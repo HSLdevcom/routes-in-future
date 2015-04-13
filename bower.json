@@ -1,0 +1,9 @@
+{
+  "name": "tr",
+  "private": true,
+  "dependencies": {
+    "react": "~0.13.1",
+    "lodash": "~3.6.0",
+    "jquery": "~2.1.3"
+  }
+}

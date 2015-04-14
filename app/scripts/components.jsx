@@ -38,16 +38,9 @@ var RouteCategoryList = React.createClass({
         this.props.expandCategory(this.props.categoryName);
     },
     render: function() {
-        var routesList;
-        if(this.props.expanded){
-          routesList = <RoutesList  data={this.props.data}/>;
-        } else {
-          routesList = '';
-        }
         return (
-          <div className='vantaa-routes routes accordion' data-expanded={this.props.expanded}>
-            <button className='expand-routes-list' onClick={this.expandThis}>Kehärata ja Vantaan bussilinjasto</button>
-            {routesList}
+          <div className='vantaa-routes routes accordion'>
+            <RoutesList  data={this.props.data}/>
           </div>
         );
     }
@@ -55,17 +48,13 @@ var RouteCategoryList = React.createClass({
 var AllRoutesList = React.createClass({
     getInitialState: function() {
        return {
-           addressSearchText: '',
-           openRouteCategory: ''
+           addressSearchText: ''
        };
-    },
-    expandCategory:function(categoryName) {
-      this.setState({openRouteCategory:'vantaa'});
     },
     render: function() {
         return (
           <div className='routes-group'>
-            <RouteCategoryList data={DATA} routeCategory='vantaa' expanded={(this.state.openRouteCategory==='vantaa')?true:false} expandCategory={this.expandCategory}/>
+            <RouteCategoryList data={DATA} routeCategory='vantaa'/>
           </div>
         );
     }
@@ -96,9 +85,8 @@ var RouteSearchBox = React.createClass({
       if(e.target.value!=='') {
         this.setState({suggestionsForFrom:false, suggestionsForTo:false, suggestionsForLine:true});
         var matches = _.where(replacementLines,{oldLines:[e.target.value]});
-        this.showSuggestions(matches);
+          this.showSuggestions(matches);
         var newRoutes =  _.map(matches, function(match) {
-
           return getRoutePattern(_.find(DATA.routes,{route_short_name:match.newLine}).route_id);
         });
         return showRoutesOnMap(newRoutes);

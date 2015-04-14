@@ -19,6 +19,9 @@ body {
   line-height: 18px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+div,header,footer,nav,aside,section,main {
+  box-sizing: border-box;
+}
 h1,h2,h3,h4,h5,p {
   margin: 0 0 1em;
 }
@@ -61,8 +64,8 @@ main {
 .left-sidebar {
   z-index: 2;
   position: relative;
-  background: #FFF;
-  color: #999999;
+  background: #007AC9;
+  color: #FFF;
   width: 25vw;
   margin:0;
   min-height: 100%;

@@ -8,16 +8,16 @@ function getRoutePattern(routeId) {
   return routePattern;
 }
 function showRoutesOnMap(routes) {
-  var maxRouteLat = 0;
-  var maxRouteLon = 0;
-  var minRouteLat = 0;
-  var minRouteLon = 0;
-  showLayer.clearLayers();
-  for(var i=0; i<routes.length; i++) {
-    showLayer.addLayer(routes[i].polyline);
-    showLayer.addLayer(routes[i].startMarker);
-    showLayer.addLayer(routes[i].stopMarker);
-  }
+  // var maxRouteLat = 0;
+  // var maxRouteLon = 0;
+  // var minRouteLat = 0;
+  // var minRouteLon = 0;
+  // showLayer.clearLayers();
+  // for(var i=0; i<routes.length; i++) {
+  //   showLayer.addLayer(routes[i].polyline);
+  //   showLayer.addLayer(routes[i].startMarker);
+  //   showLayer.addLayer(routes[i].stopMarker);
+  // }
   DATA.patterns = [];
   DATA.allPatterns.map(function(pattern, index) {
     for (var i = 0; i < routes.length; i++) {
@@ -29,7 +29,7 @@ function showRoutesOnMap(routes) {
     }
 
   });
-  DATA.patterns[0].render = false;
+  
   transitive.updateData(DATA);
 
   //map.fitBounds([route.stopLatLongs[0],route.stopLatLongs[(route.stopLatLongs.length-1)]]);

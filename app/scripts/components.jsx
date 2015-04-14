@@ -1,10 +1,10 @@
 var Route = React.createClass({
-    openRouteOnMap: function() {
-      openRouteMap(this.props.route.route_id);
-
+    selectRoute: function(e){
+      this.props.selectRoute(this.props.route.route_id);
     },
     render: function() {
-        var pattern = _.find(DATA.patterns,{route_id:this.props.route.route_id});
+        var activeClass = (this.props.route.active)? 'route clearfix active' : 'route clearfix inactive';
+        var pattern = _.find(DATA.allPatterns,{route_id:this.props.route.route_id});
         var routeStartText = _.find(
               DATA.stops,
               { stop_id:pattern.stops[0].stop_id}
@@ -14,18 +14,47 @@ var Route = React.createClass({
               { stop_id:pattern.stops[pattern.stops.length-1].stop_id}
         ).stop_name;
         return (
-          <div className='route' onClick={this.openRouteOnMap}>
-            {this.props.route.route_short_name} {routeStartText}-{routeStopText}
+          <div className={activeClass} onClick={this.selectRoute}>
+            <div className='checkmark'></div>
+            <span className='route-nr'>{this.props.route.route_short_name}</span>
+            <span className='route-text'>{routeStartText} - {routeStopText}</span>
           </div>
         );
     }
 });
 var RoutesList = React.createClass({
+    getInitialState: function() {
+      return {routes:this.props.routes};
+    },
+    selectRoute: function(rId) {
+      var activeRoutes = [];
+      var routes = this.state.routes.map(function(route, index) {
+        if(route.route_id === rId) {
+          if(route.active) {
+            route.active = false;
+          } else {
+            activeRoutes.push(route.route_id);
+            route.active = true;
+          }
+        } else {
+          if(route.active) {
+            activeRoutes.push(route.route_id);
+          }
+        }
+        return route;
+      });
+
+      activeRoutes = activeRoutes.map(function(routeId, index) {
+        return getRoutePattern(routeId);
+      });
+
+      this.setState({routes: routes});
+      return showRoutesOnMap(activeRoutes);
+    },
     render: function() {
-        var routes = [];
-        routes = this.props.data.routes.map(function(route){
-          return <Route route={route} key={route.route_id} />;
-        });
+        var routes = this.state.routes.map(function(route) {
+          return <Route route={route} isActive={route.isActive} selectRoute={this.selectRoute} key={route.route_id} />;
+        },this);
         return (
           <div className='routes-list'>
             {routes}
@@ -33,28 +62,12 @@ var RoutesList = React.createClass({
         );
     }
 });
-var RouteCategoryList = React.createClass({
-    expandThis: function() {
-        this.props.expandCategory(this.props.categoryName);
-    },
-    render: function() {
-        return (
-          <div className='vantaa-routes routes accordion'>
-            <RoutesList  data={this.props.data}/>
-          </div>
-        );
-    }
-});
 var AllRoutesList = React.createClass({
-    getInitialState: function() {
-       return {
-           addressSearchText: ''
-       };
-    },
     render: function() {
         return (
           <div className='routes-group'>
-            <RouteCategoryList data={DATA} routeCategory='vantaa'/>
+            <h3>Uudet linjat</h3>
+            <RoutesList routes={DATA.routes} />
           </div>
         );
     }
@@ -83,12 +96,12 @@ var RouteSearchBox = React.createClass({
     },
     searchCurrentlines: function(e) {
       if(e.target.value!=='') {
-        this.setState({suggestionsForFrom:false, suggestionsForTo:false, suggestionsForLine:true});
         var matches = _.where(replacementLines,{oldLines:[e.target.value]});
-          this.showSuggestions(matches);
         var newRoutes =  _.map(matches, function(match) {
           return getRoutePattern(_.find(DATA.routes,{route_short_name:match.newLine}).route_id);
         });
+        this.setState({suggestionsForFrom:false, suggestionsForTo:false, suggestionsForLine:true});
+        this.showSuggestions(matches);
         return showRoutesOnMap(newRoutes);
       } else {
         return clearRoutesOnMap();
@@ -107,8 +120,8 @@ var RouteSearchBox = React.createClass({
           return <li key={suggestion.newLine}>{suggestion.newLine}</li>;
         });
         suggestions = <div className='suggestions'>
-                        <h3>Korvaavat linjat:</h3>
-                        <ul>{suggestionsitems}</ul>;
+                        <h4>Korvaavat linjat:</h4>
+                        <ul>{suggestionsitems}</ul>
                       </div>;
       } else {
         var suggestions = '';
@@ -117,6 +130,7 @@ var RouteSearchBox = React.createClass({
         return (
           <div className='route-search-container'>
             <form name='route-search-form'>
+              <h3>Hae reittiä:</h3>
               <div className='form-group'>
                 <input type='text' className='autocomplete typeahead' onChange={this.search} name='from-place' placeholder='mistä' />
                 {this.state.suggestionsForFrom ? suggestions : ''}
@@ -125,12 +139,14 @@ var RouteSearchBox = React.createClass({
                 <input type='text' className='autocomplete typeahead' onChange={this.search} name='to-place' placeholder='mihin' />
                 {this.state.suggestionsForTo ? suggestions : ''}
               </div>
-              <h2>Tai hae nykyisellä linjanumerolla:</h2>
+              <h3>Hae nykyisellä linjanumerolla:</h3>
               <div className='form-group'>
                 <input type='text' className='autocomplete typeahead' onChange={this.searchCurrentlines} name='current-linenr' placeholder='nykyinen linjanumero' />
                 {this.state.suggestionsForLine ? suggestions : ''}
               </div>
-              <button type='submit'>Hae reitti</button>
+              <div className='form-group'>
+                <button type='submit'>Hae reitti</button>
+              </div>
             </form>
           </div>
         );

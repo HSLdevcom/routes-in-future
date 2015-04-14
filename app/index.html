@@ -13,6 +13,7 @@
     <!-- endbuild -->
 
     <!-- build:css styles/main.css -->
+    <link type="text/css" rel="stylesheet" href="styles/build.css" />
     <link type="text/css" rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
 
@@ -21,7 +22,6 @@
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <!--Leaflet CDN-->
 
-    <link rel="stylesheet" href="styles/build.css" />
     <script src="scripts/build.js"></script>
     <!--Transitive-->
   </head>
@@ -31,7 +31,7 @@
     <![endif]-->
     <main class="clearfix">
       <nav class="left-sidebar" >
-        <div class="logo">
+        <div class="logo clearfix">
           <h1>Tulevat reitit</h1>
         </div>
         <h2>
@@ -112,8 +112,8 @@
         <!-- build:js scripts/main.js -->
         <script src="data/data.js"></script>
         <script src="data/replacement_map.js"></script>
-        <script src="scripts/components.js"></script>
         <script src="scripts/main.js"></script>
+        <script src="scripts/components.js"></script>
         <!-- endbuild -->
 </body>
 </html>

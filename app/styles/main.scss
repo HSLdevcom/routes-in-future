@@ -1,41 +1,54 @@
 $icon-font-path: '../fonts/';
 @import "node_modules/normalize.scss/normalize.scss";
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
 // bower:scss
 // endbower
-
+$hslblue : #007AC9;
+$hsldarkblue : #006eb5;
 .browserupgrade {
   margin: 0.2em 0;
   background: #ccc;
   color: #000;
   padding: 0.2em 0;
 }
-
+.form-group,
+.clearfix {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
 html,body {
   min-height: 100%;
   width: 100%;
 }
 body {
-  font-size: 12px;
-  line-height: 18px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-div,header,footer,nav,aside,section,main {
+div, header, footer, nav, aside, section, main, button, input, textarea {
   box-sizing: border-box;
 }
 h1,h2,h3,h4,h5,p {
   margin: 0 0 1em;
+  font-weight: 300;
 }
 h1 {
-  font-size: 2.25em;
-  line-height: 2.2em;
+  font-size: 2em;
+  line-height: 1.1em;
 }
 h2 {
-  font-size: 1.8em;
-  line-height: 1.2em;
+  font-size: 1.6em;
+  line-height: 1.1em;
 }
 h3 {
-  font-size: 1.6em;
-  line-height: 1.2em;
+  font-size: 1.4em;
+  line-height: 1.1em;
 }
 h4 {
   font-size: 1.2em;
@@ -49,12 +62,17 @@ p {
   font-size: 1em;
   line-height: 1.1em;
 }
-button {
-  font-size: 1.2em;
-  line-height: 3em;
+input,button {
+  font-size: 1em;
+  line-height: 2.5em;
+  height: 2.5em;
   display: block;
+  padding: 0 1em;
+  margin: 0 0 1em;
+  transition: all 0.25s ease-out;
+}
+button {
   text-transform: uppercase;
-  padding: 0 15px;
 }
 main {
   position: relative;
@@ -64,65 +82,112 @@ main {
 .left-sidebar {
   z-index: 2;
   position: relative;
-  background: #007AC9;
+  background: $hslblue;
   color: #FFF;
   width: 25vw;
   margin:0;
+  padding: 0 1em;
   min-height: 100%;
   overflow: hidden;
   a {
-    color: #999999;
+    color: #FFF;
+  }
+  .logo {
+    width: 100%;
+    margin-top: 1em;
+    h1 {
+      background-image: url(../images/hsllogo.svg);
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: auto 1.25em;
+      padding-left: 140px;
+    }
   }
   h2:first-child {
     margin-top: 0;
   }
-  .logo {
-    padding: 0 15px;
+  button,input{
+    color: #FFF;
+    background: $hsldarkblue;
+    border: none;
+    border-radius: 3px;
   }
-  .routes-group,
-  .route-search-container {
-
+  input {
+    width: 100%;
+  }
+  button {
+    float: right;
+    &:hover {
+      color: $hsldarkblue;
+      background: #FFFFFF;
+    }
+  }
+  ::-webkit-input-placeholder {
+    color: rgba(#FFF,0.8);
+  }
+  :-moz-placeholder {
+    color: rgba(#FFF,0.8);
+  }
+  ::-moz-placeholder {
+    color: rgba(#FFF,0.8);
+  }
+  :-ms-input-placeholder {
+    color: rgba(#FFF,0.8);
   }
   .routes-group {
-    .routes.accordion {
-      width: 100%;
-      height: calc(100% - 4.4em);
-    }
-    button {
-      margin-bottom: 1em;
-      background: #eef1f3;
-      color: #9dabb3;
-      border: none;
-      width: 100%;
-      outline: none;
-      font-weight: bold;
-      font-size: 1em;
-      text-align: left;
-    }
     .routes-list {
       position:relative;
       overflow: scroll;
       width: 100%;
-      max-height: 280px;
+      background: $hsldarkblue;
+      border-radius: 3px;
+      max-height: 200px;
+      padding: 1em;
     }
     .route {
       width: 100%;
-      height: 1.5em;
-      font-size: 1.2em;
-      line-height: 1.4em;
-      padding: 0 1em;
+      display: block;
       cursor: pointer;
-      &:hover {
-        background: #00B9E4;
+      .checkmark {
+        background: #FFF;
+        width: 1em;
+        height: 1em;
+        float: left;
+        position: relative;
+        border-radius: 3px;
+      }
+      .route-nr,
+      .route-text {
+        float: left;
+      }
+      .route-nr {
+        margin: 0 0 0 0.5em;
+        min-width: 3em;
+      }
+      &.active {
+        .checkmark {
+          &:before {
+            width: 0.66em;
+            height: 0.33em;
+            content: " ";
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 0.2em solid #000;
+            border-bottom: 0.2em solid #000;
+            transform-origin: 50% 50%;
+            transform: translate(0.05em,0.1em) rotate(-45deg);
+          }
+        }
       }
     }
   }
   footer {
     position: absolute;
-    bottom: 20px;
+    bottom: 1em;
     left: 0;
     width: 100%;
-    padding: 0 15px;
+    padding: 0 1em;
     p {
       display: flex;
       justify-content: space-between;

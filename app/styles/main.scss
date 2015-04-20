@@ -4,7 +4,8 @@ $icon-font-path: '../fonts/';
 // bower:scss
 // endbower
 $hslblue : #007AC9;
-$hsldarkblue : #006eb5;
+//$hsldarkblue : #006eb5;
+$hsldarkblue : #025A93;
 .browserupgrade {
   margin: 0.2em 0;
   background: #ccc;
@@ -27,8 +28,8 @@ html,body {
   width: 100%;
 }
 body {
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 12px;
+  line-height: 18px;
   font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 div, header, footer, nav, aside, section, main, button, input, textarea {
@@ -122,62 +123,204 @@ main {
       background: #FFFFFF;
     }
   }
+  .form-group {
+    position: relative;
+    input {
+      margin: 0;
+    }
+    margin: 0 0 1em;
+  }
+  .autocomplete-container {
+    height: 200px;
+    width: 100%;
+    background: $hsldarkblue;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    z-index: 99;
+    margin: 0;
+    box-sizing: border-box;
+    border: 2px solid #FFF;
+    border-right: none;
+    border-radius: 0 0 3px 3px;
+    ul {
+      height: 100%;
+      overflow-y: scroll;
+      list-style-position: inside;
+      list-style-type: none;
+      width: 100%;
+      margin:0;
+      padding: 0;
+      position: relative;
+      box-sizing: border-box;
+      &::-webkit-scrollbar {
+        background: #fff;
+      }
+      &::-webkit-scrollbar-button       {
+        background: rgba($hslblue, 0.75);
+      }
+      &::-webkit-scrollbar-track        { /* 3 */ }
+      &::-webkit-scrollbar-track-piece  { /* 4 */ }
+      &::-webkit-scrollbar-thumb {
+        background: rgba($hslblue,0.75);
+        border-radius: 99em;
+        width: 50%;
+      }
+      &::-webkit-scrollbar-corner       { /* 6 */ }
+      &::-webkit-resizer                { /* 7 */ }
+    }
+    li{
+      padding: 0 1em;
+      &:hover {
+        background: #FFF;
+        color: $hslblue;
+      }
+    }
+  }
   ::-webkit-input-placeholder {
-    color: rgba(#FFF,0.8);
+    color: rgba(#FFF,0.6);
   }
   :-moz-placeholder {
-    color: rgba(#FFF,0.8);
+    color: rgba(#FFF,0.6);
   }
   ::-moz-placeholder {
-    color: rgba(#FFF,0.8);
+    color: rgba(#FFF,0.6);
   }
   :-ms-input-placeholder {
-    color: rgba(#FFF,0.8);
+    color: rgba(#FFF,0.6);
   }
-  .routes-group {
-    .routes-list {
-      position:relative;
-      overflow: scroll;
-      width: 100%;
-      background: $hsldarkblue;
-      border-radius: 3px;
-      max-height: 200px;
-      padding: 1em;
+  .routes-list {
+    position:relative;
+    overflow-y: scroll;
+    width: 100%;
+    background: $hsldarkblue;
+    border-radius: 3px;
+    max-height: 200px;
+    padding: 1em;
+    &::-webkit-scrollbar {
+      background: #fff;
     }
-    .route {
-      width: 100%;
-      display: block;
-      cursor: pointer;
+    &::-webkit-scrollbar-button       {
+      background: rgba($hslblue, 0.75);
+    }
+    &::-webkit-scrollbar-track        { /* 3 */ }
+    &::-webkit-scrollbar-track-piece  { /* 4 */ }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($hslblue,0.75);
+      border-radius: 99em;
+      width: 50%;
+    }
+    &::-webkit-scrollbar-corner       { /* 6 */ }
+    &::-webkit-resizer                { /* 7 */ }
+  }
+  .route {
+    width: 100%;
+    display: block;
+    cursor: pointer;
+    .checkmark {
+      background: #FFF;
+      width: 1em;
+      height: 1em;
+      float: left;
+      position: relative;
+      border-radius: 3px;
+    }
+    .route-nr,
+    .route-text {
+      float: left;
+    }
+    .route-nr {
+      margin: 0 0 0 0.5em;
+      min-width: 3em;
+    }
+    &.active {
       .checkmark {
-        background: #FFF;
-        width: 1em;
-        height: 1em;
-        float: left;
-        position: relative;
-        border-radius: 3px;
+        &:before {
+          width: 0.66em;
+          height: 0.33em;
+          content: " ";
+          position: absolute;
+          top: 0;
+          left: 0;
+          border-left: 0.2em solid $hslblue;
+          border-bottom: 0.2em solid $hslblue;
+          transform-origin: 50% 50%;
+          transform: translate(0.1em,0.1em) rotate(-45deg);
+        }
       }
-      .route-nr,
-      .route-text {
-        float: left;
+    }
+  }
+  form[name="line-search-form"] {
+    margin-bottom: 2em;
+  }
+  .new-routes-replacing {
+    h4 {
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+  }
+  .all-new-routes {
+    border-radius: 3px;
+    background: $hsldarkblue;
+    h4 {
+      line-height: 2em;
+      cursor: pointer;
+      padding: 0 1em;
+      margin-bottom: 0;
+      position: relative;
+      &:after, &:before {
+      	right: 1em;
+      	top: 50%;
+      	border: solid transparent;
+      	content: " ";
+      	height: 0;
+      	width: 0;
+      	position: absolute;
+      	pointer-events: none;
       }
-      .route-nr {
-        margin: 0 0 0 0.5em;
-        min-width: 3em;
+
+      &:after {
+      	border-color: rgba(136, 183, 213, 0);
+      	border-left-color: $hsldarkblue;
+      	border-width: 0.5em;
+      	margin-top: -0.5em;
+        transform: translateX(-0.2em);
       }
-      &.active {
-        .checkmark {
-          &:before {
-            width: 0.66em;
-            height: 0.33em;
-            content: " ";
-            position: absolute;
-            top: 0;
-            left: 0;
-            border-left: 0.2em solid #000;
-            border-bottom: 0.2em solid #000;
-            transform-origin: 50% 50%;
-            transform: translate(0.05em,0.1em) rotate(-45deg);
-          }
+      &:before {
+      	border-color: rgba(194, 225, 245, 0);
+      	border-left-color: #FFF;
+      	border-width: 0.5em;
+      	margin-top: -0.5em;
+      }
+    }
+    .routes-list {
+      padding-top: 0;
+      display: none;
+      max-height: 10em;
+    }
+    &.open {
+      .routes-list {
+        display: block;
+      }
+      h4 {
+
+        &:after {
+        	border-color: rgba(136, 183, 213, 0);
+        	border-top-color: $hsldarkblue;
+        	border-width: 0.5em;
+          margin-top: -0.45em;
+          transform: none;
+          right: 1.5em;
+
+        }
+        &:before {
+        	border-color: rgba(194, 225, 245, 0);
+        	border-top-color: #FFF;
+        	border-width: 0.5em;
+          margin-top: -0.25em;
+          transform: none;
+          right: 1.5em;
+
         }
       }
     }
@@ -210,6 +353,20 @@ main {
     width: 100%;
   }
 }
-/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
+.transitive-line:hover {
+  stroke: #000;
+}
+@media screen and (min-width: 1500px) {
+  body {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+@media screen and (max-width: 1100px) {
+  .left-sidebar {
+    width: 33vw;
+  }
+  .map-container {
+    width: 67vw;
+  }
 }

@@ -1,17 +1,20 @@
 $icon-font-path: '../fonts/';
-@import "node_modules/normalize.scss/normalize.scss";
+@import 'node_modules/normalize.scss/normalize';
 @import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
 // bower:scss
 // endbower
-$hslblue : #007AC9;
+$hslblue : #007ac9;
 //$hsldarkblue : #006eb5;
-$hsldarkblue : #025A93;
+$hsldarkblue : #025a93;
+$black: #000000;
+$grey: #000000;
 .browserupgrade {
-  margin: 0.2em 0;
-  background: #ccc;
-  color: #000;
-  padding: 0.2em 0;
+  background: $grey;
+  color: $black;
+  margin: .2em 0;
+  padding: .2em 0;
 }
+
 .form-group,
 .clearfix {
   &:before,

@@ -1,47 +1,59 @@
 var initialLayers = L.layerGroup();
 var showLayer = L.layerGroup();
+var oldRouteLayer = L.layerGroup();
 var map;
 var transitive;
-
+var oldTransitive;
+var oldroutenumbers;
+var oldTransitiveData;
+var oldRoutes;
 var COMPUTED = [
   // showLabelsOnHover,
   // highlightOptionOnHover
 ];
 //DATA.allPatterns = DATA.patterns;
-function showRoutesOnMap() {
-  // Create journeys of active routes
-  //DATA.patterns = _.where(DATA.allPatterns,{render:true});
-  var routeIds = _.where(DATA.routes,{active:true}).map(function(route) {
-    return route.route_id
-  });
-  var patterns = _.filter(DATA.patterns, function(pattern){
-    if(routeIds.indexOf(pattern.route_id) !== -1) {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  DATA.journeys = patterns.map(function(pattern){
-    return {
-      journey_id: 'j_'+pattern.pattern_id,
-      journey_name: 'Pattern:'+pattern.pattern_id,
-      segments: [{
-        type: 'TRANSIT',
-        pattern_id: pattern.pattern_id,
-        from_stop_index: 0,
-        to_stop_index: (pattern.stops.length-1)
-      }]
-    };
-  });
-  transitive.updateData(DATA);
-  //map.fitBounds([],routes[0].stopLatLongs[(routes[0].stopLatLongs.length-1)]]);
-}
+function showRoutesOnMap(DATA,type) {
+  // Create journeys of active routes, if its search results leave the journeys alone
+  if(type!=='routesearch'){
+    DATA.journeys = [];
+    var routeIds = _.where(DATA.routes,{active:true}).map(function(route) {
+      return route.route_id
+    });
+    var patterns = _.filter(DATA.patterns, function(pattern){
+      if(routeIds.indexOf(pattern.route_id) !== -1) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    DATA.journeys = patterns.map(function(pattern){
+      return {
+        journey_id: 'j_'+pattern.pattern_id,
+        journey_name: 'Pattern:'+pattern.pattern_id,
+        segments: [{
+          type: 'TRANSIT',
+          pattern_id: pattern.pattern_id,
+          from_stop_index: 0,
+          to_stop_index: (pattern.stops.length-1)
+        }]
+      };
+    });
+  }
 
+  if(type === 'new' || type === 'routesearch') {
+    transitive.updateData(DATA);
+  } else if(type === 'old') {
+    oldTransitive.clearData();
+    oldTransitive.updateData(DATA);
+  }
+}
 function clearRoutesOnMap() {
+  oldTransitive.clearData();
   showLayer.clearLayers();
   DATA.journeys = [];
   transitive.updateData(DATA);
 }
+
 /**
  * Show labels on hover
  */
@@ -124,10 +136,15 @@ function startMap() {
   transitive = new Transitive({
     data: DATA,
     styles:STYLES,
-    autoResize: false,
-    zoomEnabled: false
   });
+
+  oldTransitive = new Transitive({
+    data:{},
+    styles:OLD_STYLES
+  });
+  oldRouteLayer.addLayer(new L.TransitiveLayer(oldTransitive))
   map.addLayer(new L.TransitiveLayer(transitive));
+  map.addLayer(oldRouteLayer);
   transitive.on('render',function(transitive){
     COMPUTED.map(function(behaviour){
 
@@ -139,4 +156,14 @@ function startMap() {
 
 $(document).ready(function() {
   startMap();
+  oldroutenumbers = _.uniq(replacementLines.map(function(line) {
+    return line.oldLines;
+  })
+  .reduce(function(a,b) {
+    return a.concat(b);
+  }));
+  $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes').done(function(data){
+    oldRoutes = data;
+  });
+
 });

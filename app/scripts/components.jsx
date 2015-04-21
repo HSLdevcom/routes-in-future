@@ -24,7 +24,7 @@ var Route = React.createClass({
 });
 var RoutesList = React.createClass({
     selectRoute: function(routeId) {
-      this.props.setActiveRoute(routeId);
+      this.props.setActiveRoutes([routeId]);
     },
     render: function() {
         var routes = this.props.routes.map(function(route) {
@@ -123,64 +123,20 @@ var AutocompleteInput = React.createClass({
     );
   }
 });
-var ReplacementLineSearch = React.createClass({
-  getInitialState: function() {
-    return {newroutes:[]};
-  },
-  searchCurrentlines: function(e) {
-    e.preventDefault();
-    if(e.target.value!=='') {
-      var matches = _.where(replacementLines,{oldLines:[e.target.value]});
-      var routeInfos = [];
-      var routeIds = [];
-      var routeInfos =  matches.map(function(match) {
-        var routeInfo = _.where(this.props.routes,{route_short_name:match.newLine})[0];
-        routeIds.push(routeInfo.route_id);
-        return routeInfo;
-      },this);
-      this.props.setActiveRoutes(routeIds);
-      this.setState({newroutes:routeInfos});
-    } else {
-      this.props.setActiveRoutes([]);
-      this.setState({newroutes:[]});
-      return clearRoutesOnMap();
-    }
-  },
-  setActiveRoute: function(routeId){
-    this.props.setActiveRoute(routeId);
-  },
-  render: function(){
-    var newRoutes;
-    if(this.state.newroutes.length){
-      newRoutes = <div className='new-routes-replacing'>
-                    <h4>Uudet linjat:</h4>
-                    <RoutesList setActiveRoute={this.setActiveRoute} routes={this.state.newroutes} />
-                  </div>;
-    }
-    return(
-      <form name='line-search-form' onSubmit={this.searchCurrentlines}>
-        <h3>Hae nykyisellä linjanumerolla:</h3>
-        <div className='form-group'>
-          <input autoComplete='off' type='text' onChange={this.searchCurrentlines} name='current-linenr' placeholder='nykyinen linjanumero' />
-          {newRoutes}
-        </div>
-      </form>
-    );
-  }
-});
 var RouteSearchBox = React.createClass({
     getInitialState: function() {
        return {
-           from: {
-             name:'from',
-             lat:0,
-             lon:0
-           },
-           to: {
-               name:'to',
-               lat:0,
-               lon:0
-           }
+          searchResult:[],
+          from: {
+            name:'from',
+            lat:0,
+            lon:0
+          },
+          to: {
+            name:'to',
+            lat:0,
+            lon:0
+          }
        };
     },
     setResult: function(result, type) {
@@ -190,7 +146,7 @@ var RouteSearchBox = React.createClass({
           if(type==='from'){
             _this.setState({
               from:{
-                name:'from',
+                name:'Mistä',
                 lat:data.hits.hits[0]._source.location[1],
                 lon:data.hits.hits[0]._source.location[0]
               }
@@ -198,7 +154,7 @@ var RouteSearchBox = React.createClass({
           } else if(type==='to') {
             _this.setState({
               to:{
-                name:'to',
+                name:'Mihin',
                 lat:data.hits.hits[0]._source.location[1],
                 lon:data.hits.hits[0]._source.location[0]
               }
@@ -214,22 +170,22 @@ var RouteSearchBox = React.createClass({
       e.preventDefault();
       var od = {
         from: this.state.from,
-        to: this.state.to,
-        accessModes: 'WALK'
+        to: this.state.to
       };
       var profiler = new OtpProfiler({
         host: 'http://matka.hsl.fi/otp/routers/finland',
-        limit: 3 // limit the number of options to profile, defaults to 3
+        limit: 1 // limit the number of options to profile, defaults to 3
       });
-      profiler.journey(od, function(err, data) {
-          var profilerTransitive = new Transitive({
-            data: data,
-            styles:STYLES
+      profiler.profile(od, function(err, data) {
+        if(err===null){
+          profiler.journey({
+            profile: data
+          },function(err,transitivedata){
+            console.log(transitivedata);
+            showRoutesOnMap(transitivedata,'routesearch');
           });
-          map.addLayer(new L.TransitiveLayer(profilerTransitive));
-          map.setView([60.287481, 24.996849], 11);
+        }
       });
-
     },
     render: function() {
       return (
@@ -244,69 +200,106 @@ var RouteSearchBox = React.createClass({
         );
     }
 });
+var ReplacementLineSearch = React.createClass({
+  getInitialState: function() {
+    return {newroutes:[]};
+  },
+  searchCurrentlines: function(e) {
+    e.preventDefault();
+    this.props.hideAllRoutesList();
+    if(e.target.value!=='') {
+      var oldLineId;
+      var matches = _.filter(replacementLines,function(line){
+        if(line.oldLines.indexOf(e.target.value)!==-1) return true;
+      });
+      if(matches.length>0){
+        var routeInfos = [];
+        var routeIds = [];
+        var routeInfos =  matches.map(function(match) {
+          var routeInfo = _.where(this.props.routes,{route_short_name:match.newLine})[0];
+          routeIds.push(routeInfo.route_id);
+          return routeInfo;
+        },this);
+        this.props.clearActiveRoutes();
+        this.props.setActiveRoutes(routeIds);
+        this.setState({newroutes:routeInfos});
+
+        oldRoute = _.find(oldRoutes,{shortName:e.target.value});
+        new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
+          showRoutesOnMap(data,'old');
+          
+        });
+      }
+    } else {
+      this.props.clearActiveRoutes();
+      this.props.setActiveRoutes([]);
+      this.setState({newroutes:[]});
+    }
+  },
+  render: function(){
+    var newRoutes;
+    if(this.state.newroutes.length){
+      newRoutes = <div className='new-routes-replacing'>
+                    <h4>Linjan korvaa seuraavat linjat:</h4>
+                    <RoutesList setActiveRoutes={this.props.setActiveRoutes} routes={this.state.newroutes} />
+                  </div>;
+    }
+    return(
+      <form name='line-search-form' onSubmit={this.searchCurrentlines}>
+        <h3>Hae nykyisellä linjanumerolla:</h3>
+        <div className='form-group'>
+          <input autoComplete='off' type='text' onChange={this.searchCurrentlines} name='current-linenr' placeholder='nykyinen linjanumero' />
+          {newRoutes}
+        </div>
+      </form>
+    );
+  }
+});
+
 var LeftSidebar = React.createClass({
   getInitialState: function(){
     return {DATA:DATA, showAllRoutes:false};
   },
-  setActiveRoutes: function(routeIds){
+  clearActiveRoutes: function(routeIds){
     DATA.routes = DATA.routes.map(function(route){
       route.active = false;
+      return route;
+    });
+    this.setState({DATA:DATA});
+    showRoutesOnMap(DATA,'new');
+    showRoutesOnMap(DATA,'old');
+  },
+  setActiveRoutes:function(routeIds) {
+    DATA.routes = DATA.routes.map(function(route){
       for(var i = 0; i < routeIds.length; i++) {
         if(routeIds[i] === route.route_id) {
-          route.active = true;
+          if(route.active) {
+            route.active = false;
+          } else {
+            route.active = true;
+          }
         }
       }
       return route;
     });
-    // DATA.allPatterns = DATA.allPatterns.map(function(pattern, index) {
-    //   pattern.render = false;
-    //   for(var i = 0; i < routeIds.length; i++) {
-    //     if(routeIds[i] === pattern.route_id) {
-    //       pattern.render = true;
-    //     }
-    //   }
-    //
-    //   return pattern;
-    // });
     this.setState({DATA:DATA});
-    showRoutesOnMap();
-  },
-  setActiveRoute:function(routeId) {
-    DATA.routes = DATA.routes.map(function(route){
-      if(routeId === route.route_id) {
-        if(route.active) {
-          route.active = false;
-        } else {
-          route.active = true;
-        }
-      }
-      return route;
-    });
-    // DATA.allPatterns = DATA.allPatterns.map(function(pattern, index) {
-    //   if(pattern.route_id === routeId) {
-    //     if(pattern.render) {
-    //       pattern.render = false;
-    //     } else {
-    //       pattern.render = true;
-    //     }
-    //   }
-    //   return pattern;
-    // });
-    this.setState({DATA:DATA});
-    showRoutesOnMap();
+    showRoutesOnMap(DATA,'new');
   },
   showAllRoutesList: function() {
     this.setState({showAllRoutes:!this.state.showAllRoutes});
+  },
+  hideAllRoutesList: function() {
+    this.setState({showAllRoutes:false});
   },
   render: function(){
     var showClass = (this.state.showAllRoutes)?'all-new-routes open':'all-new-routes';
     return (
       <div>
-        <RouteSearchBox setActiveRoute={this.setActiveRoute} setActiveRoutes={this.setActiveRoutes} />
-        <ReplacementLineSearch routes={DATA.routes} setActiveRoute={this.setActiveRoute} setActiveRoutes={this.setActiveRoutes} />
+        <RouteSearchBox setActiveRoutes={this.setActiveRoutes} />
+        <ReplacementLineSearch hideAllRoutesList={this.hideAllRoutesList} setActiveRoutes={this.setActiveRoutes} clearActiveRoutes={this.clearActiveRoutes} routes={DATA.routes} />
         <div className={showClass} >
           <h4 onClick={this.showAllRoutesList}>Kaikki uudet linjat</h4>
-          <RoutesList setActiveRoute={this.setActiveRoute} routes={DATA.routes} />
+          <RoutesList setActiveRoutes={this.setActiveRoutes} clearActiveRoutes={this.clearActiveRoutes} routes={DATA.routes} />
         </div>
       </div>
     );

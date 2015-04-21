@@ -200,8 +200,7 @@ require.relative = function(parent) {
   return localRequire;
 };
 require.register("component-type/index.js", Function("exports, require, module",
-"\n\
-/**\n\
+"/**\n\
  * toString ref.\n\
  */\n\
 \n\
@@ -217,18 +216,21 @@ var toString = Object.prototype.toString;\n\
 \n\
 module.exports = function(val){\n\
   switch (toString.call(val)) {\n\
-    case '[object Function]': return 'function';\n\
     case '[object Date]': return 'date';\n\
     case '[object RegExp]': return 'regexp';\n\
     case '[object Arguments]': return 'arguments';\n\
     case '[object Array]': return 'array';\n\
-    case '[object String]': return 'string';\n\
+    case '[object Error]': return 'error';\n\
   }\n\
 \n\
   if (val === null) return 'null';\n\
   if (val === undefined) return 'undefined';\n\
+  if (val !== val) return 'nan';\n\
   if (val && val.nodeType === 1) return 'element';\n\
-  if (val === Object(val)) return 'object';\n\
+\n\
+  val = val.valueOf\n\
+    ? val.valueOf()\n\
+    : Object.prototype.valueOf.apply(val)\n\
 \n\
   return typeof val;\n\
 };\n\
@@ -11199,7 +11201,8 @@ function isHost(obj) {\n\
 \n\
 request.getXHR = function () {\n\
   if (root.XMLHttpRequest\n\
-    && ('file:' != root.location.protocol || !root.ActiveXObject)) {\n\
+      && (!root.location || 'file:' != root.location.protocol\n\
+          || !root.ActiveXObject)) {\n\
     return new XMLHttpRequest;\n\
   } else {\n\
     try { return new ActiveXObject('Microsoft.XMLHTTP'); } catch(e) {}\n\
@@ -16916,7 +16919,6 @@ function isFunction(val) {\n\
 require.register("transitive/lib/styler/styles.js", Function("exports, require, module",
 "var d3 = require('d3');\n\
 var clone = require('clone');\n\
-\n\
 /**\n\
  * Scales for utility functions to use\n\
  */\n\
@@ -16991,7 +16993,7 @@ var stops_merged = exports.stops_merged = {\n\
     return '#fff';\n\
   },\n\
   r: function(display, data, index, utils) {\n\
-    return utils.pixels(display.zoom.scale(), 8, 12, 16);\n\
+    return utils.pixels(display.zoom.scale(), 4, 6, 8);\n\
   },\n\
   stroke: function(display, data, index, utils) {\n\
     var point = data.owner;\n\
@@ -16999,7 +17001,7 @@ var stops_merged = exports.stops_merged = {\n\
     return '#000';\n\
   },\n\
   'stroke-width': function(display, data, index, utils) {\n\
-    return 2;\n\
+    return 1;\n\
   },\n\
 \n\
   /**\n\
@@ -17069,9 +17071,9 @@ var stops_pattern = exports.stops_pattern = {\n\
 exports.places = {\n\
   cx: 0,\n\
   cy: 0,\n\
-  r: 14,\n\
+  r: 7,\n\
   stroke: '0px',\n\
-  fill: '#fff'\n\
+  fill: '#000'\n\
 };\n\
 \n\
 /**\n\
@@ -17134,19 +17136,24 @@ var labels = exports.labels = {\n\
 \n\
 exports.segments = {\n\
   stroke: [\n\
-    '#008',\n\
+    '#007AC9',\n\
     function(display, data) {\n\
       var segment = data;\n\
       if (!segment.focused) return notFocusedColor;\n\
       if (segment.type === 'TRANSIT') {\n\
-        if (segment.patterns) {\n\
-          if (segment.patterns[0].route.route_short_name.toLowerCase().substring(\n\
-            0,\n\
-            2) === 'dc') return '#f00';\n\
-          return segment.patterns[0].route.getColor();\n\
+        if (segment.patterns[0].route_id === 'HSL:1300V' || \n\
+            segment.patterns[0].route_id === 'HSL:1300M'|| \n\
+            segment.patterns[0].route_id === 'HSL:1300') {\n\
+          return '#FF640E';\n\
+        } else {\n\
+          return '#007AC9';\n\
         }\n\
       } else if (segment.type === 'CAR') {\n\
-        return '#888';\n\
+        return 'rgba(0,0,0,0)';\n\
+      } else if (segment.type === 'BICYCLE') {\n\
+        return 'rgba(0,0,0,0)';\n\
+      } else if (segment.type === 'WALK') {\n\
+        return 'rgba(0,0,0,0.33)';\n\
       }\n\
     }\n\
   ],\n\
@@ -17155,20 +17162,20 @@ exports.segments = {\n\
     function(display, data) {\n\
       var segment = data;\n\
       if (segment.frequency && segment.frequency.average < 12) {\n\
-        if (segment.frequency.average > 6) return '12px, 12px';\n\
+        if (segment.frequency.average > 6) return '6px, 6px';\n\
         return '12px, 2px';\n\
       }\n\
     }\n\
   ],\n\
   'stroke-width': [\n\
-    '12px',\n\
+    '6px',\n\
     function(display, data, index, utils) {\n\
       var segment = data;\n\
 \n\
       if (segment.mode === 3) {\n\
-        return utils.pixels(display.zoom.scale(), 2, 4, 8) + 'px';\n\
+        return utils.pixels(display.zoom.scale(), 2, 2, 2) + 'px';\n\
       }\n\
-      return utils.pixels(display.zoom.scale(), 4, 8, 12) + 'px';\n\
+      return utils.pixels(display.zoom.scale(), 4, 4, 4) + 'px';\n\
     }\n\
   ],\n\
   envelope: [\n\
@@ -17191,22 +17198,12 @@ exports.segments = {\n\
  */\n\
 \n\
 exports.segments_front = {\n\
-  stroke: '#008',\n\
+  stroke: '#006eb5',\n\
   'stroke-width': function(display, data, index, utils) {\n\
     return utils.pixels(display.zoom.scale(), 3, 6, 10) / 2 + 'px';\n\
   },\n\
   fill: 'none',\n\
-  display: [\n\
-    'none',\n\
-    function(display, data, index, utils) {\n\
-      if (data.pattern && data.pattern.route && data.pattern.route.route_type ===\n\
-        3 &&\n\
-        data.pattern.route.route_short_name.toLowerCase().substring(0, 2) ===\n\
-        'dc') {\n\
-        return 'inline';\n\
-      }\n\
-    }\n\
-  ]\n\
+  display: 'none'\n\
 };\n\
 \n\
 /**\n\
@@ -17216,7 +17213,8 @@ exports.segments_front = {\n\
 exports.segments_halo = {\n\
   stroke: '#fff',\n\
   'stroke-width': function(display, data, index, utils) {\n\
-    return data.computeLineWidth(display) + 8;\n\
+    //return data.computeLineWidth(display) + 8;\n\
+    return 0;\n\
   },\n\
   'stroke-linecap': 'round',\n\
   fill: 'none'\n\
@@ -17231,14 +17229,11 @@ exports.segment_label_containers = {\n\
     if (!data.isFocused()) return notFocusedColor;\n\
   },\n\
   'stroke-width': function(display, data) {\n\
-    if (data.parent.pattern && data.parent.pattern.route.route_short_name.toLowerCase()\n\
-      .substring(0, 2) === 'dc') return 1;\n\
     return 0;\n\
   },\n\
   rx: 3,\n\
   ry: 3\n\
-};\n\
-//@ sourceURL=transitive/lib/styler/styles.js"
+};//@ sourceURL=transitive/lib/styler/styles.js"
 ));
 require.register("transitive/lib/point/index.js", Function("exports, require, module",
 "var augment = require('augment');\n\
@@ -19264,7 +19259,7 @@ var SegmentLabel = augment(Label, function(base) {\n\
 \n\
     this.textSvg = this.svgGroup.append('text')\n\
       .datum(this) //{ segment: this.parent })\n\
-    .attr('id', 'transitive-segment-label-' + this.parent.getId())\n\
+      .attr('id', 'transitive-segment-label-' + this.parent.getId())\n\
       .text(this.getText())\n\
       .attr('class', 'transitive-segment-label')\n\
       .attr('font-size', this.fontSize)\n\
@@ -19365,7 +19360,7 @@ LabelEdgeGroup.prototype.addEdge = function(rEdge) {\n\
 LabelEdgeGroup.prototype.getLabelTextArray = function() {\n\
   var textArray = [];\n\
   each(this.renderedSegment.pathSegment.getPatterns(), function(pattern) {\n\
-    var shortName = pattern.route.route_short_name;\n\
+    var shortName = pattern.route.route_short_name || '';\n\
     if (textArray.indexOf(shortName) === -1) textArray.push(shortName);\n\
   });\n\
   return textArray;\n\
@@ -21265,15 +21260,15 @@ Network.prototype.createRenderedSegments = function() {\n\
 \n\
       if (pathSegment.type === 'TRANSIT') {\n\
 \n\
-        // create a RenderedSegment for each pattern, except for buses which are collapsed to a single segment\n\
-        var busPatterns = [];\n\
+        // create collapse patterns to a single segment per mode\n\
+        var patterns = {};\n\
         each(pathSegment.getPatterns(), function(pattern) {\n\
-          if (pattern.route.route_type === 3) busPatterns.push(pattern);\n\
-          else this.createRenderedSegment(pathSegment, [pattern]);\n\
+          if (pattern.route.route_type in patterns) patterns[pattern.route.route_type].push(pattern);\n\
+          else patterns[pattern.route.route_type] = [pattern];\n\
         }, this);\n\
-        if (busPatterns.length > 0) {\n\
-          this.createRenderedSegment(pathSegment, busPatterns);\n\
-        }\n\
+        each(patterns, function(key, value) {\n\
+          this.createRenderedSegment(pathSegment, value);\n\
+        }, this);\n\
       } else { // non-transit segments\n\
         this.createRenderedSegment(pathSegment);\n\
       }\n\
@@ -21651,6 +21646,22 @@ var Renderer = augment(Object, function() {\n\
 \n\
   this.focusPath = function(path) {};\n\
 \n\
+  this.isDraggable = function(point) {\n\
+    var draggableTypes = this.transitive.options.draggableTypes;\n\
+    if(!draggableTypes) return false;\n\
+\n\
+    var retval = false;\n\
+    each(draggableTypes, function(type) {\n\
+      if(type === point.getType()) {\n\
+        // Return true in ether of the following cases:\n\
+        // 1. No ID array is provided for this point type (i.e. entire type is draggable)\n\
+        // 2. An ID array is provided and it includes this Point's ID\n\
+        retval = !draggableTypes[type] || draggableTypes[type].indexOf(point.getId()) !== -1;\n\
+      }\n\
+    });\n\
+    return retval;\n\
+  };\n\
+\n\
 });\n\
 \n\
 /**\n\
@@ -21707,10 +21718,10 @@ var DefaultRenderer = augment(Renderer, function(base) {\n\
     });\n\
 \n\
     // draw the vertex-based points\n\
+\n\
     each(network.graph.vertices, function(vertex) {\n\
       vertex.point.render(display);\n\
-      if (options.draggableTypes && options.draggableTypes.indexOf(\n\
-        vertex.point.getType()) !== -1) {\n\
+      if (self.isDraggable(vertex.point)) {\n\
         vertex.point.makeDraggable(self.transitive);\n\
       }\n\
     });\n\
@@ -22544,7 +22555,7 @@ RenderedSegment.prototype.compareTo = function(other) {\n\
 RenderedSegment.prototype.getLabelTextArray = function() {\n\
   var textArray = [];\n\
   each(this.patterns, function(pattern) {\n\
-    var shortName = pattern.route.route_short_name;\n\
+    var shortName = pattern.route.route_short_name || '';\n\
     if (textArray.indexOf(shortName) === -1) textArray.push(shortName);\n\
   });\n\
   return textArray;\n\
@@ -23204,7 +23215,6 @@ require.register("conveyal-leaflet.transitivelayer/TransitiveLayer.js", Function
   _resize: function(data) {\n\
     this._transitive.resize(data.newSize.x, data.newSize.y);\n\
     this._refresh();\n\
-    console.log('resizing');\n\
   }\n\
 \n\
 });\n\
@@ -23417,4 +23427,7 @@ require.alias("component-props/index.js", "component-to-function/deps/props/inde
 
 require.alias("yields-select/index.js", "yields-select/index.js");
 require.alias("transitive/lib/transitive.js", "transitive/index.js");
+
+
 require.alias("conveyal-leaflet.transitivelayer/TransitiveLayer.js", "Leaflet.TransitiveLayer/index.js");
+require.alias("conveyal-leaflet.transitivelayer/TransitiveLayer.js", "conveyal-leaflet.transitivelayer/index.js");

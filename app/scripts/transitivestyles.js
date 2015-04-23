@@ -78,8 +78,8 @@ var stops_merged = STYLES.stops_merged = {
     return utils.pixels(display.zoom.scale(), 4, 6, 8);
   },
   stroke: function(display, data, index, utils) {
-    var point = data.owner;
-    if (!point.isFocused()) return notFocusedColor;
+    //var point = data.owner;
+    //if (!point.isFocused()) return notFocusedColor;
     return '#000';
   },
   'stroke-width': function(display, data, index, utils) {
@@ -111,7 +111,8 @@ var stops_merged = STYLES.stops_merged = {
   'marker-padding': 3,
 
   visibility: function(display, data) {
-    if (!data.owner.containsSegmentEndPoint()) return 'hidden';
+     
+    //if (!data.owner.containsSegmentEndPoint()) return 'hidden';
   }
 };
 
@@ -141,8 +142,8 @@ var stops_pattern = STYLES.stops_pattern = {
   ],
   stroke: 'none',
   visibility: function(display, data) {
-    if (display.zoom.scale() < 1.5) return 'hidden';
-    if (data.owner.containsSegmentEndPoint()) return 'hidden';
+    //if (display.zoom.scale() < 1.5) return 'hidden';
+    //if (data.owner.containsSegmentEndPoint()) return 'hidden';
   }
 };
 
@@ -153,9 +154,9 @@ var stops_pattern = STYLES.stops_pattern = {
 STYLES.places = {
   cx: 0,
   cy: 0,
-  r: 7,
+  r: 5,
   stroke: '0px',
-  fill: '#000'
+  fill: '#FFF'
 };
 
 /**
@@ -481,12 +482,12 @@ OLD_STYLES.multipoints_pattern = clone(stops_pattern);
 
 var labels = OLD_STYLES.labels = {
   'font-size': function(display, data, index, utils) {
-    return utils.fontSize(display, data) + 'px';
+    return '16px';
   },
   'font-weight': function(display, data, index, utils) {
     var point = data.owner.parent;
     if (point.containsBoardPoint() || point.containsAlightPoint())
-      return 'bold';
+      return 'normal';
   },
 
   /**
@@ -521,7 +522,7 @@ var labels = OLD_STYLES.labels = {
 
 OLD_STYLES.segments = {
   stroke: [
-    '#007AC9',
+    '#7f929c',
     function(display, data) {
       var segment = data;
       //debugger;
@@ -529,9 +530,9 @@ OLD_STYLES.segments = {
       if (segment.type === 'TRANSIT') {
         if( segment.patterns.length===1 && 
             (segment.patterns[0].route_id === 'HSL:1300V' || segment.patterns[0].route_id === 'HSL:1300M')) {
-          return 'rgba(0,0,0,0.33)';
+          return '#7f929c';
         } else {
-          return 'rgba(0,0,0,0.33)';
+          return '#7f929c';
         }
       } else if (segment.type === 'CAR') {
         return 'rgba(0,0,0,0)';
@@ -539,6 +540,9 @@ OLD_STYLES.segments = {
         return 'rgba(0,0,0,0)';
       } else if (segment.type === 'WALK') {
         return 'rgba(0,0,0,0.33)';
+      } else {
+        return '#7f929c';
+
       }
     }
   ],
@@ -583,7 +587,7 @@ OLD_STYLES.segments = {
  */
 
 OLD_STYLES.segments_front = {
-  stroke: '#006eb5',
+  stroke: '#7f929c',
   'stroke-width': function(display, data, index, utils) {
     return utils.pixels(display.zoom.scale(), 3, 6, 10) / 2 + 'px';
   },
@@ -622,11 +626,12 @@ OLD_STYLES.segments_halo = {
 OLD_STYLES.segment_label_containers = {
   fill: function(display, data) {
     if (!data.isFocused()) return notFocusedColor;
+    return '#7f929c';
   },
   'stroke-width': function(display, data) {
-    if (data.parent.pattern && data.parent.pattern.route.route_short_name.toLowerCase()
-      .substring(0, 2) === 'dc') return 1;
-    return 0;
+    //if (data.parent.pattern && data.parent.pattern.route.route_short_name.toLowerCase()
+     // .substring(0, 2) === 'dc') return 1;
+    return '3px';
   },
   rx: 3,
   ry: 3

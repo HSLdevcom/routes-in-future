@@ -1,9 +1,37 @@
+var Icon = React.createClass({
+  propTypes: {
+    img: React.PropTypes.string.isRequired
+  },
+  render: function() {
+
+    var clazz = '';
+    if (this.props.className) {
+
+      clazz = this.props.className;
+    }
+
+    var id = '';
+    if (this.props.id){
+      id = 'id=' + this.props.id + ' '; // Adding the space here, as otherwise it leads to different number of spaceis in server-side vs client-side html due to minification
+    }
+
+    var html = '<svg '+id+' viewBox="0 0 40 40" class="icon '+clazz+'">'+
+                  '<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#'+this.props.img+'"></use>'+
+               '</svg>';
+    return (<span dangerouslySetInnerHTML={{__html: html}} />);
+  }
+});
 var Route = React.createClass({
     selectRoute: function(e){
       this.props.selectRoute(this.props.route.route_id);
     },
     render: function() {
-        var activeClass = (this.props.route.active)? 'route clearfix active' : 'route clearfix inactive';
+        var classes = (this.props.route.active)? 'route clearfix active ' : 'route clearfix inactive ';
+        var icon;
+        if(this.props.route.route_type===3) {
+          classes+= 'bus';
+          icon = <Icon img='icon-icon_bus'/>
+        }
         var pattern = _.find(DATA.patterns,{route_id:this.props.route.route_id});
         var routeStartText = _.find(
               DATA.stops,
@@ -13,11 +41,15 @@ var Route = React.createClass({
               DATA.stops,
               { stop_id:pattern.stops[pattern.stops.length-1].stop_id}
         ).stop_name;
+        var routeText = routeStartText+' - '+routeStopText;
         return (
-          <div className={activeClass} onClick={this.selectRoute}>
-            <div className='checkmark'></div>
-            <span className='route-nr'>{this.props.route.route_short_name}</span>
-            <span className='route-text'>{routeStartText} - {routeStopText}</span>
+          <div className={classes} onClick={this.props.onClick}>
+            <div className='checkmark-icon-nr'>
+              <div className='checkmark'></div>
+              {icon}
+              <div className='route-nr'>{this.props.route.route_short_name}</div>
+            </div>
+            <div className='route-text'>{routeText}</div>
           </div>
         );
     }
@@ -27,11 +59,16 @@ var RoutesList = React.createClass({
       this.props.setActiveRoutes([routeId]);
     },
     render: function() {
+        var style = {};
         var routes = this.props.routes.map(function(route) {
-          return <Route route={route} isActive={route.isActive} selectRoute={this.selectRoute} key={route.route_id} />;
+          var boundClick = this.selectRoute.bind(this, route.route_id);
+          return <Route route={route} isActive={route.isActive} onClick={boundClick} key={route.route_id} />;
         },this);
+        if(this.props.height) {
+          style.maxHeight = this.props.height+'px';
+        }
         return (
-          <div className='routes-list'>
+          <div className='routes-list' style={style}>
             {routes}
           </div>
         );
@@ -126,7 +163,7 @@ var AutocompleteInput = React.createClass({
 var RouteSearchBox = React.createClass({
     getInitialState: function() {
        return {
-          searchResult:[],
+          searchResults:[],
           from: {
             name:'from',
             lat:0,
@@ -146,7 +183,7 @@ var RouteSearchBox = React.createClass({
           if(type==='from'){
             _this.setState({
               from:{
-                name:'Mistä',
+                name:result.street+' '+result.nr,
                 lat:data.hits.hits[0]._source.location[1],
                 lon:data.hits.hits[0]._source.location[0]
               }
@@ -154,7 +191,7 @@ var RouteSearchBox = React.createClass({
           } else if(type==='to') {
             _this.setState({
               to:{
-                name:'Mihin',
+                name:result.street+' '+result.nr,
                 lat:data.hits.hits[0]._source.location[1],
                 lon:data.hits.hits[0]._source.location[0]
               }
@@ -168,19 +205,26 @@ var RouteSearchBox = React.createClass({
     },
     searchRoutes: function(e){
       e.preventDefault();
+      var _this = this;
       var od = {
         from: this.state.from,
-        to: this.state.to
+        to: this.state.to,
+        accessModes: 'WALK',
+        egressModes: 'WALK',
+        transitModes: 'TRANSIT',
+        date: '2015-08-27'
       };
       var profiler = new OtpProfiler({
-        host: 'http://matka.hsl.fi/otp/routers/finland',
+        host: 'http://172.30.1.134:8080/otp/routers/helsinki',
         limit: 1 // limit the number of options to profile, defaults to 3
       });
       profiler.profile(od, function(err, data) {
+
+        _this.setState({searchResults : data.options});
         if(err===null){
-          profiler.journey({
-            profile: data
-          },function(err,transitivedata){
+          od.profile = data;
+          console.log(data);
+          profiler.journey(od,function(err,transitivedata){
             console.log(transitivedata);
             showRoutesOnMap(transitivedata,'routesearch');
           });
@@ -188,15 +232,71 @@ var RouteSearchBox = React.createClass({
       });
     },
     render: function() {
+      var results;
+      if(this.state.searchResults.length){
+        results = this.state.searchResults.map(function(result) {
+          if(result.summary!=='Non-transit options') {
+            var walkTime = Math.floor((result.access.reduce(function(a,b){
+              return {time: a.time + b.time};
+              }).time + result.egress.reduce(function(a,b){
+              return {time: a.time + b.time};
+              }).time + result.transit.reduce(function(a,b){
+              return {walkTime: a.walkTime + b.walkTime};
+              }).walkTime)/60) + ' min. kävelyä';
+            
+            var time = <div className='time'>
+                          <div className='total-time'>
+                            <h3>
+                              {Math.floor(result.stats.min/60)} - 
+                              {Math.floor((result.stats.max-result.transit[0].waitStats.max)/60)} min.
+                            </h3>
+                          </div>
+                          <div className='walk-time'>
+                            <h4>{walkTime} </h4>
+                          </div>
+                        </div>;
+            //<div className ='time'>{Math.floor(result.stats.min/60)} - {Math.floor(result.stats.max/60)}</div>
+            console.log(result)
+            var routes = <div className='result-routes'>
+                            {result.transit.map(function(transit){
+                              return (
+                                <div className='result-route'>
+                                  <h4>
+                                    {transit.routes.map(function(route,index){
+                                      if(typeof route.shortName==='undefined') route.shortName = 'SOMETHING';
+                                      if(index===(transit.routes.length-1)) {
+                                       return route.shortName;
+                                      }
+                                      return route.shortName+' / ';
+                                    })}
+                                  </h4>
+                                </div>
+                              );
+                            })}
+                        </div>;
+            return (<div className='result'>{routes}{time}</div>);
+
+          } else {
+            return '';
+          }
+
+        });
+      }
+      
       return (
-          <form name='route-search-form' onSubmit={this.searchRoutes}>
-            <h3>Hae reittiä:</h3>
-            <AutocompleteInput  name='from' placeholder='Mistä' setResult={this.setResult}/>
-            <AutocompleteInput  name='to' placeholder='Mihin' setResult={this.setResult}/>
-            <div className='form-group'>
-              <button type='submit'>Hae reitti</button>
+          <div>
+            <form name='route-search-form' className='route-search-form' onSubmit={this.searchRoutes}>
+              <h3>Katso, muuttuukko reittisi.</h3>
+              <AutocompleteInput  name='from' placeholder='Mistä?' setResult={this.setResult}/>
+              <AutocompleteInput  name='to' placeholder='Mihin?' setResult={this.setResult}/>
+              <div className='form-group'>
+                <button type='submit'>Hae</button>
+              </div>
+            </form>
+            <div className='search-results'>
+              {results}
             </div>
-          </form>
+          </div>
         );
     }
 });
@@ -206,11 +306,14 @@ var ReplacementLineSearch = React.createClass({
   },
   searchCurrentlines: function(e) {
     e.preventDefault();
-    this.props.hideAllRoutesList();
-    if(e.target.value!=='') {
+    this.props.clearActiveRoutes();
+    this.props.setActiveRoutes([]);
+    this.setState({newroutes:[]});
+    var value = React.findDOMNode(this.refs.theLineNr).value;
+    if(value!=='') {
       var oldLineId;
       var matches = _.filter(replacementLines,function(line){
-        if(line.oldLines.indexOf(e.target.value)!==-1) return true;
+        if(line.oldLines.indexOf(value)!==-1) return true;
       });
       if(matches.length>0){
         var routeInfos = [];
@@ -224,41 +327,52 @@ var ReplacementLineSearch = React.createClass({
         this.props.setActiveRoutes(routeIds);
         this.setState({newroutes:routeInfos});
 
-        oldRoute = _.find(oldRoutes,{shortName:e.target.value});
+        oldRoute = _.find(oldRoutes,{shortName:value});
         new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
           showRoutesOnMap(data,'old');
-          
         });
       }
-    } else {
-      this.props.clearActiveRoutes();
-      this.props.setActiveRoutes([]);
-      this.setState({newroutes:[]});
     }
   },
-  render: function(){
-    var newRoutes;
-    if(this.state.newroutes.length){
-      newRoutes = <div className='new-routes-replacing'>
-                    <h4>Linjan korvaa seuraavat linjat:</h4>
-                    <RoutesList setActiveRoutes={this.props.setActiveRoutes} routes={this.state.newroutes} />
-                  </div>;
+  showAllNewRoutes: function(e) {
+    e.preventDefault();
+    var routeIds = this.props.routes.map(function(route) {
+      return route.route_id;
+    });
+    this.props.clearActiveRoutes();
+    this.props.setActiveRoutes([]);
+    this.setState({newroutes: this.props.routes});
+  },
+  setActiveRoutes: function(routeIds){
+    this.props.setActiveRoutes(routeIds);
+  },
+  render: function() {
+    var routes;
+    if(this.state.newroutes.length) {
+      
+      routes = <div className='new-routes'>
+                  <RoutesList height={this.props.listHeight} setActiveRoutes={this.setActiveRoutes} routes={this.state.newroutes} />
+                </div>;
     }
     return(
-      <form name='line-search-form' onSubmit={this.searchCurrentlines}>
-        <h3>Hae nykyisellä linjanumerolla:</h3>
-        <div className='form-group'>
-          <input autoComplete='off' type='text' onChange={this.searchCurrentlines} name='current-linenr' placeholder='nykyinen linjanumero' />
-          {newRoutes}
-        </div>
-      </form>
+      <div>
+        <form name='line-search-form' className='line-search-form' onSubmit={this.searchCurrentlines}>
+          <h3>Katso tulevat linjasi:</h3>
+          <div className='form-group'>
+            <input autoComplete='off' type='text' ref='theLineNr' name='current-linenr' placeholder='Nykyinen linjanumero' />
+            <button type='submit'>Hae</button>
+          </div>
+          <a href='#show-all-new' onClick={this.showAllNewRoutes}>Näytä kaikki uudet linjat <small>&gt;</small></a>
+        </form>
+        {routes}
+      </div>
     );
   }
 });
 
 var LeftSidebar = React.createClass({
   getInitialState: function(){
-    return {DATA:DATA, showAllRoutes:false};
+    return {DATA:DATA,listHeight: 0};
   },
   clearActiveRoutes: function(routeIds){
     DATA.routes = DATA.routes.map(function(route){
@@ -285,22 +399,20 @@ var LeftSidebar = React.createClass({
     this.setState({DATA:DATA});
     showRoutesOnMap(DATA,'new');
   },
-  showAllRoutesList: function() {
-    this.setState({showAllRoutes:!this.state.showAllRoutes});
-  },
-  hideAllRoutesList: function() {
-    this.setState({showAllRoutes:false});
+  componentDidMount: function() {
+    var listHeight = document.querySelectorAll('.route-search-form')[0].offsetHeight;
+    listHeight += document.querySelectorAll('.line-search-form')[0].offsetHeight;
+    listHeight += document.querySelectorAll('.info')[0].offsetHeight;
+    listHeight += document.querySelectorAll('.footer')[0].offsetHeight;
+    listHeight = window.innerHeight -listHeight
+    this.setState({listHeight:listHeight});
   },
   render: function(){
     var showClass = (this.state.showAllRoutes)?'all-new-routes open':'all-new-routes';
     return (
       <div>
-        <RouteSearchBox setActiveRoutes={this.setActiveRoutes} />
-        <ReplacementLineSearch hideAllRoutesList={this.hideAllRoutesList} setActiveRoutes={this.setActiveRoutes} clearActiveRoutes={this.clearActiveRoutes} routes={DATA.routes} />
-        <div className={showClass} >
-          <h4 onClick={this.showAllRoutesList}>Kaikki uudet linjat</h4>
-          <RoutesList setActiveRoutes={this.setActiveRoutes} clearActiveRoutes={this.clearActiveRoutes} routes={DATA.routes} />
-        </div>
+        <RouteSearchBox listHeight={this.state.listHeight} setActiveRoutes={this.setActiveRoutes} />
+        <ReplacementLineSearch listHeight={this.state.listHeight} setActiveRoutes={this.setActiveRoutes} clearActiveRoutes={this.clearActiveRoutes} routes={DATA.routes} />
       </div>
     );
   }

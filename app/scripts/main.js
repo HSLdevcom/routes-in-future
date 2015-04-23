@@ -14,7 +14,7 @@ var COMPUTED = [
 //DATA.allPatterns = DATA.patterns;
 function showRoutesOnMap(DATA,type) {
   // Create journeys of active routes, if its search results leave the journeys alone
-  if(type!=='routesearch'){
+  if(type!=='routesearch') {
     DATA.journeys = [];
     var routeIds = _.where(DATA.routes,{active:true}).map(function(route) {
       return route.route_id
@@ -26,6 +26,7 @@ function showRoutesOnMap(DATA,type) {
         return false;
       }
     });
+
     DATA.journeys = patterns.map(function(pattern){
       return {
         journey_id: 'j_'+pattern.pattern_id,
@@ -135,7 +136,7 @@ function startMap() {
 
   transitive = new Transitive({
     data: DATA,
-    styles:STYLES,
+    styles:STYLES
   });
 
   oldTransitive = new Transitive({

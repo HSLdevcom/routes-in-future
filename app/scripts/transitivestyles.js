@@ -72,7 +72,7 @@ STYLES.wireframe_edges = {
 
 var stops_merged = STYLES.stops_merged = {
   fill: function(display, data, index, utils) {
-    return '#fff';
+    return '#007AC9';
   },
   r: function(display, data, index, utils) {
     return utils.pixels(display.zoom.scale(), 4, 6, 8);
@@ -80,7 +80,7 @@ var stops_merged = STYLES.stops_merged = {
   stroke: function(display, data, index, utils) {
     //var point = data.owner;
     //if (!point.isFocused()) return notFocusedColor;
-    return '#000';
+    return '#FFF';
   },
   'stroke-width': function(display, data, index, utils) {
     return 1;
@@ -529,7 +529,7 @@ OLD_STYLES.segments = {
       if (!segment.focused) return notFocusedColor;
       if (segment.type === 'TRANSIT') {
         if( segment.patterns.length===1 && 
-            (segment.patterns[0].route_id === 'HSL:1300V' || segment.patterns[0].route_id === 'HSL:1300M')) {
+            (segment.patterns[0].route_id === 'HSL:1300V' || segment.patterns[0].route_id === 'HSL:1300M')) { //TRAIN HSL:3xxx
           return '#7f929c';
         } else {
           return '#7f929c';

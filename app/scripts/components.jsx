@@ -204,6 +204,7 @@ var RouteSearchBox = React.createClass({
       });
     },
     searchRoutes: function(e){
+      this.props.clearActiveRoutes('route');
       e.preventDefault();
       var _this = this;
       var od = {
@@ -211,30 +212,53 @@ var RouteSearchBox = React.createClass({
         to: this.state.to,
         accessModes: 'WALK',
         egressModes: 'WALK',
+        directModes: '',
+        suboptimal: 0,
         transitModes: 'TRANSIT',
         date: '2015-08-27'
       };
       var profiler = new OtpProfiler({
         host: 'http://172.30.1.134:8080/otp/routers/helsinki',
-        limit: 1 // limit the number of options to profile, defaults to 3
+        limit: 5 // limit the number of options to profile, defaults to 3
       });
       profiler.profile(od, function(err, data) {
-
+        var valid = [];
+        data.options.map(function(option){
+          var option = option;
+          if(typeof option.transit!=='undefined') {
+            option.transit.map(function(transit){
+              transit.routes.map(function(route){
+                if(_.where(replacementLines,{newLine:route.shortName}).length) {
+                  valid.push(option);
+                }
+              });
+            });
+          }
+        });
+        var validObj = {
+          options: valid
+        }
         _this.setState({searchResults : data.options});
         if(err===null){
-          od.profile = data;
-          console.log(data);
-          profiler.journey(od,function(err,transitivedata){
-            console.log(transitivedata);
+
+          od.profile = validObj;
+          profiler.journey(od,function(err,transitivedata) {
             showRoutesOnMap(transitivedata,'routesearch');
           });
         }
       });
     },
+    focusJourney: function(index){
+      transitive.focusJourney(index+'_transit');
+    },
+    blurJourney: function(){
+      transitive.focusJourney();
+    },
     render: function() {
       var results;
-      if(this.state.searchResults.length){
-        results = this.state.searchResults.map(function(result) {
+      if(this.state.searchResults.length) {
+
+        results = this.state.searchResults.map(function(result, index) {
           if(result.summary!=='Non-transit options') {
             var walkTime = Math.floor((result.access.reduce(function(a,b){
               return {time: a.time + b.time};
@@ -256,44 +280,41 @@ var RouteSearchBox = React.createClass({
                           </div>
                         </div>;
             //<div className ='time'>{Math.floor(result.stats.min/60)} - {Math.floor(result.stats.max/60)}</div>
-            console.log(result)
-            var routes = <div className='result-routes'>
-                            {result.transit.map(function(transit){
+            var routes =  result.transit.map(function(transit){
                               return (
-                                <div className='result-route'>
-                                  <h4>
+                                <div className='result-routes'>
                                     {transit.routes.map(function(route,index){
-                                      if(typeof route.shortName==='undefined') route.shortName = 'SOMETHING';
-                                      if(index===(transit.routes.length-1)) {
-                                       return route.shortName;
-                                      }
-                                      return route.shortName+' / ';
+                                      var clazz = 'result-route ' + route.mode;
+                                      if(typeof route.shortName==='undefined') route.shortName = 'Metro';
+                                      var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
+                                      return <h4 className={clazz}>{txt}</h4>;
                                     })}
-                                  </h4>
                                 </div>
                               );
-                            })}
-                        </div>;
-            return (<div className='result'>{routes}{time}</div>);
+                            });
+            return (<div className='result' onMouseLeave={this.blurJourney} onMouseEnter={this.focusJourney.bind(this,index)}>{routes}{time}</div>);
 
           } else {
             return '';
           }
 
-        });
+        },this);
       }
-      
+      var style = {};
+      if(this.props.listHeight) {
+        style.maxHeight = this.props.listHeight+'px';
+      }
       return (
-          <div>
-            <form name='route-search-form' className='route-search-form' onSubmit={this.searchRoutes}>
-              <h3>Katso, muuttuukko reittisi.</h3>
+          <div className='route-search-form'>
+            <form name='route-search-form'  onSubmit={this.searchRoutes}>
+              <h3>Katso, muuttuuko reittisi.</h3>
               <AutocompleteInput  name='from' placeholder='Mistä?' setResult={this.setResult}/>
               <AutocompleteInput  name='to' placeholder='Mihin?' setResult={this.setResult}/>
               <div className='form-group'>
                 <button type='submit'>Hae</button>
               </div>
             </form>
-            <div className='search-results'>
+            <div className='search-results' style={style}>
               {results}
             </div>
           </div>
@@ -302,11 +323,10 @@ var RouteSearchBox = React.createClass({
 });
 var ReplacementLineSearch = React.createClass({
   getInitialState: function() {
-    return {newroutes:[]};
+    return {newroutes: [], showAllRoutes: false};
   },
   searchCurrentlines: function(e) {
     e.preventDefault();
-    this.props.clearActiveRoutes();
     this.props.setActiveRoutes([]);
     this.setState({newroutes:[]});
     var value = React.findDOMNode(this.refs.theLineNr).value;
@@ -323,9 +343,9 @@ var ReplacementLineSearch = React.createClass({
           routeIds.push(routeInfo.route_id);
           return routeInfo;
         },this);
-        this.props.clearActiveRoutes();
+        this.props.clearActiveRoutes('line');
         this.props.setActiveRoutes(routeIds);
-        this.setState({newroutes:routeInfos});
+        this.setState({newroutes: routeInfos, showAllRoutes: false});
 
         oldRoute = _.find(oldRoutes,{shortName:value});
         new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
@@ -336,33 +356,33 @@ var ReplacementLineSearch = React.createClass({
   },
   showAllNewRoutes: function(e) {
     e.preventDefault();
-    var routeIds = this.props.routes.map(function(route) {
-      return route.route_id;
-    });
-    this.props.clearActiveRoutes();
-    this.props.setActiveRoutes([]);
-    this.setState({newroutes: this.props.routes});
+    this.props.clearActiveRoutes('line');
+    if(this.state.showAllRoutes) {
+      this.setState({newroutes: [], showAllRoutes: false});
+    } else {
+      this.setState({newroutes: this.props.routes, showAllRoutes: true});
+    }
   },
   setActiveRoutes: function(routeIds){
     this.props.setActiveRoutes(routeIds);
   },
   render: function() {
     var routes;
-    if(this.state.newroutes.length) {
+    if(this.state.newroutes.length && this.props.isOpen) {
       
       routes = <div className='new-routes'>
                   <RoutesList height={this.props.listHeight} setActiveRoutes={this.setActiveRoutes} routes={this.state.newroutes} />
                 </div>;
     }
     return(
-      <div>
-        <form name='line-search-form' className='line-search-form' onSubmit={this.searchCurrentlines}>
+      <div className='line-search-form'>
+        <form name='line-search-form'  onSubmit={this.searchCurrentlines}>
           <h3>Katso tulevat linjasi:</h3>
           <div className='form-group'>
             <input autoComplete='off' type='text' ref='theLineNr' name='current-linenr' placeholder='Nykyinen linjanumero' />
             <button type='submit'>Hae</button>
           </div>
-          <a href='#show-all-new' onClick={this.showAllNewRoutes}>Näytä kaikki uudet linjat <small>&gt;</small></a>
+          <a href='#show-all-new' onClick={this.showAllNewRoutes}>{(this.state.showAllRoutes && this.props.isOpen)? 'Piillota kaikki uudet linjat' :'Näytä kaikki uudet linjat'} <small>&gt;</small></a>
         </form>
         {routes}
       </div>
@@ -372,14 +392,14 @@ var ReplacementLineSearch = React.createClass({
 
 var LeftSidebar = React.createClass({
   getInitialState: function(){
-    return {DATA:DATA,listHeight: 0};
+    return {DATA:DATA,listHeight: 0, open: 'route'};
   },
-  clearActiveRoutes: function(routeIds){
+  clearActiveRoutes: function(searchToShow){
     DATA.routes = DATA.routes.map(function(route){
       route.active = false;
       return route;
     });
-    this.setState({DATA:DATA});
+    this.setState({DATA:DATA, open: searchToShow});
     showRoutesOnMap(DATA,'new');
     showRoutesOnMap(DATA,'old');
   },
@@ -399,20 +419,44 @@ var LeftSidebar = React.createClass({
     this.setState({DATA:DATA});
     showRoutesOnMap(DATA,'new');
   },
-  componentDidMount: function() {
+  handleResize: function(e) {
     var listHeight = document.querySelectorAll('.route-search-form')[0].offsetHeight;
     listHeight += document.querySelectorAll('.line-search-form')[0].offsetHeight;
     listHeight += document.querySelectorAll('.info')[0].offsetHeight;
     listHeight += document.querySelectorAll('.footer')[0].offsetHeight;
-    listHeight = window.innerHeight -listHeight
+    if(listHeight>window.innerHeight){
+      document.getElementsByClassName('left-sidebar')[0].style.overflow = 'auto';
+      listHeight = 300;
+    } else {
+      document.getElementsByClassName('left-sidebar')[0].style.overflow = 'hidden';
+      listHeight = window.innerHeight -listHeight;
+    }
     this.setState({listHeight:listHeight});
   },
+  componentDidMount: function() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   render: function(){
-    var showClass = (this.state.showAllRoutes)?'all-new-routes open':'all-new-routes';
     return (
-      <div>
-        <RouteSearchBox listHeight={this.state.listHeight} setActiveRoutes={this.setActiveRoutes} />
-        <ReplacementLineSearch listHeight={this.state.listHeight} setActiveRoutes={this.setActiveRoutes} clearActiveRoutes={this.clearActiveRoutes} routes={DATA.routes} />
+      <div className="sidebar-inner">
+        <RouteSearchBox 
+          isOpen={(this.state.open==='route')?true:false}
+          listHeight={this.state.listHeight} 
+          clearActiveRoutes={this.clearActiveRoutes} 
+          updateHeight={this.handleResize} 
+          listHeight={this.state.listHeight} 
+          setActiveRoutes={this.setActiveRoutes} />
+        <ReplacementLineSearch
+          isOpen={(this.state.open==='line')?true:false}
+          listHeight={this.state.listHeight} 
+          setActiveRoutes={this.setActiveRoutes} 
+          clearActiveRoutes={this.clearActiveRoutes} 
+          routes={this.state.DATA.routes} />
       </div>
     );
   }

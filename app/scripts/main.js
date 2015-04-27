@@ -31,6 +31,7 @@ function showRoutesOnMap(DATA,type) {
       return {
         journey_id: 'j_'+pattern.pattern_id,
         journey_name: 'Pattern:'+pattern.pattern_id,
+        focus: false,
         segments: [{
           type: 'TRANSIT',
           pattern_id: pattern.pattern_id,
@@ -43,6 +44,10 @@ function showRoutesOnMap(DATA,type) {
 
   if(type === 'new' || type === 'routesearch') {
     transitive.updateData(DATA);
+    transitive.focusJourney();
+    oldTransitive.clearData();
+    oldTransitive.updateData({});
+
   } else if(type === 'old') {
     oldTransitive.clearData();
     oldTransitive.updateData(DATA);

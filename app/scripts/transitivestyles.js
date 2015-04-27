@@ -224,10 +224,14 @@ STYLES.segments = {
       var segment = data;
       if (!segment.focused) return notFocusedColor;
       if (segment.type === 'TRANSIT') {
-        if (segment.patterns[0].route_id === 'HSL:1300V' || 
-            segment.patterns[0].route_id === 'HSL:1300M'|| 
-            segment.patterns[0].route_id === 'HSL:1300') {
+        if (segment.mode == 0 ) {
+          return '#00985f';
+        } else if (segment.mode == 1) {
           return '#FF640E';
+        } else if (segment.mode == 2) {
+          return '#8c4799';
+        } else if (segment.mode == 4) {
+          return '#00b9e4';
         } else {
           return '#007AC9';
         }

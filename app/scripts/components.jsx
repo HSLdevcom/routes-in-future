@@ -88,33 +88,48 @@ var AutocompleteInput = React.createClass({
     this.setState({value: e.target.value});
     $.get('http://matka.hsl.fi/geocoder/suggest/'+e.target.value)
     .then(function(data) {
-      var streets = [];
-      if(streets.length === 0 && data.fuzzy_streetnames.length > 0) {
-        streets = data.fuzzy_streetnames;
-      } else {
-        streets = data.streetnames;
-      }
+      var suggestions = {}
+      _.forEach(data.streetnames, function (obj, streetname) {
+        obj.forEach(function (city) {
+          city['name'] = streetname
+          city['key'] = city.key.charAt(0).toUpperCase() + city.key.slice(1);
+          suggestions[streetname + ', ' + city.key ] = city
+        })
+      })
+      data.stops.forEach(function (stop) {
+        suggestions[stop.stop_name + ' (' + stop.stop_code + ')'] = stop
+      })
       _this.setState({
-        suggestions: streets
+        suggestions: suggestions
       });
 
     });
   },
   setAdress: function(index){
-
-    var suggestions = [];
     var suggestion = this.state.suggestions[index];
-    var value = suggestion.key;
-    var returnThis = {};
-    if(!this.state.suggestions[index].aptNr){
-      for(var i = 1; i <= this.state.suggestions[index].doc_count; i++) {
-        suggestions.push({key:this.state.suggestions[index].key, aptNr:i});
-      }
-      this.setState({suggestions:suggestions, value:value, autocompleteDone: false});
-    } else {
-      value = value +' '+ suggestion.aptNr;
-      returnThis = {street: suggestion.key, nr: suggestion.aptNr};
-      this.setState({suggestions:[], value:value, autocompleteDone: true, result: returnThis});
+    if (suggestion.stop_name) {
+      returnThis = {'lon': suggestion.location[0], 'lat': suggestion.location[1], name: index}
+      this.setState({suggestions:[], value:index, autocompleteDone: true, result: returnThis});
+    } else if (suggestion.key && suggestion.name) {
+      $.get('http://matka.hsl.fi/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
+        if (data.results.length == 1) {
+          var result = data.results[0];
+          var name = result.katunimi + (result.osoitenumero == 0 ? "": " " + result.osoitenumero ) + ', ' + result.kaupunki;
+          returnThis = {'lon': data.results[0].location[0], 'lat': data.results[0].location[1], name: name}
+          this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
+        } else {
+          var suggestions = []
+          var results = _.sortBy(data.results, 'osoitenumero')
+          results.forEach(function (result) {
+            suggestions.push(result)
+          })
+          this.setState({suggestions:suggestions, value:index, autocompleteDone: false})
+        }
+      }.bind(this));
+    } else if (suggestion.location) {
+      var name = suggestion.katunimi + (suggestion.osoitenumero == 0 ? "": " " + suggestion.osoitenumero ) + ', ' + suggestion.kaupunki;
+      returnThis = {'lon': suggestion.location[0], 'lat': suggestion.location[1], name: name}
+      this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
     }
     React.findDOMNode(this.refs.theInput).focus();
   },
@@ -138,14 +153,17 @@ var AutocompleteInput = React.createClass({
   render: function(){
     var autocompleteList;
     var value = this.state.value;
-    if(this.state.suggestions.length) {
-      var autocompleteListItems = this.state.suggestions.map(function(suggestion,index){
-        if(suggestion.aptNr) {
-          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.key + index}>{suggestion.key} {suggestion.aptNr}</li>;
+    if(Object.keys(this.state.suggestions).length) {
+      var autocompleteListItems = _.map(this.state.suggestions, function(suggestion,key){
+        if(suggestion.osoitenumero) {
+          return <li onClick={this.setAdress.bind(this,key)} key={key}>{suggestion.katunimi} {suggestion.osoitenumero}{suggestion.kiinteiston_jakokirjain}, {suggestion.kaupunki}</li>;
         } else {
-          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.key + index}>{suggestion.key}</li>;
+          return <li onClick={this.setAdress.bind(this,key)} key={key}>{key}</li>;
         }
       },this);
+      autocompleteListItems.sort( function(a, b) {
+        return (a.key.localeCompare(b.key))
+      })
       autocompleteList = <div onMouseEnter={this.blockHide} onMouseLeave={this.allowHide} className='autocomplete-container'>
                           <ul className='autocomplete-list'>
                             {autocompleteListItems}
@@ -178,30 +196,24 @@ var RouteSearchBox = React.createClass({
     },
     setResult: function(result, type) {
       var _this = this;
-      $.get('http://matka.hsl.fi/geocoder/search/'+result.street+'/'+result.nr).then(function(data){
-        if(typeof data.hits.hits != 'undefined' && data.hits.hits.length!==0){
-          if(type==='from'){
-            _this.setState({
-              from:{
-                name:result.street+' '+result.nr,
-                lat:data.hits.hits[0]._source.location[1],
-                lon:data.hits.hits[0]._source.location[0]
-              }
-            });
-          } else if(type==='to') {
-            _this.setState({
-              to:{
-                name:result.street+' '+result.nr,
-                lat:data.hits.hits[0]._source.location[1],
-                lon:data.hits.hits[0]._source.location[0]
-              }
-            });
-          }
-          return true;
-        } else {
-          return false;
+        if(type==='from'){
+          _this.setState({
+            from:{
+              name:result.name,
+              lat:result.lat,
+              lon:result.lon
+            }
+          });
+        } else if(type==='to') {
+          _this.setState({
+            to:{
+              name:result.name,
+              lat:result.lat,
+              lon:result.lon
+            }
+          });
         }
-      });
+      return true;
     },
     searchRoutes: function(e){
       this.props.clearActiveRoutes('route');

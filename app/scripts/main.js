@@ -141,12 +141,38 @@ function startMap() {
 
   transitive = new Transitive({
     data: DATA,
-    styles:STYLES
+    styles:STYLES,
+    zoomFactors: [{
+      minScale: 0,
+      gridCellSize: 25,
+      internalVertexFactor: 1000000,
+      angleConstraint: 22.5,
+      mergeVertexThreshold: 200
+    }, {
+      minScale: 1.5,
+      gridCellSize: 0,
+      internalVertexFactor: 0,
+      angleConstraint: 5,
+      mergeVertexThreshold: 0
+    }]
   });
 
   oldTransitive = new Transitive({
     data:{},
-    styles:OLD_STYLES
+    styles:OLD_STYLES,
+    zoomFactors: [{
+      minScale: 0,
+      gridCellSize: 25,
+      internalVertexFactor: 1000000,
+      angleConstraint: 22.5,
+      mergeVertexThreshold: 200
+    }, {
+      minScale: 1.5,
+      gridCellSize: 0,
+      internalVertexFactor: 0,
+      angleConstraint: 5,
+      mergeVertexThreshold: 0
+    }]
   });
   oldRouteLayer.addLayer(new L.TransitiveLayer(oldTransitive))
   map.addLayer(new L.TransitiveLayer(transitive));

@@ -235,22 +235,21 @@ var RouteSearchBox = React.createClass({
       });
       profiler.profile(od, function(err, data) {
         var valid = [];
-        data.options.map(function(option){
+        var seen = [];
+        var sorted = data.options.sort(function (a, b) {return(a.stats.min-b.stats.min)})
+        sorted.map(function(option){
           var option = option;
           if(typeof option.transit!=='undefined') {
-            option.transit.map(function(transit){
-              transit.routes.map(function(route){
-                if(_.where(replacementLines,{newLine:route.shortName}).length) {
-                  valid.push(option);
-                }
-              });
-            });
+            if (!_.includes(seen, option.summary)){
+              seen.push(option.summary);
+              valid.push(option);
+            }
           }
         });
         var validObj = {
           options: valid
         }
-        _this.setState({searchResults : data.options});
+        _this.setState({searchResults : valid});
         if(err===null){
 
           od.profile = validObj;

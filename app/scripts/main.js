@@ -12,22 +12,22 @@ var COMPUTED = [
   // highlightOptionOnHover
 ];
 //DATA.allPatterns = DATA.patterns;
-function showRoutesOnMap(DATA,type) {
+function showRoutesOnMap(data,type) {
   // Create journeys of active routes, if its search results leave the journeys alone
   if(type!=='routesearch') {
-    DATA.journeys = [];
-    var routeIds = _.where(DATA.routes,{active:true}).map(function(route) {
+    data.journeys = [];
+    var routeIds = _.where(data.routes,{active:true}).map(function(route) {
       return route.route_id
     });
-    var patterns = _.filter(DATA.patterns, function(pattern){
+    var patterns = _.uniq(_.filter(data.patterns, function(pattern){
       if(routeIds.indexOf(pattern.route_id) !== -1) {
         return true;
       } else {
         return false;
       }
-    });
+    }),'route_id');
 
-    DATA.journeys = patterns.map(function(pattern){
+    data.journeys = patterns.map(function(pattern){
       return {
         journey_id: 'j_'+pattern.pattern_id,
         journey_name: 'Pattern:'+pattern.pattern_id,
@@ -43,21 +43,25 @@ function showRoutesOnMap(DATA,type) {
   }
 
   if(type === 'new' || type === 'routesearch') {
-    transitive.updateData(DATA);
+    transitive.updateData(data);
     transitive.focusJourney();
     oldTransitive.clearData();
     oldTransitive.updateData({});
 
   } else if(type === 'old') {
+    data.patterns = data.patterns.map(function(pattern, index){
+      pattern.render = (index===0)? true:false;
+      return pattern;
+    });
     oldTransitive.clearData();
-    oldTransitive.updateData(DATA);
+    oldTransitive.updateData(data);
+    console.log(data)
   }
 }
 function clearRoutesOnMap() {
   oldTransitive.clearData();
-  showLayer.clearLayers();
+  transitive.clearData();
   DATA.journeys = [];
-  transitive.updateData(DATA);
 }
 
 /**
@@ -197,5 +201,16 @@ $(document).ready(function() {
   $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes').done(function(data){
     oldRoutes = data;
   });
-
+  $('.read-more-link').on('click',function(e){
+    e.preventDefault();
+    $(this).toggleClass('open');
+    $('.more-info').toggleClass('open');
+    $('#sidebar').toggleClass('hidden');
+  });
+  $('.modal .close').on('click',function(){
+    $('.modal').removeClass('open');
+  });
+  $('.welcome-text .close').on('click',function(){
+    $('.welcome-text').removeClass('open');
+  });
 });

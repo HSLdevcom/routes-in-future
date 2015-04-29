@@ -247,22 +247,35 @@
             <h1>Tulevat reitit</h1>
           </div>
           <h3>
-            Kehärata <span class="date">1.7.2015</span>
-            <br>
-            Vantaan bussilinjasto <span class="date">10.8.2015</span>
+           Kehärata ja Vantaan bussilinjasto <span class="date">alkaen 10.8.2015</span>
           </h3>
+          <div class="more-info">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed venenatis, orci sit amet consectetur maximus, dolor sem malesuada ante, sed mattis tortor magna vitae nisl. Mauris imperdiet id ex sit amet vulputate. In nisl diam, ultrices eu egestas a, convallis id lorem. Quisque non neque varius, vehicula sem et, elementum massa. Nullam id scelerisque libero. Vivamus convallis leo ac odio finibus, sed dictum lacus semper. Mauris eget tincidunt ex, vel pellentesque purus. Vivamus feugiat at augue ut luctus.
+            </p>
+            <p>
+            Nunc suscipit sollicitudin mattis. Integer vehicula scelerisque lacus, quis sodales arcu feugiat ut. Suspendisse potenti. Curabitur a laoreet ipsum. Cras molestie, turpis id euismod pretium, sapien tellus ultricies risus, quis cursus massa elit in lorem. Proin auctor lacus non libero gravida, id fermentum enim venenatis. Mauris dolor nisi, sagittis eget odio at, accumsan suscipit mauris. Nulla facilisi. Integer vulputate lacus non libero egestas, sit amet tincidunt nisi suscipit. Curabitur lacinia ultricies magna, quis eleifend tortor placerat sit amet.</p>
+            <p>
+            Duis a tellus non dolor suscipit molestie. Phasellus accumsan metus molestie justo faucibus congue. Praesent orci nibh, sodales non euismod commodo, hendrerit id arcu. Praesent eleifend dictum tincidunt. Praesent porttitor nisl ex, ut euismod tortor varius ut. Duis placerat ullamcorper nisi, rutrum fermentum purus euismod at. Donec imperdiet ipsum et magna cursus, in sodales neque venenatis. Vivamus consectetur iaculis tempor. Donec quis nisi et dolor egestas posuere. Etiam efficitur ornare molestie. Integer gravida dignissim risus sit amet dictum. Nullam porttitor, justo ac lacinia dapibus, ex mauris sagittis elit, non lobortis ex justo in massa. Morbi eu orci eget metus semper vestibulum. Curabitur mi nisl, ultricies id interdum eu, vulputate ut quam. Vestibulum mattis tellus quis leo elementum finibus.
+            </p>
+          </div>
           <h4>
-            <a href="https://www.hsl.fi/keharata-ja-vantaan-bussilinjasto" target="_blank">
-              <span>
+            <a href="#openinfo" class="read-more-link" target="_blank">
+              <span class="closed">
                 Lue lisää 
-              </span>
-              <svg viewBox="0 0 40 40" class="icon arrow-right">
+              </span>             
+              <svg viewBox="0 0 40 40" class="icon arrow-right closed">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" fill="#FFF" xlink:href="#icon-icon_arrow-right"></use>
               </svg>
+              <svg viewBox="0 0 40 40" class="icon arrow-left open">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" fill="#FFF" xlink:href="#icon-icon_arrow-left"></use>
+              </svg>
+              <span class="open">
+                Sulje
+              </span>
             </a>
           </h4>
         </div>
-        <div id="sidebar"></div>
+        <div id="sidebar" class="sidebar-searches"></div>
 
       </nav>
       <footer class="footer">
@@ -275,7 +288,23 @@
       <section class="map-container">
         <div id="map"></div>
       </section>
+      <section class="welcome-text open">
+        <svg viewBox="0 0 40 40" class="icon close">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000" xlink:href="#icon-icon_close"></use>
+          </svg>
+          <p>
+            Aenean eu mauris ut lorem viverra blandit. Suspendisse cursus mi eget lobortis sollicitudin. Nunc erat elit, tristique in dignissim eget, feugiat id lacus. Integer accumsan condimentum ultrices. Aenean sem lectus, tempor vel eros eget, pellentesque ullamcorper eros. Nulla semper metus leo, vel condimentum dolor tempor id. Phasellus accumsan convallis ullamcorper. Suspendisse sagittis erat a ligula hendrerit pretium. Quisque lacinia faucibus arcu, ac lacinia felis euismod commodo.
 
+            Duis rhoncus vestibulum nisl, ac feugiat nisi pulvinar eu. Integer sagittis sagittis consequat. Nullam tortor metus, euismod nec mattis tristique, volutpat at diam. Sed aliquet ut dui vel imperdiet. Vivamus sit amet nunc non sapien mollis lacinia sed ut ante. Morbi fringilla consectetur maximus. Phasellus at finibus magna. Ut neque elit, posuere quis cursus ut, feugiat sed purus. Nulla tempor lorem a varius molestie. Sed accumsan feugiat pharetra. Maecenas urna enim, aliquam sit amet purus in, ornare aliquet enim. Ut malesuada felis ac accumsan accumsan.
+          </p>
+      </section>
+      <section class="modal ">
+        <div class="modal-content">
+          <svg viewBox="0 0 40 40" class="icon close">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000" xlink:href="#icon-icon_close"></use>
+          </svg>
+        </div>
+      </section>
     </main>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

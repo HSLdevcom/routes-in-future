@@ -277,6 +277,36 @@ main {
       width: auto;
     }
   }
+
+  .read-more-link {
+    
+    .open {
+      display: none;
+    }
+
+    &.open {
+
+      .open {
+        display: inline-block;
+      }
+
+      .closed {
+        display: none;
+      }
+    }
+  }
+
+  .more-info {
+    max-height: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-out;
+
+    &.open {
+      max-height: 1000px;
+      height: auto;
+    }
+  }
 }
 
 .site-branding {
@@ -333,6 +363,13 @@ main {
   }
 }
 
+.sidebar-searches {
+
+  &.hidden {
+    display: none;
+  }
+}
+
 .route-search-form,
 .line-search-form {
   padding: 20px 20px 10px;
@@ -344,6 +381,26 @@ main {
 
   button {
     width: 31.25%;
+  }
+}
+
+.pre-heading {
+  margin: 1em 0;
+}
+
+.route-search-form {
+  
+  .result-content {
+    position: relative;
+  }
+
+  .close {
+    cursor: pointer;
+    height: 1.5em;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1.5em;
   }
 }
 
@@ -499,6 +556,7 @@ h4.result-route {
     margin-bottom: 0;
 }
 
+
 .routes-list {
   border-radius: 3px;
   overflow: auto;
@@ -582,6 +640,7 @@ h4.result-route {
   &.active {
 
     background: $white;
+
     .checkmark {
       
       &:before {
@@ -639,6 +698,62 @@ footer {
     width: 100%;
   }
 }
+.welcome-text {
+  background: $white;
+  padding: 2em;
+  width: calc(100% - 500px);
+  left: 430px;
+  position: absolute;
+  top: 60px;
+  z-index: 99;
+  border-radius: $border-radius;
+  display: none;
+  &.open {
+    display: block;
+  }
+  .close {
+    cursor: pointer;
+    height: 2em;
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    width: 2em;
+  }
+}
+.modal {
+  background: rgba(0, 0, 0, .5);
+  display: none;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 99;
+  
+  &.open {
+    display: block;
+  }
+
+  .modal-content {
+    background: $white;
+    border-radius: $border-radius;
+    left: 50%;
+    padding: 3em 2.5em 1em 1em;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 400px);
+  }
+
+  .close {
+    cursor: pointer;
+    height: 2em;
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    width: 2em;
+  }
+}
 
 .transitive-line:hover {
   stroke: $black;
@@ -672,6 +787,7 @@ footer {
   .routes-list {
     padding: 0 15px;
   }
+
   .map-container {
     width: calc(100% - 320px);
   }

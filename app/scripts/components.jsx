@@ -83,6 +83,11 @@ var AutocompleteInput = React.createClass({
       doNotBlur: false
     };
   },
+  componentWillReceiveProps: function(newProps) {
+    if(newProps.cleared !== this.props.cleared) {
+      this.setState({value:''});
+    }
+  },
   search: function(e){
     var _this = this;
     this.setState({value: e.target.value});
@@ -109,6 +114,11 @@ var AutocompleteInput = React.createClass({
     var suggestion = this.state.suggestions[index];
     if (suggestion.stop_name) {
       returnThis = {'lon': suggestion.location[0], 'lat': suggestion.location[1], name: index}
+      if(suggestion.zone_id==4){
+       returnThis.city = 'Vantaa'; 
+      } else {
+       returnThis.city = '0';  
+      }
       this.setState({suggestions:[], value:index, autocompleteDone: true, result: returnThis});
     } else if (suggestion.key && suggestion.name) {
       $.get('http://matka.hsl.fi/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
@@ -129,6 +139,11 @@ var AutocompleteInput = React.createClass({
     } else if (suggestion.location) {
       var name = suggestion.katunimi + (suggestion.osoitenumero == 0 ? "": " " + suggestion.osoitenumero ) + ', ' + suggestion.kaupunki;
       returnThis = {'lon': suggestion.location[0], 'lat': suggestion.location[1], name: name}
+      if(suggestion.kaupunki=='Vantaa'){
+       returnThis.city = 'Vantaa'; 
+      } else {
+       returnThis.city = '0';  
+      }
       this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
     }
     React.findDOMNode(this.refs.theInput).focus();
@@ -181,6 +196,7 @@ var AutocompleteInput = React.createClass({
 var RouteSearchBox = React.createClass({
     getInitialState: function() {
        return {
+          cleared: false,
           searchResults:[],
           from: {
             name:'from',
@@ -198,19 +214,11 @@ var RouteSearchBox = React.createClass({
       var _this = this;
         if(type==='from'){
           _this.setState({
-            from:{
-              name:result.name,
-              lat:result.lat,
-              lon:result.lon
-            }
+            from:result
           });
         } else if(type==='to') {
           _this.setState({
-            to:{
-              name:result.name,
-              lat:result.lat,
-              lon:result.lon
-            }
+            to:result
           });
         }
       return true;
@@ -230,7 +238,8 @@ var RouteSearchBox = React.createClass({
         date: '2015-08-27'
       };
       var profiler = new OtpProfiler({
-        host: 'http://172.30.1.134:8080/otp/routers/helsinki',
+        //host: 'http://172.30.1.134:8080/otp/routers/helsinki',
+        host: 'http://ec2-52-28-64-191.eu-central-1.compute.amazonaws.com/otp/routers/helsinki',
         limit: 5 // limit the number of options to profile, defaults to 3
       });
       profiler.profile(od, function(err, data) {
@@ -259,6 +268,10 @@ var RouteSearchBox = React.createClass({
         }
       });
     },
+    clearSearch: function(){
+      this.props.clearActiveRoutes('route');
+      this.setState({searchResults : [], cleared: !this.state.cleared});
+    },
     focusJourney: function(index){
       transitive.focusJourney(index+'_transit');
     },
@@ -266,11 +279,16 @@ var RouteSearchBox = React.createClass({
       transitive.focusJourney();
     },
     render: function() {
-      var results;
+      var resultContent;
       if(this.state.searchResults.length) {
-
+        var style = {};
+        var results;
+        if(this.props.listHeight) {
+          style.maxHeight = this.props.listHeight+'px';
+        }
         results = this.state.searchResults.map(function(result, index) {
           if(result.summary!=='Non-transit options') {
+
             var walkTime = Math.floor((result.access.reduce(function(a,b){
               return {time: a.time + b.time};
               }).time + result.egress.reduce(function(a,b){
@@ -296,9 +314,10 @@ var RouteSearchBox = React.createClass({
                                 <div className='result-routes'>
                                     {transit.routes.map(function(route,index){
                                       var clazz = 'result-route ' + route.mode;
+                                      var key = 'resultroute'+index;
                                       if(typeof route.shortName==='undefined') route.shortName = 'Metro';
                                       var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
-                                      return <h4 className={clazz}>{txt}</h4>;
+                                      return <h4 className={clazz} key={key}>{txt}</h4>;
                                     })}
                                 </div>
                               );
@@ -310,24 +329,28 @@ var RouteSearchBox = React.createClass({
           }
 
         },this);
+        resultContent = <div className='result-content'>
+          <h4 className='pre-heading'>Uudet reittisi (10.8.2015 alkaen)</h4>
+          <div onClick={this.clearSearch}>
+            <Icon img='icon-icon_close' className='close' />
+          </div>
+          <div className='search-results' style={style}>
+            {results}
+          </div>
+        </div>;
       }
-      var style = {};
-      if(this.props.listHeight) {
-        style.maxHeight = this.props.listHeight+'px';
-      }
+      
       return (
           <div className='route-search-form'>
             <form name='route-search-form'  onSubmit={this.searchRoutes}>
               <h3>Katso, muuttuuko reittisi.</h3>
-              <AutocompleteInput  name='from' placeholder='Mistä?' setResult={this.setResult}/>
-              <AutocompleteInput  name='to' placeholder='Mihin?' setResult={this.setResult}/>
+              <AutocompleteInput cleared={this.state.cleared} name='from' placeholder='Mistä?' setResult={this.setResult}/>
+              <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
               <div className='form-group'>
                 <button type='submit'>Hae</button>
               </div>
             </form>
-            <div className='search-results' style={style}>
-              {results}
-            </div>
+              {resultContent}
           </div>
         );
     }
@@ -382,6 +405,7 @@ var ReplacementLineSearch = React.createClass({
     if(this.state.newroutes.length && this.props.isOpen) {
       
       routes = <div className='new-routes'>
+                  <h4 className='pre-heading'>Korvaavat linjat (10.8.2015 alkaen)</h4>
                   <RoutesList height={this.props.listHeight} setActiveRoutes={this.setActiveRoutes} routes={this.state.newroutes} />
                 </div>;
     }
@@ -411,8 +435,7 @@ var LeftSidebar = React.createClass({
       return route;
     });
     this.setState({DATA:DATA, open: searchToShow});
-    showRoutesOnMap(DATA,'new');
-    showRoutesOnMap(DATA,'old');
+    clearRoutesOnMap();
   },
   setActiveRoutes:function(routeIds) {
     DATA.routes = DATA.routes.map(function(route){

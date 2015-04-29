@@ -23,12 +23,15 @@ STYLES.utils = {
   pixels: function(zoom, min, normal, max) {
     return zoomScale.range([min, normal, max])(zoom);
   },
+
   strokeWidth: function(display) {
     return strokeScale(display.zoom.scale());
   },
+
   fontSize: function(display, data) {
     return Math.floor(fontScale(display.zoom.scale()));
   },
+
   defineSegmentCircleMarker: function(display, segment, radius, fillColor) {
     var markerId = 'circleMarker-' + segment.getId();
     display.svg.append('defs').append('svg:marker')
@@ -56,7 +59,8 @@ STYLES.wireframe_vertices = {
   cx: 0,
   cy: 0,
   r: 3,
-  fill: '#000'
+  fill: '#FFF',
+  stroke: '#007AC9'
 };
 
 STYLES.wireframe_edges = {
@@ -72,7 +76,7 @@ STYLES.wireframe_edges = {
 
 var stops_merged = STYLES.stops_merged = {
   fill: function(display, data, index, utils) {
-    return '#007AC9';
+    return '#FFF';
   },
   r: function(display, data, index, utils) {
     return utils.pixels(display.zoom.scale(), 4, 6, 8);
@@ -80,10 +84,10 @@ var stops_merged = STYLES.stops_merged = {
   stroke: function(display, data, index, utils) {
     //var point = data.owner;
     //if (!point.isFocused()) return notFocusedColor;
-    return '#FFF';
+    return '#007AC9';
   },
   'stroke-width': function(display, data, index, utils) {
-    return 1;
+    return 3;
   },
 
   /**
@@ -111,8 +115,7 @@ var stops_merged = STYLES.stops_merged = {
   'marker-padding': 3,
 
   visibility: function(display, data) {
-     
-    //if (!data.owner.containsSegmentEndPoint()) return 'hidden';
+    if (!data.owner.containsSegmentEndPoint()) return 'hidden';
   }
 };
 
@@ -126,23 +129,26 @@ var stops_pattern = STYLES.stops_pattern = {
   r: [
     4,
     function(display, data, index, utils) {
-      return utils.pixels(display.zoom.scale(), 1, 2, 4);
+      return 4;
+      //return utils.pixels(display.zoom.scale(), 1, 2, 4);
     },
     function(display, data, index, utils) {
-      var point = data.owner;
-      var busOnly = true;
-      point.getPatterns().forEach(function(pattern) {
-        if (pattern.route && pattern.route.route_type !== 3) busOnly =
-          false;
-      });
-      if (busOnly && !point.containsSegmentEndPoint()) {
-        return 0.5 * utils.pixels(display.zoom.scale(), 2, 4, 6.5);
-      }
+      // var point = data.owner;
+      // var busOnly = true;
+      // point.getPatterns().forEach(function(pattern) {
+      //   if (pattern.route && pattern.route.route_type !== 3) busOnly =
+      //     false;
+      // });
+      // if (busOnly && !point.containsSegmentEndPoint()) {
+      //   return 0.5 * utils.pixels(display.zoom.scale(), 2, 4, 6.5);
+      // }
+      return 4;
     }
   ],
-  stroke: 'none',
+  stroke: '#007AC9',
   visibility: function(display, data) {
-    //if (display.zoom.scale() < 1.5) return 'hidden';
+    if (display.scale < 1.3) return 'hidden';
+    return 'visible';
     //if (data.owner.containsSegmentEndPoint()) return 'hidden';
   }
 };
@@ -165,14 +171,14 @@ STYLES.places = {
 
 var multipoints_merged = STYLES.multipoints_merged = clone(stops_merged);
 
-multipoints_merged.visibility = true;
+multipoints_merged.visibility = 'hidden';
 
 /**
  * Default Multipoint Stops along a pattern
  */
 
 STYLES.multipoints_pattern = clone(stops_pattern);
-
+STYLES.multipoints_pattern.visibility = 'hidden';
 /**
  * Default label rules
  */
@@ -378,7 +384,7 @@ OLD_STYLES.wireframe_edges = {
  * Default Merged Stops Rules
  */
 
-var stops_merged = OLD_STYLES.stops_merged = {
+OLD_STYLES.stops_merged = {
   fill: function(display, data, index, utils) {
     return '#fff';
   },
@@ -427,30 +433,34 @@ var stops_merged = OLD_STYLES.stops_merged = {
  * Stops Along a Pattern
  */
 
-var stops_pattern = OLD_STYLES.stops_pattern = {
+OLD_STYLES.stops_pattern = {
   cx: 0,
   cy: 0,
-  r: [
+   r: [
     4,
     function(display, data, index, utils) {
-      return utils.pixels(display.zoom.scale(), 1, 2, 4);
+      return 4;
+      //return utils.pixels(display.zoom.scale(), 1, 2, 4);
     },
     function(display, data, index, utils) {
-      var point = data.owner;
-      var busOnly = true;
-      point.getPatterns().forEach(function(pattern) {
-        if (pattern.route && pattern.route.route_type !== 3) busOnly =
-          false;
-      });
-      if (busOnly && !point.containsSegmentEndPoint()) {
-        return 0.5 * utils.pixels(display.zoom.scale(), 2, 4, 6.5);
-      }
+      // var point = data.owner;
+      // var busOnly = true;
+      // point.getPatterns().forEach(function(pattern) {
+      //   if (pattern.route && pattern.route.route_type !== 3) busOnly =
+      //     false;
+      // });
+      // if (busOnly && !point.containsSegmentEndPoint()) {
+      //   return 0.5 * utils.pixels(display.zoom.scale(), 2, 4, 6.5);
+      // }
+      return 4;
     }
   ],
-  stroke: 'none',
+  stroke: '#7f929c',
   visibility: function(display, data) {
-    if (display.zoom.scale() < 1.5) return 'hidden';
-    if (data.owner.containsSegmentEndPoint()) return 'hidden';
+    console.log(display.zoom.scale())
+    return 'visible';
+    //if (display.zoom.scale() < 1.5) return 'hidden';
+    //if (data.owner.containsSegmentEndPoint()) return 'hidden';
   }
 };
 
@@ -470,15 +480,15 @@ OLD_STYLES.places = {
  * Default MultiPoint rules -- based on Stop rules
  */
 
-var OLD_STYLESmultipoints_merged = OLD_STYLES.multipoints_merged = clone(stops_merged);
+OLD_STYLES.multipoints_merged = clone(stops_merged);
 
-OLD_STYLESmultipoints_merged.visibility = true;
+OLD_STYLES.multipoints_merged.visibility = true;
 
 /**
  * Default Multipoint Stops along a pattern
  */
 
-OLD_STYLES.multipoints_pattern = clone(stops_pattern);
+OLD_STYLES.multipoints_pattern = OLD_STYLES.stops_pattern;
 
 /**
  * Default label rules

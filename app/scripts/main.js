@@ -1,11 +1,10 @@
 var initialLayers = L.layerGroup();
-var showLayer = L.layerGroup();
-var oldRouteLayer = L.layerGroup();
+var transitiveLayer;
+var oldTransitiveLayer;
 var map;
 var transitive;
 var oldTransitive;
 var oldroutenumbers;
-var oldTransitiveData;
 var oldRoutes;
 var COMPUTED = [
   // showLabelsOnHover,
@@ -42,26 +41,27 @@ function showRoutesOnMap(data,type) {
     });
   }
 
+  oldTransitive.clearData();
   if(type === 'new' || type === 'routesearch') {
     transitive.updateData(data);
     transitive.focusJourney();
-    oldTransitive.clearData();
-    oldTransitive.updateData({});
-
+    if(data.journeys.length) {
+      map.fitBounds(transitiveLayer.getBounds());
+    } else {
+      map.setView([60.287481, 24.996849], 11);
+    }
   } else if(type === 'old') {
     data.patterns = data.patterns.map(function(pattern, index){
       pattern.render = (index===0)? true:false;
       return pattern;
     });
-    oldTransitive.clearData();
     oldTransitive.updateData(data);
-    console.log(data)
   }
 }
 function clearRoutesOnMap() {
   oldTransitive.clearData();
   transitive.clearData();
-  DATA.journeys = [];
+  map.setView([60.287481, 24.996849], 11);
 }
 
 /**
@@ -178,9 +178,10 @@ function startMap() {
       mergeVertexThreshold: 0
     }]
   });
-  oldRouteLayer.addLayer(new L.TransitiveLayer(oldTransitive))
-  map.addLayer(new L.TransitiveLayer(transitive));
-  map.addLayer(oldRouteLayer);
+  oldTransitiveLayer = new L.TransitiveLayer(oldTransitive);
+  transitiveLayer = new L.TransitiveLayer(transitive);
+  map.addLayer(oldTransitiveLayer);
+  map.addLayer(transitiveLayer);
   transitive.on('render',function(transitive){
     COMPUTED.map(function(behaviour){
 

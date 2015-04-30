@@ -116,7 +116,7 @@ h4,
 h5,
 p {
   font-weight: 300;
-  margin: 0 0 1em;
+  margin: 0 0 .5em;
 }
 
 h1 {
@@ -173,6 +173,12 @@ button {
     background: $white;
     color: $hsldarkblue;
   }
+
+  &:disabled,
+  &:disabled:hover {
+    background: rgba($gray, .8);
+    color: $white;
+  }
 }
 
 input[type="text"] {
@@ -186,6 +192,13 @@ input[type="text"] {
 
 ::placeholder {
   color: rgba($gray, 1);
+}
+
+.error {
+  color: $hsl-alert;
+  a {
+    color: $hsl-alert;
+  }
 }
 
 .icon {
@@ -214,7 +227,7 @@ main {
   position: relative;
   width: 360px;
   z-index: 2;
-  padding-bottom: 80px;
+  padding-bottom: 35px;
 
   &::-webkit-scrollbar-thumb { 
     background: $white;
@@ -237,10 +250,65 @@ main {
   }
 }
 
+.site-branding {
+  margin: 0 0 15px;
+
+  h3,
+  h4 {
+    padding-left: 0;
+  }
+  
+  h1 {
+    float: left;
+    font-size: 25px;
+    line-height: 25px;
+    margin: 0;
+  }
+}
+
+.logo {
+  float: left;
+  font-size: 25px;
+  height: 25px;
+
+  .lines {
+    display: flex;
+    float: left;
+    height: 95%;
+    justify-content: space-between;
+    margin-left: 5px;
+    transform: translateY(2.5%);
+    width: 6px;
+  }
+
+  .line {
+    background: $white;
+    height: 100%;
+    width: 2px;
+  }
+
+  .hsl-hrt {
+    float: left;
+    margin-left: 5px;
+  }
+
+  span {
+    float: left;
+    font-size: .5em;
+    line-height: 1em;
+    width: 100%;
+  }
+
+  .main-logo {
+    float: left;
+    height: 100%;
+  }
+}
+
 .info {
   background: $hsl-blue;
   color: $white;
-  padding: 20px 15px 20px;
+  padding: 10px 15px 15px;
   
   h3 {
     margin-bottom: .5em;
@@ -309,60 +377,6 @@ main {
   }
 }
 
-.site-branding {
-  padding-top: 1em;
-  
-  h3,
-  h4 {
-    padding-left: 0;
-  }
-  
-  h1 {
-    float: left;
-    font-size: 25px;
-    line-height: 25px;
-  }
-}
-
-.logo {
-  float: left;
-  font-size: 25px;
-  height: 25px;
-
-  .lines {
-    display: flex;
-    float: left;
-    height: 95%;
-    justify-content: space-between;
-    margin-left: 5px;
-    transform: translateY(2.5%);
-    width: 6px;
-  }
-
-  .line {
-    background: $white;
-    height: 100%;
-    width: 2px;
-  }
-
-  .hsl-hrt {
-    float: left;
-    margin-left: 5px;
-  }
-
-  span {
-    float: left;
-    font-size: .5em;
-    line-height: 1em;
-    width: 100%;
-  }
-
-  .main-logo {
-    float: left;
-    height: 100%;
-  }
-}
-
 .sidebar-searches {
 
   &.hidden {
@@ -372,7 +386,7 @@ main {
 
 .route-search-form,
 .line-search-form {
-  padding: 20px 20px 10px;
+  padding: 15px 20px 10px;
   
   h3,
   h4 {
@@ -513,12 +527,13 @@ main {
     }
 }
 .result {
-  background: $white;   
+  background: $white;
+  border: 1px solid #ddd;
   border-radius: 3px;   
   margin: 1em 0;   
   padding: 50px 10px 10px; 
   position: relative;
-  width: 100%;
+  width: 98%;
   cursor: pointer;
 }
 .result-routes {
@@ -665,7 +680,7 @@ footer {
   bottom: 0;
   color: $gray;
   left: 0;
-  padding: 30px 20px 20px;
+  padding: 10px 20px 10px;
   position: fixed;
   width: 360px;
   z-index: 3;
@@ -673,6 +688,7 @@ footer {
   p {
     display: flex;
     justify-content: space-between;
+    margin: 0;
 
     a {
       color: $gray;
@@ -700,7 +716,7 @@ footer {
 }
 .welcome-text {
   background: $white;
-  padding: 2em;
+  padding: 2em 3.2em 2em 2em;
   width: calc(100% - 500px);
   left: 430px;
   position: absolute;
@@ -759,6 +775,14 @@ footer {
   stroke: $black;
 }
 
+.transitive-stop-marker-pattern {
+  z-index: 4;
+}
+
+.transitive-segment-label {
+  z-index: 5;
+}
+
 @media screen and (min-width: 1500px) {
   
 }
@@ -770,12 +794,12 @@ footer {
     width: 320px;
 
     .info {
-      padding: 20px 15px 20px;
+      padding: 20px 10px 20px;
     }
 
     .route-search-form,
     .line-search-form {
-      padding: 20px 15px 10px;
+      padding: 20px 10px 10px;
 
     }
   }
@@ -785,7 +809,7 @@ footer {
   }
 
   .routes-list {
-    padding: 0 15px;
+    padding: 0 10px;
   }
 
   .map-container {

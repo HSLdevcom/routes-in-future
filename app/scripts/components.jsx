@@ -23,6 +23,8 @@ var Icon = React.createClass({
 });
 var Route = React.createClass({
     selectRoute: function(e){
+      e.stopPropagation();
+
       this.props.selectRoute(this.props.route.route_id);
     },
     render: function() {
@@ -43,7 +45,7 @@ var Route = React.createClass({
         ).stop_name;
         var routeText = routeStartText+' - '+routeStopText;
         return (
-          <div className={classes} onClick={this.props.onClick}>
+          <div className={classes} onClick={this.selectRoute}>
             <div className='checkmark-icon-nr'>
               <div className='checkmark'></div>
               {icon}
@@ -61,8 +63,7 @@ var RoutesList = React.createClass({
     render: function() {
         var style = {};
         var routes = this.props.routes.map(function(route) {
-          var boundClick = this.selectRoute.bind(this, route.route_id);
-          return <Route route={route} isActive={route.isActive} onClick={boundClick} key={route.route_id} />;
+          return <Route route={route} isActive={route.isActive} selectRoute={this.selectRoute} key={route.route_id} />;
         },this);
         if(this.props.height) {
           style.maxHeight = this.props.height+'px';
@@ -196,81 +197,89 @@ var AutocompleteInput = React.createClass({
 var RouteSearchBox = React.createClass({
     getInitialState: function() {
        return {
+          cantSearch: false,
           cleared: false,
           searchResults:[],
           from: {
-            name:'from',
+            name: 'from',
+            city: '',
             lat:0,
             lon:0
           },
           to: {
             name:'to',
+            city: '',
             lat:0,
             lon:0
           }
        };
     },
     setResult: function(result, type) {
-      var _this = this;
-        if(type==='from'){
-          _this.setState({
-            from:result
-          });
-        } else if(type==='to') {
-          _this.setState({
-            to:result
-          });
-        }
+      if(type==='from'){
+        this.setState({
+          from:result
+        });
+      } else if(type==='to') {
+        this.setState({
+          to:result
+        });
+      }
       return true;
     },
     searchRoutes: function(e){
-      this.props.clearActiveRoutes('route');
       e.preventDefault();
-      var _this = this;
-      var od = {
-        from: this.state.from,
-        to: this.state.to,
-        accessModes: 'WALK',
-        egressModes: 'WALK',
-        directModes: '',
-        suboptimal: 0,
-        transitModes: 'TRANSIT',
-        date: '2015-08-27'
-      };
-      var profiler = new OtpProfiler({
-        //host: 'http://172.30.1.134:8080/otp/routers/helsinki',
-        host: 'http://ec2-52-28-64-191.eu-central-1.compute.amazonaws.com/otp/routers/helsinki',
-        limit: 5 // limit the number of options to profile, defaults to 3
-      });
-      profiler.profile(od, function(err, data) {
-        var valid = [];
-        var seen = [];
-        var sorted = data.options.sort(function (a, b) {return(a.stats.min-b.stats.min)})
-        sorted.map(function(option){
-          var option = option;
-          if(typeof option.transit!=='undefined') {
-            if (!_.includes(seen, option.summary)){
-              seen.push(option.summary);
-              valid.push(option);
+      if(this.state.from.city !== 'Vantaa' && this.state.to.city !=='Vantaa') {
+        this.setState({cantSearch: true, searchResults: []});
+        return this.props.clearActiveRoutes('route');
+      } else {
+        this.setState({cantSearch: false});
+        this.props.clearActiveRoutes('route');
+        var _this = this;
+        var od = {
+          from: this.state.from,
+          to: this.state.to,
+          accessModes: 'WALK',
+          egressModes: 'WALK',
+          directModes: '',
+          suboptimal: 0,
+          transitModes: 'TRANSIT',
+          date: '2015-08-27'
+        };
+        var profiler = new OtpProfiler({
+          //host: 'http://172.30.1.134:8080/otp/routers/helsinki',
+          host: 'http://ec2-52-28-64-191.eu-central-1.compute.amazonaws.com/otp/routers/helsinki',
+          limit: 5 // limit the number of options to profile, defaults to 3
+        });
+        profiler.profile(od, function(err, data) {
+          var valid = [];
+          var seen = [];
+          var sorted = data.options.sort(function (a, b) {return(a.stats.min-b.stats.min)})
+          sorted.map(function(option){
+            var option = option;
+            if(typeof option.transit!=='undefined') {
+              if (!_.includes(seen, option.summary)){
+                seen.push(option.summary);
+                valid.push(option);
+              }
             }
+          });
+          var validObj = {
+            options: valid
+          }
+          _this.setState({searchResults : valid});
+          if(err===null){
+
+            od.profile = validObj;
+            profiler.journey(od,function(err,transitivedata) {
+              showRoutesOnMap(transitivedata,'routesearch');
+            });
           }
         });
-        var validObj = {
-          options: valid
-        }
-        _this.setState({searchResults : valid});
-        if(err===null){
-
-          od.profile = validObj;
-          profiler.journey(od,function(err,transitivedata) {
-            showRoutesOnMap(transitivedata,'routesearch');
-          });
-        }
-      });
+      }
     },
     clearSearch: function(){
       this.props.clearActiveRoutes('route');
-      this.setState({searchResults : [], cleared: !this.state.cleared});
+      this.setState({searchResults : [], cleared: !this.state.cleared, cantSearch: false});
     },
     focusJourney: function(index){
       transitive.focusJourney(index+'_transit');
@@ -279,7 +288,7 @@ var RouteSearchBox = React.createClass({
       transitive.focusJourney();
     },
     render: function() {
-      var resultContent;
+      var resultContent, errorContent;
       if(this.state.searchResults.length) {
         var style = {};
         var results;
@@ -339,7 +348,14 @@ var RouteSearchBox = React.createClass({
           </div>
         </div>;
       }
-      
+      if(this.state.cantSearch && this.props.isOpen) {
+        errorContent =  <div className='error'>
+                          <h4>Kumpikaan osoitteista ei ole muutosalueella</h4>
+                          <p>
+                            Voit hakea reittisi <a href='http://www.reittiopas.fi' target='_blank'>reittioppaasta</a>
+                          </p>
+                        </div>;
+      }
       return (
           <div className='route-search-form'>
             <form name='route-search-form'  onSubmit={this.searchRoutes}>
@@ -347,9 +363,10 @@ var RouteSearchBox = React.createClass({
               <AutocompleteInput cleared={this.state.cleared} name='from' placeholder='Mistä?' setResult={this.setResult}/>
               <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
               <div className='form-group'>
-                <button type='submit'>Hae</button>
+                <button ref='theSumbitBtn' type='submit'>Hae</button>
               </div>
             </form>
+              {errorContent}
               {resultContent}
           </div>
         );

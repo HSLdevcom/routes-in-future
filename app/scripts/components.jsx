@@ -253,7 +253,7 @@ var RouteSearchBox = React.createClass({
         profiler.profile(od, function(err, data) {
           var valid = [];
           var seen = [];
-          var sorted = data.options.sort(function (a, b) {return(a.stats.min-b.stats.min)})
+          var sorted = data.options.sort(function (a, b) {return(a.stats.avg-b.stats.avg)})
           sorted.map(function(option){
             var option = option;
             if(typeof option.transit!=='undefined') {

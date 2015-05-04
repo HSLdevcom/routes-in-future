@@ -92,7 +92,7 @@ var AutocompleteInput = React.createClass({
   search: function(e){
     var _this = this;
     this.setState({value: e.target.value});
-    $.get('http://matka.hsl.fi/geocoder/suggest/'+e.target.value)
+    $.get('http://77.95.145.186/geocoder/suggest/'+e.target.value)
     .then(function(data) {
       var suggestions = {}
       _.forEach(data.streetnames, function (obj, streetname) {
@@ -122,7 +122,7 @@ var AutocompleteInput = React.createClass({
       }
       this.setState({suggestions:[], value:index, autocompleteDone: true, result: returnThis});
     } else if (suggestion.key && suggestion.name) {
-      $.get('http://matka.hsl.fi/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
+      $.get('http://77.95.145.186/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
         if (data.results.length == 1) {
           var result = data.results[0];
           var name = result.katunimi + (result.osoitenumero == 0 ? "": " " + result.osoitenumero ) + ', ' + result.kaupunki;
@@ -197,6 +197,7 @@ var AutocompleteInput = React.createClass({
 var RouteSearchBox = React.createClass({
     getInitialState: function() {
        return {
+          focusedIndex: 0,
           cantSearch: false,
           cleared: false,
           searchResults:[],
@@ -232,6 +233,38 @@ var RouteSearchBox = React.createClass({
         this.setState({cantSearch: true, searchResults: []});
         return this.props.clearActiveRoutes('route');
       } else {
+        var startTime = '07:00';
+        var endTime = '11:00';
+        var profileDate = '2015-08-26';
+        var inputTimeofDay = React.findDOMNode(this.refs.theTime).value; 
+        var inputDayOfTheWeek = React.findDOMNode(this.refs.theDay).value; 
+        var maxWalkTime = 15;
+        if(inputTimeofDay === 'morning') {
+          startTime = '06:00';
+          endTime = '11:00';
+        } else if (inputTimeofDay === 'day'){
+          startTime = '11:00';
+          endTime = '15:00';
+        } else if (inputTimeofDay === 'afternoon'){
+          startTime = '15:00';
+          endTime = '18:00';
+        } else if (inputTimeofDay === 'evening'){
+          startTime = '18:00';
+          endTime = '23:59';
+        } else if (inputTimeofDay === 'night'){
+          startTime = '00:01';
+          endTime = '05:00';
+          maxWalkTime = 45;
+        }
+
+        if(inputDayOfTheWeek === 'weekday') {
+          profileDate = '2015-08-26';
+        } else if (inputTimeofDay === 'saturday'){
+          profileDate = '2015-08-29';
+        } else if (inputTimeofDay === 'sunday'){
+          profileDate = '2015-08-30';
+        }
+        
         this.setState({cantSearch: false});
         this.props.clearActiveRoutes('route');
         var _this = this;
@@ -240,14 +273,19 @@ var RouteSearchBox = React.createClass({
           to: this.state.to,
           accessModes: 'WALK',
           egressModes: 'WALK',
+          startTime: startTime,
+          endTime: endTime,
+          maxWalkTime: maxWalkTime,
+          bikeTime: 0,
+          bikeSafe: 0,
           directModes: '',
           suboptimal: 0,
           transitModes: 'TRANSIT',
-          date: '2015-08-27'
+          date: profileDate
         };
         var profiler = new OtpProfiler({
           //host: 'http://172.30.1.134:8080/otp/routers/helsinki',
-          host: 'http://ec2-52-28-64-191.eu-central-1.compute.amazonaws.com/otp/routers/helsinki',
+          host: 'http://77.95.145.186/otp/routers/helsinki',
           limit: 5 // limit the number of options to profile, defaults to 3
         });
         profiler.profile(od, function(err, data) {
@@ -270,10 +308,17 @@ var RouteSearchBox = React.createClass({
           if(err===null){
 
             od.profile = validObj;
-            profiler.journey(od,function(err,transitivedata) {
-              showRoutesOnMap(transitivedata,'routesearch');
-            });
+            if(validObj.options.length) {
+              profiler.journey(od,function(err,transitivedata) {
+                showRoutesOnMap(transitivedata,'routesearch');
+                transitive.focusJourney('0_transit');
+
+              });
+
+            }
+
           }
+
         });
       }
     },
@@ -283,9 +328,7 @@ var RouteSearchBox = React.createClass({
     },
     focusJourney: function(index){
       transitive.focusJourney(index+'_transit');
-    },
-    blurJourney: function(){
-      transitive.focusJourney();
+      this.setState({focusedIndex: index});
     },
     render: function() {
       var resultContent, errorContent;
@@ -297,7 +340,7 @@ var RouteSearchBox = React.createClass({
         }
         results = this.state.searchResults.map(function(result, index) {
           if(result.summary!=='Non-transit options') {
-
+            var clazz = (this.state.focusedIndex === index)? 'result focused': 'result';
             var walkTime = Math.floor((result.access.reduce(function(a,b){
               return {time: a.time + b.time};
               }).time + result.egress.reduce(function(a,b){
@@ -331,7 +374,7 @@ var RouteSearchBox = React.createClass({
                                 </div>
                               );
                             });
-            return (<div className='result' onMouseLeave={this.blurJourney} onMouseEnter={this.focusJourney.bind(this,index)}>{routes}{time}</div>);
+            return (<div className={clazz} onClick={this.focusJourney.bind(this,index)} >{routes}{time}</div>);
 
           } else {
             return '';
@@ -339,7 +382,7 @@ var RouteSearchBox = React.createClass({
 
         },this);
         resultContent = <div className='result-content'>
-          <h4 className='pre-heading'>Uudet reittisi (10.8.2015 alkaen)</h4>
+          <h4 className='pre-heading'>Uudet reittisi</h4>
           <div onClick={this.clearSearch}>
             <Icon img='icon-icon_close' className='close' />
           </div>
@@ -363,6 +406,18 @@ var RouteSearchBox = React.createClass({
               <AutocompleteInput cleared={this.state.cleared} name='from' placeholder='Mistä?' setResult={this.setResult}/>
               <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
               <div className='form-group'>
+                <select className='select-box' ref='theDay' name='the-day'>
+                  <option value='weekday'>Arkipäivä</option>
+                  <option value='saturday'>Lauantai</option>
+                  <option value='sunday'>Sunnuntai</option>
+                </select>                
+                <select className='select-box' ref='theTime' name='the-time'>
+                  <option value='morning'>Aamu</option>
+                  <option value='day'>Päivä</option>
+                  <option value='afternoon'>Iltapäivä</option>
+                  <option value='evening'>Ilta</option>
+                  <option value='night'>Yö</option>
+                </select>
                 <button ref='theSumbitBtn' type='submit'>Hae</button>
               </div>
             </form>
@@ -374,13 +429,13 @@ var RouteSearchBox = React.createClass({
 });
 var ReplacementLineSearch = React.createClass({
   getInitialState: function() {
-    return {newroutes: [], showAllRoutes: false};
+    return {newroutes: [], showAllRoutes: false, searching: false};
   },
   searchCurrentlines: function(e) {
     e.preventDefault();
     this.props.setActiveRoutes([]);
-    this.setState({newroutes:[]});
     var value = React.findDOMNode(this.refs.theLineNr).value;
+    var _this = this;
     if(value!=='') {
       var oldLineId;
       var matches = _.filter(replacementLines,function(line){
@@ -396,22 +451,27 @@ var ReplacementLineSearch = React.createClass({
         },this);
         this.props.clearActiveRoutes('line');
         this.props.setActiveRoutes(routeIds);
-        this.setState({newroutes: routeInfos, showAllRoutes: false});
+        this.setState({newroutes: routeInfos, showAllRoutes: false, searching: true});
 
         oldRoute = _.find(oldRoutes,{shortName:value});
         new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
-          showRoutesOnMap(data,'old');
+            showRoutesOnMap(data,'old');
+           _this.setState({searching: false});
         });
       }
     }
   },
   showAllNewRoutes: function(e) {
     e.preventDefault();
-    this.props.clearActiveRoutes('line');
-    if(this.state.showAllRoutes) {
-      this.setState({newroutes: [], showAllRoutes: false});
-    } else {
-      this.setState({newroutes: this.props.routes, showAllRoutes: true});
+    if(!this.state.searching) {
+      React.findDOMNode(this.refs.theLineNr).value = '';
+      this.props.clearActiveRoutes('line');
+      if(this.state.showAllRoutes) {
+        this.setState({newroutes: [], showAllRoutes: false});
+      } else {
+        this.setState({newroutes: this.props.routes, showAllRoutes: true});
+      }
+      
     }
   },
   setActiveRoutes: function(routeIds){
@@ -420,12 +480,19 @@ var ReplacementLineSearch = React.createClass({
   render: function() {
     var routes;
     if(this.state.newroutes.length && this.props.isOpen) {
-      
+      var heading = '';
+
+      if(!this.state.showAllRoutes) {
+        heading = <h4 className='pre-heading'>Korvaavat linjat</h4>;
+      }
+
       routes = <div className='new-routes'>
-                  <h4 className='pre-heading'>Korvaavat linjat (10.8.2015 alkaen)</h4>
+                  {heading}
                   <RoutesList height={this.props.listHeight} setActiveRoutes={this.setActiveRoutes} routes={this.state.newroutes} />
                 </div>;
     }
+    
+
     return(
       <div className='line-search-form'>
         <form name='line-search-form'  onSubmit={this.searchCurrentlines}>

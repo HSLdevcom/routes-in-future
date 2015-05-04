@@ -53,22 +53,6 @@ $ferry-color: $hsl-ferry-blue;
   font-weight: normal;
   font-style: normal;
 }
-/* latin */
-@font-face {
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Montserrat-Regular'), url(http://fonts.gstatic.com/s/montserrat/v6/zhcz-_WihjSQC0oHJ9TCYAzyDMXhdD8sAj6OAJTFsBI.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-/* latin */
-@font-face {
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Montserrat-Bold'), url(http://fonts.gstatic.com/s/montserrat/v6/IQHow_FEYlDC4Gzy_m8fcmaVI6zN22yiurzcBKxPjFE.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
 $icon-font-family-1: 'reittiopas-icon-font-1';
 $icon-font-family-2: 'reittiopas-icon-font-2';
 
@@ -163,7 +147,8 @@ p {
   line-height: 1.1em;
 }
 
-input,
+select,
+input, 
 button {
   display: block;
   font-size: 1em;
@@ -193,6 +178,14 @@ button {
     background: rgba($gray, .8);
     color: $white;
   }
+}
+
+select {
+  background: $white;
+  border: 1px solid $light-gray;
+  border-radius: $border-radius;
+  box-shadow: inset 0 2px 4px -2px rgba($gray-blue-light, .8);
+  color: $black;
 }
 
 input[type="text"] {
@@ -407,7 +400,7 @@ main {
     padding-left: 10px;
   }
 
-  button {
+  button,.select-box {
     width: 31.25%;
   }
 }
@@ -418,8 +411,20 @@ main {
 
 .route-search-form {
   
+  .result.focused {
+    border: 3px $hsl-blue solid;
+  }
+
   .result-content {
     position: relative;
+  }
+  
+  .select-box:first-child {
+    margin-right: 2.08333333333333%;
+  }
+
+  .select-box {
+    display: inline-block;
   }
 
   .close {
@@ -731,10 +736,11 @@ footer {
 .welcome-text {
   background: $white;
   padding: 2em 3.2em 2em 2em;
-  width: calc(100% - 500px);
-  left: 430px;
+  width: 60%;
   position: absolute;
   top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 99;
   border-radius: $border-radius;
   display: none;

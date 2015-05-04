@@ -3,8 +3,6 @@
 // generated on 2015-04-06 using generator-gulp-webapp 0.3.0
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
-var watchify = require('watchify');
-var browserify = require('browserify');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 

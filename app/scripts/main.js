@@ -1,4 +1,3 @@
-
 var popupLayer = L.layerGroup();
 var transitiveLayer;
 var oldTransitiveLayer;
@@ -14,6 +13,7 @@ var COMPUTED = [
 
 //DATA.allPatterns = DATA.patterns;
 function showRoutesOnMap(data, type) {
+  setTransitiveStyles();
   // Create journeys of active routes, if its search results leave the journeys alone
   if (type !== 'routesearch') {
     data.journeys = [];

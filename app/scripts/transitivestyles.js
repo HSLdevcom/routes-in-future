@@ -1,6 +1,6 @@
 var STYLES = {};
 var OLD_STYLES = {};
-$(document).ready(function(){
+function setTransitiveStyles() {
   var d3 = require('d3');
   var clone = require('clone');
   /**
@@ -693,4 +693,4 @@ $(document).ready(function(){
     rx: 3,
     ry: 3
   };
-});
+}

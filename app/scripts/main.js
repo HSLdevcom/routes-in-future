@@ -13,7 +13,6 @@ var COMPUTED = [
 
 //DATA.allPatterns = DATA.patterns;
 function showRoutesOnMap(data, type) {
-  setTransitiveStyles();
   // Create journeys of active routes, if its search results leave the journeys alone
   if (type !== 'routesearch') {
     data.journeys = [];
@@ -124,6 +123,8 @@ function highlightOptionOnHover(transitive) {
 }
 
 function startMap() {
+  setTransitiveStyles();
+  
   var stopLatLongs = [];
   var stopStartMarkers = [];
   var polylines = [];

@@ -635,7 +635,6 @@ var LeftSidebar = React.createClass({
     listHeight += document.querySelectorAll('.info')[0].offsetHeight;
     listHeight += document.querySelectorAll('.footer')[0].offsetHeight;
     listHeight += 100;
-    console.log(listHeight)
     if(listHeight>window.innerHeight){
       document.getElementsByClassName('left-sidebar')[0].style.overflow = 'auto';
       listHeight = 100;
@@ -673,3 +672,80 @@ var LeftSidebar = React.createClass({
     );
   }
 });
+var RouteInfoModal = React.createClass({
+  closeModal: function(){
+    var node = this.getDOMNode();
+    React.unmountComponentAtNode(node);
+  },
+  componentDidMount: function(){
+    var node = this.getDOMNode();
+    node.parentNode.classList.add('open');
+  },
+  render: function(){
+    var routeInfo = ROUTEINFO[this.props.route.route_short_name];
+    var table;
+    var timeRow;
+    var scheduleRow;
+    var schedule = [];
+    if(routeInfo.specialSchedule) {
+      var hours = [];
+      for (var i = 0; i < routeInfo.scheduleHours.length; i++) {
+        hours.push(<td>{routeInfo.scheduleHours[i]}</td>);
+      }
+      timeRow = <tr className='time-row'>
+                <td>Linja</td>
+                {hours}
+                </tr>;
+    }  else {
+      timeRow = <tr className='time-row'>
+                  <td>Linja</td>
+                  <td>5-6</td> 
+                  <td>6-9</td>
+                  <td>14-18 <br></br>9-14</td> 
+                  <td>18-21</td> 
+                  <td>21-23</td> 
+                  <td>6-9</td> 
+                  <td>9-19</td>  
+                  <td>19-21</td> 
+                  <td>21-23</td> 
+                  <td>6-10</td>  
+                  <td>10-19</td> 
+                  <td>19-21</td> 
+                  <td>21-23</td>
+                </tr>
+    }
+    for (var i = 0; i < routeInfo.schedule.length; i++) {
+      schedule.push(<td>{routeInfo.schedule[i]}</td>);
+    };
+    scheduleRow =<tr><td>{this.props.route.route_short_name}</td>{schedule}</tr>
+    table = <table>
+              <thead>
+                <tr>
+                  <td></td>
+                  <td colSpan='5'>Arki</td>
+                  <td colSpan='4'>Lauantai</td>
+                  <td colSpan='4'>Sunnuntai</td>
+                </tr>
+              </thead>
+              <tbody>
+                {timeRow}
+                {scheduleRow}
+              </tbody>
+            </table>;
+    return(
+      <div>
+          <Icon img='icon-icon_close' className='icon close'  onClick={this.closeModal}/>
+          <div class="modal-content">
+            <h2>
+              {this.props.route.route_short_name}
+            </h2>
+            <p>{routeInfo.route}</p>
+            <p>{routeInfo.text}</p>
+            <h3>Vuorovälit ja liikennöintiajat (noin):</h3>
+            {table}
+          </div>
+      </div>
+    );
+  }
+});
+

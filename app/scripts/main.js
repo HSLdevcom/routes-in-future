@@ -1,5 +1,6 @@
 var app;
 function App(){
+  React.initializeTouchEvents(true);
   var _this = this;
   this.DATA = DATA;
   this.map =  L.map('map', {
@@ -129,9 +130,9 @@ App.prototype.showRoutesOnMap = function(data, type) {
     this.oldTransitive.updateData(data);
   }
 }
-App.prototype.openRouteInfo = function(route_id){
-  console.log(route_id);
-}
+App.prototype.openRouteInfo = function(route){
+  React.render(React.createElement(RouteInfoModal, {route: route}), document.getElementById('route-info-modal'));
+};
 App.prototype.clearRoutesOnMap = function() {
   this.oldTransitive.clearData();
   this.transitive.clearData();
@@ -203,9 +204,6 @@ $(document).ready(function() {
     $(this).toggleClass('open');
     $('.more-info').toggleClass('open');
     $('#sidebar').toggleClass('hidden');
-  });
-  $('.modal .close').on('click', function() {
-    $('.modal').removeClass('open');
   });
   $('.left-sidebar').on('click', function() {
     $('.welcome-text').removeClass('open');

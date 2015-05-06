@@ -658,7 +658,6 @@ h4.result-route {
 
 .route {
   border-top: 1px solid $white;
-  cursor: pointer;
   display: block;
   padding: .5em 0;
   width: 100%;
@@ -678,12 +677,14 @@ h4.result-route {
     float: left;
     justify-content: left;
     width: 28.125%;
+    margin-right: .875%;
   }
 
   .checkmark {
     background: $white;
     border: 1px solid $light-gray;
     border-radius: 3px;
+    cursor: pointer;
     float: left;
     height: 1.33333333333333em;
     margin: .333333333em 8px;
@@ -702,7 +703,7 @@ h4.result-route {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 71.875%;
+    width: calc(67% - 20px);
   }
 
   .open-route-info {
@@ -710,13 +711,20 @@ h4.result-route {
     color: $hsl-blue;
     border-radius: 99em;
     font-size: 15px;
+    margin: 0 1.5%;
     right: 0;
-    float: left;
+    float: right;
     height: 20px;
+    line-height: 15px;
     left: 0;
     width: 20px;
     text-align: center;
     font-weight: bold;
+    cursor: pointer;
+    &:hover {
+      background: $hsl-blue;
+      color: $white;
+    }
   }
 
   &.bus {
@@ -791,7 +799,7 @@ footer {
     width: 100%;
   }
 }
-.welcome-text {
+.welcome-text,.modal {
   background: $white;
   padding: 2em 3.2em 2em 2em;
   width: 60%;
@@ -814,38 +822,18 @@ footer {
     width: 2em;
   }
 }
-.modal {
-  background: rgba(0, 0, 0, .5);
-  display: none;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 99;
-  
-  &.open {
-    display: block;
-  }
 
-  .modal-content {
-    background: $white;
-    border-radius: $border-radius;
-    left: 50%;
-    padding: 3em 2.5em 1em 1em;
-    position: relative;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% - 400px);
+.route-info-modal {
+  .time-row {
+    td {
+      font-weight: bold;
+    }
   }
-
-  .close {
-    cursor: pointer;
-    height: 2em;
-    position: absolute;
-    right: 1em;
-    top: 1em;
-    width: 2em;
+  td {
+    padding: .5em;
+    border: 1px solid $black;
+    font-size: 1em;
+    line-height: 1.1em;  
   }
 }
 

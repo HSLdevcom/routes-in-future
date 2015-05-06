@@ -674,14 +674,17 @@ var LeftSidebar = React.createClass({
 });
 var RouteInfoModal = React.createClass({
   closeModal: function(){
-    var node = this.getDOMNode();
-    React.unmountComponentAtNode(node);
+    document.getElementById('route-info-modal').classList.remove('open');
+    //React.unmountComponentAtNode(document.getElementById('route-info-modal'));
   },
   componentDidMount: function(){
-    var node = this.getDOMNode();
-    node.parentNode.classList.add('open');
+    document.getElementById('route-info-modal').classList.add('open');
+  },
+  componentWillUpdate: function(){
+    document.getElementById('route-info-modal').classList.add('open');
   },
   render: function(){
+    console.log(this.props.route.route_short_name)
     var routeInfo = ROUTEINFO[this.props.route.route_short_name];
     var table;
     var timeRow;
@@ -734,7 +737,9 @@ var RouteInfoModal = React.createClass({
             </table>;
     return(
       <div>
-          <Icon img='icon-icon_close' className='icon close'  onClick={this.closeModal}/>
+          <div onClick={this.closeModal}>
+            <Icon img='icon-icon_close' className='icon close'  />
+          </div>
           <div class="modal-content">
             <h2>
               {this.props.route.route_short_name}

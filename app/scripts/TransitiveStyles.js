@@ -1,6 +1,6 @@
-var STYLES = {};
-var OLD_STYLES = {};
 function setTransitiveStyles() {
+  var STYLES = {};
+  var OLD_STYLES = {};
   var d3 = require('d3');
   var clone = require('clone');
   /**
@@ -83,9 +83,12 @@ function setTransitiveStyles() {
       return utils.pixels(display.zoom.scale(), 4, 6, 8);
     },
     stroke: function(display, data, index, utils) {
-      //var point = data.owner;
-      //if (!point.isFocused()) return notFocusedColor;
-      return '#007AC9';
+      var point = data.owner;
+      if (!point.isFocused()) {
+        return '#e0e0e0';
+      } else {
+        return '#007AC9';
+      }
     },
     'stroke-width': function(display, data, index, utils) {
       return 3;
@@ -117,7 +120,7 @@ function setTransitiveStyles() {
     'marker-padding': 3,
 
     visibility: function(display, data) {
-      if(!data.owner.focused) return 'hidden';
+      if(!data.owner.isFocused()) return 'hidden';
       if (!data.owner.containsSegmentEndPoint()) return 'hidden';
     }
   };
@@ -133,26 +136,14 @@ function setTransitiveStyles() {
       4,
       function(display, data, index, utils) {
         return 4;
-
-        //return utils.pixels(display.zoom.scale(), 1, 2, 4);
       },
       function(display, data, index, utils) {
-        // var point = data.owner;
-        // var busOnly = true;
-        // point.getPatterns().forEach(function(pattern) {
-        //   if (pattern.route && pattern.route.route_type !== 3) busOnly =
-        //     false;
-        // });
-        // if (busOnly && !point.containsSegmentEndPoint()) {
-        //   return 0.5 * utils.pixels(display.zoom.scale(), 2, 4, 6.5);
-        // }
         return 4;
       }
-
     ],
-    stroke: function(display,data) {
-      
-      if (data.rEdge.type === 'TRANSIT') {
+    stroke: function(display, data) {
+      if (data.owner.isFocused()) {
+        if (data.rEdge.type === 'TRANSIT') {
           if (data.rEdge.mode == 0) {
             return '#00985f';
           } else if (data.rEdge.mode == 1) {
@@ -165,14 +156,16 @@ function setTransitiveStyles() {
             return '#007AC9';
           }
         } 
-      return '#007AC9';
+
+        return '#007AC9';
+      } else {
+        return '#007AC9';
+      }
     },
     visibility: function(display, data) {
+      //if (!data.owner.isFocused()) return 'hidden';
       if (display.scale < 1.3) return 'hidden';
-      if(!data.owner.focused) return 'hidden';
       return 'visible';
-
-      //if (data.owner.containsSegmentEndPoint()) return 'hidden';
     }
   };
 
@@ -202,6 +195,7 @@ function setTransitiveStyles() {
 
   STYLES.multipoints_pattern = _.cloneDeep(stops_pattern);
   STYLES.multipoints_pattern.visibility = 'hidden';
+
   /**
    * Default label rules
    */
@@ -251,25 +245,29 @@ function setTransitiveStyles() {
       '#007AC9',
       function(display, data) {
         var segment = data;
-        if (!segment.focused) return notFocusedColor;
-        if (segment.type === 'TRANSIT') {
-          if (segment.mode == 0) {
-            return '#00985f';
-          } else if (segment.mode == 1) {
-            return '#FF640E';
-          } else if (segment.mode == 2) {
-            return '#8c4799';
-          } else if (segment.mode == 4) {
-            return '#00b9e4';
-          } else {
-            return '#007AC9';
+        
+        if (segment.focused === false) {
+          return notFocusedColor;
+        } else {
+          if (segment.type === 'TRANSIT') {
+            if (segment.mode == 0) {
+              return '#00985f';
+            } else if (segment.mode == 1) {
+              return '#FF640E';
+            } else if (segment.mode == 2) {
+              return '#8c4799';
+            } else if (segment.mode == 4) {
+              return '#00b9e4';
+            } else {
+              return '#007AC9';
+            }
+          } else if (segment.type === 'CAR') {
+            return 'rgba(0,0,0,0)';
+          } else if (segment.type === 'BICYCLE') {
+            return 'rgba(0,0,0,0)';
+          } else if (segment.type === 'WALK') {
+            return 'rgba(0,0,0,0.33)';
           }
-        } else if (segment.type === 'CAR') {
-          return 'rgba(0,0,0,0)';
-        } else if (segment.type === 'BICYCLE') {
-          return 'rgba(0,0,0,0)';
-        } else if (segment.type === 'WALK') {
-          return 'rgba(0,0,0,0.33)';
         }
       }
 
@@ -489,8 +487,8 @@ function setTransitiveStyles() {
     ],
     stroke: '#7f929c',
     visibility: function(display, data) {
-       if (display.scale < 1.3) return 'hidden';
-      if(!data.owner.focused) return 'hidden';
+      if (display.scale < 1.3) return 'hidden';
+      if (!data.owner.focused) return 'hidden';
       return 'visible';
 
       //if (display.zoom.scale() < 1.5) return 'hidden';
@@ -693,4 +691,5 @@ function setTransitiveStyles() {
     rx: 3,
     ry: 3
   };
+  return ([STYLES, OLD_STYLES]);
 }

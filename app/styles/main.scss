@@ -53,6 +53,7 @@ $ferry-color: $hsl-ferry-blue;
   font-weight: normal;
   font-style: normal;
 }
+
 $icon-font-family-1: 'reittiopas-icon-font-1';
 $icon-font-family-2: 'reittiopas-icon-font-2';
 
@@ -202,6 +203,7 @@ input[type="text"] {
 }
 
 .error {
+  font-style: italic;
   color: $hsl-alert;
   a {
     color: $hsl-alert;
@@ -409,11 +411,15 @@ main {
 }
 
 .pre-heading {
-  margin: 1em 0;
+  margin: 0;
 }
 
 .route-search-form {
   
+  form {
+    margin-bottom: 1em;
+  }
+
   .result.focused {
     border: 3px $hsl-blue solid;
   }
@@ -442,7 +448,20 @@ main {
 
 .line-search-form {
   border-top: 2px solid $white;
-    
+  
+  form {
+    margin-bottom: 1em;
+  }
+
+  .close {
+    cursor: pointer;
+    height: 1.5em;
+    position: absolute;
+    right: 0;
+    top: -2.5em;
+    width: 1.5em;
+  }
+
   input[type="text"] {
     float: left;
     width: 65.625%;
@@ -468,6 +487,12 @@ main {
   .new-routes {
     padding: 0;
     width: 100%;
+    position: relative;
+  }
+
+  .error {
+    position: relative;
+
   }
 }
 
@@ -530,10 +555,14 @@ main {
   }
 }
 .search-results {
+  
   overflow: auto;
   position: relative;
   width: 100%;
-   &::-webkit-scrollbar-thumb { 
+  min-height: 200px;
+  margin-top: 10px;
+  
+  &::-webkit-scrollbar-thumb { 
       background: $white;
       border-radius: 99em;
       width: 3px;
@@ -557,14 +586,26 @@ main {
   position: relative;
   width: 98%;
   cursor: pointer;
+  &:first-child {
+    margin-top: 0;
+  }
 }
 .result-routes {
   margin-bottom: 1em;
+  width: 100%;
+  height: 1.1em;
+  overflow: hidden;
+  font-size: 1.1em;
+  line-height: 1.1em;
+  &:last-of-type {
+    margin-bottom: 0; 
+  }
 }
 h4.result-route {
   display: inline;
   padding: 0;
-
+  font-size: 1em;
+  line-height: 1em;
   &.BUS {
     color: $bus-color; 
   }
@@ -621,7 +662,7 @@ h4.result-route {
   display: block;
   padding: .5em 0;
   width: 100%;
-
+  position: relative;
   .icon {
     color: $white;
     fill: $bus-color;
@@ -662,6 +703,20 @@ h4.result-route {
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 71.875%;
+  }
+
+  .open-route-info {
+    border: 2px solid #007ac9;
+    color: $hsl-blue;
+    border-radius: 99em;
+    font-size: 15px;
+    right: 0;
+    float: left;
+    height: 20px;
+    left: 0;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
   }
 
   &.bus {
@@ -844,5 +899,16 @@ footer {
   .left-sidebar,
   .map-container {
     width: 100%;
+  }
+  section.map-container {
+    height: 80vh;
+  }
+  .left-sidebar {
+    height: auto;
+    max-height: none;
+  }
+  .search-results,
+  .routes-list {
+    min-height: 100px;
   }
 }

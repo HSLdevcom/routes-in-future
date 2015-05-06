@@ -1,18 +1,85 @@
-var popupLayer = L.layerGroup();
-var transitiveLayer;
-var oldTransitiveLayer;
-var map;
-var transitive;
-var oldTransitive;
-var oldRoutes;
-var COMPUTED = [
+var app;
+function App(){
+  var _this = this;
+  this.DATA = DATA;
+  this.map =  L.map('map', {
+    inertia: false,
+    zoomAnimation: false
+  });
+  
+  var styles = setTransitiveStyles();
+  this.STYLES = styles[0];
+  this.OLD_STYLES = styles[1];
+  this.focusedJourney = '';
+  // this.map.on('zoomend',function(){
+  //   console.log(_this.focusedJourney)
+  //   console.log(_this.transitive)
+  //    _this.transitive.focusJourney(_this.focusedJourney);
+  // });
+  this.transitive = new Transitive({
+    data: this.DATA,
+    styles:this.STYLES,
+    zoomFactors: [{
+      minScale: 0,
+      gridCellSize: 25,
+      internalVertexFactor: 1000000,
+      angleConstraint: 22.5,
+      mergeVertexThreshold: 200
+    }, {
+      minScale: 1.5,
+      gridCellSize: 0,
+      internalVertexFactor: 0,
+      angleConstraint: 5,
+      mergeVertexThreshold: 0
+    }]
+  });
+  this.oldTransitive = new Transitive({
+    data:{},
+    styles:this.OLD_STYLES,
+    zoomFactors: [{
+      minScale: 0,
+      gridCellSize: 25,
+      internalVertexFactor: 1000000,
+      angleConstraint: 22.5,
+      mergeVertexThreshold: 200
+    }, {
+      minScale: 1.5,
+      gridCellSize: 0,
+      internalVertexFactor: 0,
+      angleConstraint: 5,
+      mergeVertexThreshold: 0
+    }]
+  });
+  this.oldTransitiveLayer = new L.TransitiveLayer(this.oldTransitive);
+  this.transitiveLayer = new L.TransitiveLayer(this.transitive);
+  this.oldRoutes = [];
+  this.getOldRoutes().done(function(data){
+    _this.oldRoutes = data;
+  });
+  this.COMPUTED = [
 
-  // showLabelsOnHover,
-  // highlightOptionOnHover
-];
+    // showLabelsOnHover,
+    // highlightOptionOnHover
+  ];
+  this.transitive.on('render', function(transitive) {
+     if(_this.focusedJourney !== '' &&  _this.transitive.data!==null && typeof _this.transitive.data.journeys[_this.focusedJourney]!=='undefined') {
+        _this.transitive.focusJourney(_this.focusedJourney);
+     } else {
+        _this.transitive.focusJourney();
+     }
+    // _this.COMPUTED.map(function(behaviour) {
 
+    //   behaviour(transitive.network);
+    // });
+  });
+  this.initializeMapLayers();
+  React.render(React.createElement(LeftSidebar, {data: this.DATA}), document.getElementById('sidebar'));
+};
+App.prototype.getOldRoutes = function() {
+  return $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes');
+}
 //DATA.allPatterns = DATA.patterns;
-function showRoutesOnMap(data, type) {
+App.prototype.showRoutesOnMap = function(data, type) {
   // Create journeys of active routes, if its search results leave the journeys alone
   if (type !== 'routesearch') {
     data.journeys = [];
@@ -40,44 +107,35 @@ function showRoutesOnMap(data, type) {
         }]
       };
     });
-    //createPopups(patterns, data);
+
   }
 
   if (type === 'new' || type === 'routesearch') {
-    transitive.updateData(data);
-    transitive.focusJourney();
+    this.transitive.updateData(data);
     if (data.journeys.length) {
-      map.fitBounds(transitiveLayer.getBounds());
+      this.map.fitBounds(this.transitiveLayer.getBounds());
     } else {
-      map.setView([60.287481, 24.996849], 11);
+      this.map.setView([60.287481, 24.996849], 11);
+    }
+    if(type==='routesearch') {
+      this.transitive.focusJourney(this.focusedJourney);
     }
   } else if (type === 'old') {
-    oldTransitive.clearData();
+    this.oldTransitive.clearData();
     data.patterns = data.patterns.map(function(pattern, index) {
       pattern.render = (index === 0) ? true : false;
       return pattern;
     });
-    oldTransitive.updateData(data);
+    this.oldTransitive.updateData(data);
   }
 }
-function createPopups(patterns,data) {
-  popupLayer.clearLayers();
-  var popup;
-  var stops = patterns.map(function(pattern) {
-    return _.find(data.stops, {stop_id: pattern.stops[Math.floor(pattern.stops.length/2)].stop_id});
-  });
-  for (var i = stops.length - 1; i >= 0; i--) {
-    popup = L.popup()
-    .setLatLng([stops[i].stop_lat, stops[i].stop_lon])
-    .setContent('<p>Hello world!<br />This is a nice popup.</p>')
-    .addTo(popupLayer);
-    
-  }
+App.prototype.openRouteInfo = function(route_id){
+  console.log(route_id);
 }
-function clearRoutesOnMap() {
-  oldTransitive.clearData();
-  transitive.clearData();
-  map.setView([60.287481, 24.996849], 11);
+App.prototype.clearRoutesOnMap = function() {
+  this.oldTransitive.clearData();
+  this.transitive.clearData();
+  this.map.setView([60.287481, 24.996849], 11);
 }
 
 /**
@@ -122,100 +180,24 @@ function highlightOptionOnHover(transitive) {
   });
 }
 
-function startMap() {
-  setTransitiveStyles();
-  
-  var stopLatLongs = [];
-  var stopStartMarkers = [];
-  var polylines = [];
-  var markers = [];
-  var oneway = [];
-  var marker;
-
-  map = L.map('map', {
-    inertia: false,
-    zoomAnimation: false
-  });
-
+App.prototype.initializeMapLayers = function() {
+  var _this = this;
   L.tileLayer('http://matka.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-  }).addTo(map);
+  }).addTo(this.map);
+  
+  this.map.addLayer(this.oldTransitiveLayer);
+  this.map.addLayer(this.transitiveLayer);
 
-  for (var i = 0; i <= DATA.patterns.length - 1; i++) {
-    stopLatLongs = [];
-    stopLatLongs = DATA.patterns[i].stops.map(function(stop, index) {
-      var stopData = _.where(DATA.stops, {stop_id:stop.stop_id})[0];
-      var arr = [stopData.stop_lat, stopData.stop_lon];
-      if (index === 0) {
-        DATA.patterns[i].startMarker = L.marker(arr, {title:stopData.stop_name}).bindPopup(stopData.stop_name);
-      } else if (index === (DATA.patterns[i].stops.length - 1)) {
-        DATA.patterns[i].stopMarker = L.marker(arr, {title:stopData.stop_name}).bindPopup(stopData.stop_name);
-      }
-
-      return arr;
-    });
-
-    DATA.patterns[i].stopLatLongs = stopLatLongs;
-    DATA.patterns[i].polyline = L.polyline(stopLatLongs, {color: 'blue'});
-  }
-
-  transitive = new Transitive({
-    data: DATA,
-    styles:STYLES,
-    zoomFactors: [{
-      minScale: 0,
-      gridCellSize: 25,
-      internalVertexFactor: 1000000,
-      angleConstraint: 22.5,
-      mergeVertexThreshold: 200
-    }, {
-      minScale: 1.5,
-      gridCellSize: 0,
-      internalVertexFactor: 0,
-      angleConstraint: 5,
-      mergeVertexThreshold: 0
-    }]
-  });
-
-  oldTransitive = new Transitive({
-    data:{},
-    styles:OLD_STYLES,
-    zoomFactors: [{
-      minScale: 0,
-      gridCellSize: 25,
-      internalVertexFactor: 1000000,
-      angleConstraint: 22.5,
-      mergeVertexThreshold: 200
-    }, {
-      minScale: 1.5,
-      gridCellSize: 0,
-      internalVertexFactor: 0,
-      angleConstraint: 5,
-      mergeVertexThreshold: 0
-    }]
-  });
-  oldTransitiveLayer = new L.TransitiveLayer(oldTransitive);
-  transitiveLayer = new L.TransitiveLayer(transitive);
-  map.addLayer(oldTransitiveLayer);
-  map.addLayer(transitiveLayer);
-  map.addLayer(popupLayer);
-
-  transitive.on('render', function(transitive) {
-    COMPUTED.map(function(behaviour) {
-
-      behaviour(transitive.network);
-    });
-  });
-  map.setView([60.287481, 24.996849], 11);
+  
+  this.map.setView([60.287481, 24.996849], 11);
 }
 
 $(document).ready(function() {
-  startMap();
-  $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes').done(function(data) {
-    oldRoutes = data;
-  });
+  app = new App();
+  
   $('.read-more-link').on('click', function(e) {
     e.preventDefault();
     $(this).toggleClass('open');

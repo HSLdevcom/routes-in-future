@@ -585,7 +585,7 @@ var ReplacementLineSearch = React.createClass({
 
     return(
       <div className='line-search-form'>
-        <form name='line-search-form'  onSubmit={this.searchCurrentlines}>
+        <form className='line-form' name='line-search-form'  onSubmit={this.searchCurrentlines}>
           <h3>Katso tulevat linjasi:</h3>
           <div className='form-group'>
             <input autoComplete='off' type='text' ref='theLineNr' name='current-linenr' placeholder='Nykyinen linjanumero' />
@@ -631,10 +631,11 @@ var LeftSidebar = React.createClass({
   },
   handleResize: function(e) {
     var listHeight = document.querySelectorAll('.route-form')[0].offsetHeight;
-    listHeight += document.querySelectorAll('.line-search-form')[0].offsetHeight;
+    listHeight += document.querySelectorAll('.line-form')[0].offsetHeight;
     listHeight += document.querySelectorAll('.info')[0].offsetHeight;
     listHeight += document.querySelectorAll('.footer')[0].offsetHeight;
     listHeight += 100;
+    console.log(listHeight)
     if(listHeight>window.innerHeight){
       document.getElementsByClassName('left-sidebar')[0].style.overflow = 'auto';
       listHeight = 100;

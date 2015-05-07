@@ -12,11 +12,6 @@ function App(){
   this.STYLES = styles[0];
   this.OLD_STYLES = styles[1];
   this.focusedJourney = '';
-  // this.map.on('zoomend',function(){
-  //   console.log(_this.focusedJourney)
-  //   console.log(_this.transitive)
-  //    _this.transitive.focusJourney(_this.focusedJourney);
-  // });
   this.transitive = new Transitive({
     data: this.DATA,
     styles:this.STYLES,
@@ -78,8 +73,7 @@ function App(){
 };
 App.prototype.getOldRoutes = function() {
   return $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes');
-}
-//DATA.allPatterns = DATA.patterns;
+};
 App.prototype.showRoutesOnMap = function(data, type) {
   // Create journeys of active routes, if its search results leave the journeys alone
   if (type !== 'routesearch') {
@@ -207,6 +201,14 @@ $(document).ready(function() {
   });
   $('.left-sidebar').on('click', function() {
     $('.welcome-text').removeClass('open');
+  });
+  $('.feedback-modal .close').on('click', function() {
+    $('.feedback-modal').removeClass('open');
+  });
+  $('.footer .open-feedback').on('click', function() {
+    $('.feedback-modal').addClass('open');
+    $('.welcome-text').removeClass('open');
+    
   });
   $('.welcome-text .close').on('click', function() {
     $('.welcome-text').removeClass('open');

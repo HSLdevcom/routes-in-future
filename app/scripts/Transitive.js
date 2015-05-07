@@ -23210,6 +23210,9 @@ require.register("conveyal-leaflet.transitivelayer/TransitiveLayer.js", Function
       [bounds.getWest(), bounds.getSouth()],\n\
       [bounds.getEast(), bounds.getNorth()]\n\
     ]);\n\
+    if(this._transitive.options.focusedJourney !== '' &&  this._transitive.data!==null && typeof this._transitive.network.journeys[this._transitive.options.focusedJourney]!=='undefined') { \n\
+        this._transitive.focusJourney(this._transitive.options.focusedJourney);\n\
+    }\n\
   },\n\
 \n\
   _resize: function(data) {\n\

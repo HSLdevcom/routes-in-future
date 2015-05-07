@@ -261,56 +261,13 @@ main {
 
 .site-branding {
   margin: 0 0 15px;
-
-  h3,
-  h4 {
-    padding-left: 0;
-  }
-  
-  h1 {
-    float: left;
-    font-size: 25px;
-    line-height: 25px;
-    margin: 0;
-  }
 }
 
 .logo {
   float: left;
-  font-size: 25px;
-  height: 25px;
-
-  .lines {
-    display: flex;
-    float: left;
-    height: 95%;
-    justify-content: space-between;
-    margin-left: 5px;
-    transform: translateY(2.5%);
-    width: 6px;
-  }
-
-  .line {
-    background: $white;
-    height: 100%;
-    width: 2px;
-  }
-
-  .hsl-hrt {
-    float: left;
-    margin-left: 5px;
-  }
-
-  span {
-    float: left;
-    font-size: .5em;
-    line-height: 1em;
-    width: 100%;
-  }
-
-  .main-logo {
-    float: left;
-    height: 100%;
+  img {
+    max-width: 100%;
+    max-height: 30px;
   }
 }
 
@@ -407,6 +364,9 @@ main {
 
   button,.select-box {
     width: 31.25%;
+  }
+  .select-box {
+    padding-right: 0;
   }
 }
 
@@ -582,23 +542,34 @@ main {
   border: 1px solid #ddd;
   border-radius: 3px;   
   margin: 1em 0;   
-  padding: 50px 10px 10px; 
+  padding: 35px 10px 10px; 
   position: relative;
   width: 98%;
   cursor: pointer;
+  h5 {
+    font-size: 0.9em;
+    margin: 0 0 .5em;
+    &:last-child {
+      margin: .5em 0 0 ;   
+    }
+  }
+
   &:first-child {
     margin-top: 0;
   }
 }
 .result-routes {
   margin-bottom: 1em;
-  width: 100%;
-  height: 1.1em;
-  overflow: hidden;
   font-size: 1.1em;
   line-height: 1.1em;
-  &:last-of-type {
-    margin-bottom: 0; 
+  h5 {
+    margin: 0 0 .4em;
+    &:last-child {
+      margin: .4em 0 0 ;   
+    }
+  }
+  &:nth-child(n-1) {
+    margin-bottom: 3px; 
   }
 }
 h4.result-route {
@@ -802,7 +773,7 @@ footer {
 .welcome-text,.modal {
   background: $white;
   padding: 2em 3.2em 2em 2em;
-  width: 60%;
+  width: 70%;
   position: absolute;
   top: 60px;
   left: 50%;
@@ -845,6 +816,9 @@ footer {
     width: 100%;
     min-height: 98vh;
     max-height: 98vh;
+    textarea {
+      max-height: 40px!important;
+    }
   }
 }
 .transitive-line:hover {

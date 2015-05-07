@@ -99,16 +99,21 @@ var AutocompleteInput = React.createClass({
     this.setState({value: e.target.value});
     $.get('http://77.95.145.186/geocoder/suggest/'+e.target.value)
     .then(function(data) {
-      var suggestions = []
-      _.forEach(data.streetnames, function (obj, streetname) {
-        obj.forEach(function (city) {
-          city.type = 'street';
-          city['name'] = streetname
-          city['key'] = city.key.charAt(0).toUpperCase() + city.key.slice(1);
-          city['suggestionText'] = streetname+ ', ' +city.key.charAt(0).toUpperCase() + city.key.slice(1);
-          suggestions.push(city);
-        })
-      });
+      var suggestions = [];
+      var city = {};
+      for (var i = 0; i < data.streetnames_fi.length; i++) {
+        city.type = 'street';
+        _.forEach(data.streetnames_fi[i], function (obj, streetname) {
+          obj.forEach(function (city) {
+            city.type = 'street';
+            city['name'] = streetname
+            city['key'] = city.key.charAt(0).toUpperCase() + city.key.slice(1);
+            city['suggestionText'] = streetname+ ', ' +city.key.charAt(0).toUpperCase() + city.key.slice(1);
+            suggestions.push(city);
+          });
+        });
+      }
+
       data.stops.forEach(function (stop) {
         stop.type = 'stop';
 
@@ -162,6 +167,11 @@ var AutocompleteInput = React.createClass({
           var result = data.results[0];
           var name = result.katunimi + (result.osoitenumero == 0 ? "": " " + result.osoitenumero ) + ', ' + result.kaupunki;
           returnThis = {'lon': data.results[0].location[0], 'lat': data.results[0].location[1], name: name}
+          if(result.kaupunki=='Vantaa'){
+           returnThis.city = 'Vantaa'; 
+          } else {
+           returnThis.city = '0';  
+          }
           this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
         } else {
           var suggestions = []
@@ -180,6 +190,7 @@ var AutocompleteInput = React.createClass({
       } else {
        returnThis.city = '0';  
       }
+
       this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
     }
     React.findDOMNode(this.refs.theInput).focus();
@@ -277,29 +288,29 @@ var RouteSearchBox = React.createClass({
         var profileDate = '2015-08-26';
         var inputTimeofDay = React.findDOMNode(this.refs.theTime).value; 
         var inputDayOfTheWeek = React.findDOMNode(this.refs.theDay).value; 
-        var maxWalkTime = 15;
+        var maxWalkTime = 20;
         var linkDaymonthyear = '26.08.2015';
         var linkHour = '08';
         if(inputTimeofDay === 'morning') {
           linkHour = '08';
-          startTime = '06:00';
-          endTime = '11:00';
+          startTime = '07:00';
+          endTime = '09:00';
         } else if (inputTimeofDay === 'day'){
           linkHour = '13';
-          startTime = '11:00';
-          endTime = '15:00';
+          startTime = '12:00';
+          endTime = '14:00';
         } else if (inputTimeofDay === 'afternoon'){
           linkHour = '17';
-          startTime = '15:00';
+          startTime = '16:00';
           endTime = '18:00';
         } else if (inputTimeofDay === 'evening'){
           linkHour = '21';
           startTime = '18:00';
-          endTime = '23:59';
+          endTime = '20:00';
         } else if (inputTimeofDay === 'night'){
           linkHour = '01';
-          startTime = '00:01';
-          endTime = '05:00';
+          startTime = '22:00';
+          endTime = '23:59';
           maxWalkTime = 45;
         }
 
@@ -339,7 +350,7 @@ var RouteSearchBox = React.createClass({
         profiler.profile(od, function(err, data) {
           var valid = [];
           var seen = [];
-          var sorted = data.options.sort(function (a, b) {return(a.stats.avg-b.stats.avg)})
+          var sorted = data.options.sort(function (a, b) {return(a.stats.avg-b.stats.avg)});
           sorted.map(function(option){
             var option = option;
             if(typeof option.transit!=='undefined') {
@@ -358,9 +369,9 @@ var RouteSearchBox = React.createClass({
             od.profile = validObj;
             profiler.journey(od,function(err,transitivedata) {
               _this.setState({searchResults : valid, showError: (valid.length)?false : true});
-              app.focusedJourney = '0_transit';
-
               app.showRoutesOnMap(transitivedata,'routesearch');
+              app.transitive.options.focusedJourney = '0_transit';
+              app.transitive.focusJourney('0_transit');
               
             });
 
@@ -375,6 +386,7 @@ var RouteSearchBox = React.createClass({
     },
     focusJourney: function(index){
       var journeyId = index+'_transit'
+      app.transitive.options.focusedJourney = journeyId;
       app.transitive.focusJourney(journeyId);
       this.setState({focusedIndex: index});
     },
@@ -388,7 +400,7 @@ var RouteSearchBox = React.createClass({
         }
         results = this.state.searchResults.map(function(result, index) {
           if(result.summary!=='Non-transit options') {
-            
+            var focused = (this.state.focusedIndex === index); 
             var clazz = (this.state.focusedIndex === index)? 'result focused': 'result';
             var walkTime = Math.floor((result.access.reduce(function(a,b){
               return {time: a.time + b.time};
@@ -411,18 +423,30 @@ var RouteSearchBox = React.createClass({
                         </div>;
             
             var routes =  result.transit.map(function(transit){
-                              return (
-                                <div className='result-routes'>
-                                    {transit.routes.map(function(route,index){
-                                      var clazz = 'result-route ' + route.mode;
-                                      var key = 'resultroute'+index;
-                                      if(typeof route.shortName==='undefined') route.shortName = 'Metro';
-                                      var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
+                            var from;
+                            var to;
+                            if(focused) {
+                              from = transit.fromName.charAt(0) + transit.fromName.slice(1).toLowerCase();
+                              to = transit.toName.charAt(0) + transit.toName.slice(1).toLowerCase();                
+                            }
+                            return (
+                              <div className='result-routes'>
+                                  <h5 className='from'>{from}</h5>
+                                  {transit.routes.map(function(route,index){
+                                    var clazz = 'result-route ' + route.mode;
+                                    var key = 'resultroute'+index;
+                                    if(typeof route.shortName==='undefined') route.shortName = 'Metro';
+                                    var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
+                                    if(index<7 || focused){
                                       return <h4 className={clazz} key={key}>{txt}</h4>;
-                                    })}
-                                </div>
-                              );
-                            });
+                                    } else if(index===7) {
+                                      return <h4 className={clazz} key={key}>...</h4>;
+                                    }
+                                  })}
+                                  <h5 className='to'>{to}</h5>
+                              </div>
+                            );
+                          });
             var from = <h5>{this.state.from.name}</h5>;
             var to = <h5>{this.state.to.name}</h5>;
             return (<div className={clazz} onClick={this.focusJourney.bind(this,index)} >
@@ -514,16 +538,19 @@ var ReplacementLineSearch = React.createClass({
       if(matches.length>0){
         var routeInfos = [];
         var routeIds = [];
+        var transitiveData = [];
         var routeInfos =  matches.map(function(match) {
           var routeInfo = _.where(this.props.routes,{route_short_name:match.newLine})[0];
           routeIds.push(routeInfo.route_id);
           return routeInfo;
         },this);
-        this.props.setActiveRoutes(routeIds);
+        transitiveData = this.props.setActiveRoutes(routeIds);
         this.setState({newroutes: routeInfos, showAllRoutes: false, searching: true, showError: false});
 
         oldRoute = _.find(app.oldRoutes,{shortName:value});
+
         new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
+            app.oldTransiveData = data;
             app.showRoutesOnMap(data,'old');
            _this.setState({searching: false});
         });
@@ -604,18 +631,18 @@ var ReplacementLineSearch = React.createClass({
 
 var LeftSidebar = React.createClass({
   getInitialState: function(){
-    return {DATA:DATA,listHeight: 0, open: 'route'};
+    return {DATA:this.props.data,listHeight: 0, open: 'route'};
   },
   clearActiveRoutes: function(searchToShow){
-    DATA.routes = DATA.routes.map(function(route){
+    app.DATA.routes = app.DATA.routes.map(function(route){
       route.active = false;
       return route;
     });
-    this.setState({DATA:DATA, open: searchToShow});
+    this.setState({DATA:app.DATA, open: searchToShow});
     app.clearRoutesOnMap();
   },
   setActiveRoutes:function(routeIds) {
-    DATA.routes = DATA.routes.map(function(route){
+    app.DATA.routes = app.DATA.routes.map(function(route){
       for(var i = 0; i < routeIds.length; i++) {
         if(routeIds[i] === route.route_id) {
           if(route.active) {
@@ -627,8 +654,8 @@ var LeftSidebar = React.createClass({
       }
       return route;
     });
-    this.setState({DATA:DATA});
-    app.showRoutesOnMap(DATA,'new');
+    this.setState({DATA:app.DATA});
+    return app.showRoutesOnMap(app.DATA,'new');
   },
   handleResize: function(e) {
     var listHeight = document.querySelectorAll('.route-form')[0].offsetHeight;
@@ -676,7 +703,6 @@ var LeftSidebar = React.createClass({
 var RouteInfoModal = React.createClass({
   closeModal: function(){
     document.getElementById('route-info-modal').classList.remove('open');
-    //React.unmountComponentAtNode(document.getElementById('route-info-modal'));
   },
   componentDidMount: function(){
     document.getElementById('route-info-modal').classList.add('open');
@@ -685,7 +711,6 @@ var RouteInfoModal = React.createClass({
     document.getElementById('route-info-modal').classList.add('open');
   },
   render: function(){
-    console.log(this.props.route.route_short_name)
     var routeInfo = ROUTEINFO[this.props.route.route_short_name];
     var table;
     var timeRow;
@@ -694,29 +719,12 @@ var RouteInfoModal = React.createClass({
     if(routeInfo.specialSchedule) {
       var hours = [];
       for (var i = 0; i < routeInfo.scheduleHours.length; i++) {
-        hours.push(<td>{routeInfo.scheduleHours[i]}</td>);
+        hours.push(<td dangerouslySetInnerHTML={{__html:routeInfo.scheduleHours[i]}} />);
       }
       timeRow = <tr className='time-row'>
                 <td>Linja</td>
                 {hours}
                 </tr>;
-    }  else {
-      timeRow = <tr className='time-row'>
-                  <td>Linja</td>
-                  <td>5-6</td> 
-                  <td>6-9</td>
-                  <td>14-18 <br></br>9-14</td> 
-                  <td>18-21</td> 
-                  <td>21-23</td> 
-                  <td>6-9</td> 
-                  <td>9-19</td>  
-                  <td>19-21</td> 
-                  <td>21-23</td> 
-                  <td>6-10</td>  
-                  <td>10-19</td> 
-                  <td>19-21</td> 
-                  <td>21-23</td>
-                </tr>
     }
     for (var i = 0; i < routeInfo.schedule.length; i++) {
       schedule.push(<td>{routeInfo.schedule[i]}</td>);

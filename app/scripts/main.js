@@ -7,14 +7,11 @@ function App(){
     inertia: false,
     zoomAnimation: false
   });
-  
-  var styles = setTransitiveStyles();
-  this.STYLES = styles[0];
-  this.OLD_STYLES = styles[1];
   this.focusedJourney = '';
   this.transitive = new Transitive({
     data: this.DATA,
-    styles:this.STYLES,
+    focusedJourney: '',
+    styles:setTransitiveStyles(),
     zoomFactors: [{
       minScale: 0,
       gridCellSize: 25,
@@ -29,45 +26,12 @@ function App(){
       mergeVertexThreshold: 0
     }]
   });
-  this.oldTransitive = new Transitive({
-    data:{},
-    styles:this.OLD_STYLES,
-    zoomFactors: [{
-      minScale: 0,
-      gridCellSize: 25,
-      internalVertexFactor: 1000000,
-      angleConstraint: 22.5,
-      mergeVertexThreshold: 200
-    }, {
-      minScale: 1.5,
-      gridCellSize: 0,
-      internalVertexFactor: 0,
-      angleConstraint: 5,
-      mergeVertexThreshold: 0
-    }]
-  });
-  this.oldTransitiveLayer = new L.TransitiveLayer(this.oldTransitive);
   this.transitiveLayer = new L.TransitiveLayer(this.transitive);
   this.oldRoutes = [];
   this.getOldRoutes().done(function(data){
     _this.oldRoutes = data;
   });
-  this.COMPUTED = [
-
-    // showLabelsOnHover,
-    // highlightOptionOnHover
-  ];
-  this.transitive.on('render', function(transitive) {
-     if(_this.focusedJourney !== '' &&  _this.transitive.data!==null && typeof _this.transitive.data.journeys[_this.focusedJourney]!=='undefined') {
-        _this.transitive.focusJourney(_this.focusedJourney);
-     } else {
-        _this.transitive.focusJourney();
-     }
-    // _this.COMPUTED.map(function(behaviour) {
-
-    //   behaviour(transitive.network);
-    // });
-  });
+  this.oldTransitiveData = {};
   this.initializeMapLayers();
   React.render(React.createElement(LeftSidebar, {data: this.DATA}), document.getElementById('sidebar'));
 };
@@ -116,65 +80,28 @@ App.prototype.showRoutesOnMap = function(data, type) {
       this.transitive.focusJourney(this.focusedJourney);
     }
   } else if (type === 'old') {
-    this.oldTransitive.clearData();
+    data.routes = data.routes.map(function(route, index) {
+      route.route_color = '7f929c';
+      return route;
+    });
     data.patterns = data.patterns.map(function(pattern, index) {
       pattern.render = (index === 0) ? true : false;
       return pattern;
     });
-    this.oldTransitive.updateData(data);
+    var transitiveData = this.DATA;
+    transitiveData.routes = transitiveData.routes.concat(data.routes);
+    transitiveData.stops = transitiveData.stops.concat(data.stops);
+    transitiveData.patterns = transitiveData.patterns.concat(data.patterns);
+    this.transitive.updateData(transitiveData);
   }
 }
 App.prototype.openRouteInfo = function(route){
   React.render(React.createElement(RouteInfoModal, {route: route}), document.getElementById('route-info-modal'));
 };
 App.prototype.clearRoutesOnMap = function() {
-  this.oldTransitive.clearData();
   this.transitive.clearData();
   this.map.setView([60.287481, 24.996849], 11);
 }
-
-/**
- * Show labels on hover
- */
-
-function showLabelsOnHover(transitive) {
-  _.forEach(transitive.stops, function(stop) {
-    if (!stop.svgGroup) return;
-    stop.svgGroup.selectAll('.transitive-stop-circle')
-      .on('mouseenter', function(data) {
-
-        stop.svgGroup.select('#transitive-stop-label-' + data.point.getId())
-          .style('visibility', 'visible');
-      })
-      .on('mouseleave', function(data) {
-        stop.svgGroup.select('#transitive-stop-label-' + data.point.getId())
-          .style('visibility', 'hidden');
-      });
-  });
-}
-
-/**
- * Highlight option on hover
- */
-
-function highlightOptionOnHover(transitive) {
-  _.forEach(transitive.journeys, function(journey) {
-    _.forEach(journey.path.segments, function(segment) {
-      _.forEach(segment.renderedSegments, function(segment) {
-        var currentColor = segment.lineGraph.style('stroke');
-        segment.lineGraph.on('mouseenter', function(data) {
-            // highlight the path
-            segment.lineGraph.style('stroke', '#000');
-            var edge = segment.graphEdge;
-          }).on('mouseleave', function(data) {
-
-            segment.lineGraph.style('stroke', currentColor);
-          });
-      });
-    });
-  });
-}
-
 App.prototype.initializeMapLayers = function() {
   var _this = this;
   L.tileLayer('http://matka.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
@@ -183,7 +110,6 @@ App.prototype.initializeMapLayers = function() {
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
   }).addTo(this.map);
   
-  this.map.addLayer(this.oldTransitiveLayer);
   this.map.addLayer(this.transitiveLayer);
 
   
@@ -208,7 +134,7 @@ $(document).ready(function() {
   $('.footer .open-feedback').on('click', function() {
     $('.feedback-modal').addClass('open');
     $('.welcome-text').removeClass('open');
-    
+
   });
   $('.welcome-text .close').on('click', function() {
     $('.welcome-text').removeClass('open');

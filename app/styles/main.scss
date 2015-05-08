@@ -544,6 +544,7 @@ main {
   cursor: pointer;
   &.focused {
     border: 3px $hsl-blue solid;
+    .avg-time,
     .walk {
       display: block;
     }
@@ -560,7 +561,13 @@ main {
     margin: 4px 0;
     display: none;
   }
-
+  .avg-time {
+    color: $black;
+    padding-left: 0;
+    font-size: 1em;
+    line-height: 1.1em;
+    display: none,
+  }
   h5 {
     font-size: 0.9em;
     margin: 0 0 .5em;

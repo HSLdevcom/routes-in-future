@@ -31,7 +31,6 @@ function App(){
   this.getOldRoutes().done(function(data){
     _this.oldRoutes = data;
   });
-  this.oldTransitiveData = {};
   this.initializeMapLayers();
   React.render(React.createElement(LeftSidebar, {data: this.DATA}), document.getElementById('sidebar'));
 };
@@ -79,7 +78,51 @@ App.prototype.showRoutesOnMap = function(data, type) {
     if(type==='routesearch') {
       this.transitive.focusJourney(this.focusedJourney);
     }
-  } else if (type === 'old') {
+  }
+};
+App.prototype.setActiveRoutes = function(routeIds){
+  this.DATA.routes = this.DATA.routes.map(function(route){
+      for(var i = 0; i < routeIds.length; i++) {
+        if(routeIds[i] === route.route_id) {
+          if(route.active) {
+            route.active = false;
+          } else {
+            route.active = true;
+          }
+        }
+      }
+      return route;
+    });
+  return this.DATA;
+};
+App.prototype.clearActiveRoutes= function(){
+  this.DATA.routes = this.DATA.routes.map(function(route){
+    route.active = false;
+    return route;
+  });
+  this.clearRoutesOnMap();
+  return this.DATA;
+};
+App.prototype.clearRoutesOnMap = function() {
+  this.transitive.clearData();
+  this.map.setView([60.287481, 24.996849], 11);
+};
+App.prototype.setActiveRoutes = function(routeIds){
+  this.DATA.routes = this.DATA.routes.map(function(route){
+      for(var i = 0; i < routeIds.length; i++) {
+        if(routeIds[i] === route.route_id) {
+          if(route.active) {
+            route.active = false;
+          } else {
+            route.active = true;
+          }
+        }
+      }
+      return route;
+    });
+  return this.DATA;
+};
+App.prototype.renderOldAndNewRoutes = function(data){
     data.routes = data.routes.map(function(route, index) {
       route.route_color = '7f929c';
       return route;
@@ -88,20 +131,41 @@ App.prototype.showRoutesOnMap = function(data, type) {
       pattern.render = (index === 0) ? true : false;
       return pattern;
     });
-    var transitiveData = this.DATA;
+    var transitiveData = _.clone(this.DATA);
     transitiveData.routes = transitiveData.routes.concat(data.routes);
     transitiveData.stops = transitiveData.stops.concat(data.stops);
     transitiveData.patterns = transitiveData.patterns.concat(data.patterns);
+    transitiveData.journeys = [];
+    var routeIds = _.where(transitiveData.routes, {active:true}).map(function(route) {
+      return route.route_id
+    });
+    var patterns = _.uniq(_.filter(transitiveData.patterns, function(pattern) {
+      if (routeIds.indexOf(pattern.route_id) !== -1) {
+        return true;
+      } else {
+        return false;
+      }
+    }), 'route_id');
+
+    transitiveData.journeys = patterns.map(function(pattern) {
+      return {
+        journey_id: 'j_' + pattern.pattern_id,
+        journey_name: 'Pattern:' + pattern.pattern_id,
+        focus: false,
+        segments: [{
+          type: 'TRANSIT',
+          pattern_id: pattern.pattern_id,
+          from_stop_index: 0,
+          to_stop_index: (pattern.stops.length - 1)
+        }]
+      };
+    });
     this.transitive.updateData(transitiveData);
-  }
-}
+};
 App.prototype.openRouteInfo = function(route){
   React.render(React.createElement(RouteInfoModal, {route: route}), document.getElementById('route-info-modal'));
 };
-App.prototype.clearRoutesOnMap = function() {
-  this.transitive.clearData();
-  this.map.setView([60.287481, 24.996849], 11);
-}
+
 App.prototype.initializeMapLayers = function() {
   var _this = this;
   L.tileLayer('http://matka.hsl.fi/hsl-map/{z}/{x}/{y}.png', {

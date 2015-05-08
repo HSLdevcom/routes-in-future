@@ -75,7 +75,7 @@ var ROUTEINFO = {
     specialSchedule:true,
     scheduleHours: [
       '5-6',
-      '6-9<',
+      '6-9',
       '9-14<br>14-18',
       '18-21',
       '21-23',

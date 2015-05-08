@@ -380,10 +380,6 @@ main {
     margin-bottom: 1em;
   }
 
-  .result.focused {
-    border: 3px $hsl-blue solid;
-  }
-
   .result-content {
     position: relative;
   }
@@ -546,6 +542,25 @@ main {
   position: relative;
   width: 98%;
   cursor: pointer;
+  &.focused {
+    border: 3px $hsl-blue solid;
+    .walk {
+      display: block;
+    }
+    h5 {
+    margin: 0;
+      &:last-child {
+        margin:0 ;   
+      }
+    }
+  }
+  .walk {
+    width: 16px;
+    height: 16px;
+    margin: 4px 0;
+    display: none;
+  }
+
   h5 {
     font-size: 0.9em;
     margin: 0 0 .5em;
@@ -559,33 +574,32 @@ main {
   }
 }
 .result-routes {
-  margin-bottom: 1em;
   font-size: 1.1em;
   line-height: 1.1em;
+  
   h5 {
-    margin: 0 0 .4em;
-    &:last-child {
-      margin: .4em 0 0 ;   
-    }
-  }
-  &:nth-child(n-1) {
-    margin-bottom: 3px; 
+    margin: 0 ;
   }
 }
+
 h4.result-route {
   display: inline;
-  padding: 0;
   font-size: 1em;
   line-height: 1em;
+  padding: 0;
+  
   &.BUS {
     color: $bus-color; 
   }
+  
   &.TRAM {
     color: $tram-color; 
   }
+  
   &.RAIL {
     color: $train-color; 
   }
+  
   &.SUBWAY {
     color: $metro-color; 
   }

@@ -14,8 +14,12 @@ var Icon = React.createClass({
     if (this.props.id){
       id = 'id=' + this.props.id + ' '; // Adding the space here, as otherwise it leads to different number of spaceis in server-side vs client-side html due to minification
     }
+    var fill = '';
+    if (this.props.fill){
+      fill = '#' + this.props.fill;
+    }
 
-    var html = '<svg '+id+' viewBox="0 0 40 40" class="icon '+clazz+'">'+
+    var html = '<svg '+id+' viewBox="0 0 40 40" class="icon '+clazz+'" fill="'+fill+'">'+
                   '<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#'+this.props.img+'"></use>'+
                '</svg>';
     return (<span dangerouslySetInnerHTML={{__html: html}} />);
@@ -430,8 +434,9 @@ var RouteSearchBox = React.createClass({
                               to = transit.toName.charAt(0) + transit.toName.slice(1).toLowerCase();                
                             }
                             return (
-                              <div className='result-routes'>
-                                  <h5 className='from'>{from}</h5>
+                              <div>
+                                <h5 className='from'>{from}</h5>
+                                <div className='result-routes'>
                                   {transit.routes.map(function(route,index){
                                     var clazz = 'result-route ' + route.mode;
                                     var key = 'resultroute'+index;
@@ -443,7 +448,9 @@ var RouteSearchBox = React.createClass({
                                       return <h4 className={clazz} key={key}>...</h4>;
                                     }
                                   })}
-                                  <h5 className='to'>{to}</h5>
+                                </div>
+                                <h5 className='to'>{to}</h5>
+                                <Icon img='icon-icon_walk' className='walk'fill='999'/>
                               </div>
                             );
                           });
@@ -451,6 +458,7 @@ var RouteSearchBox = React.createClass({
             var to = <h5>{this.state.to.name}</h5>;
             return (<div className={clazz} onClick={this.focusJourney.bind(this,index)} >
                       {from}
+                      <Icon img='icon-icon_walk' className='walk'fill='999'/>
                       {routes}
                       {to}
                       {time}
@@ -544,16 +552,16 @@ var ReplacementLineSearch = React.createClass({
           routeIds.push(routeInfo.route_id);
           return routeInfo;
         },this);
-        transitiveData = this.props.setActiveRoutes(routeIds);
-        this.setState({newroutes: routeInfos, showAllRoutes: false, searching: true, showError: false});
+        if(this.props.setActiveRoutes(routeIds)) {
+          this.setState({newroutes: routeInfos, showAllRoutes: false, searching: true, showError: false});
 
-        oldRoute = _.find(app.oldRoutes,{shortName:value});
+          oldRoute = _.find(app.oldRoutes,{shortName:value});
 
-        new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
-            app.oldTransiveData = data;
-            app.showRoutesOnMap(data,'old');
-           _this.setState({searching: false});
-        });
+          new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
+              app.renderOldAndNewRoutes(data);
+             _this.setState({searching: false});
+          });
+        }
       } else {
         this.setState({showError: true, newroutes: [], showAllRoutes: false, searching: false});
       } 
@@ -573,7 +581,9 @@ var ReplacementLineSearch = React.createClass({
     }
   },
   setActiveRoutes: function(routeIds){
-    this.props.setActiveRoutes(routeIds);
+    if(this.props.setActiveRoutes(routeIds)){
+      app.showRoutesOnMap(app.DATA,'new');
+    }
   },
   clearSearch: function(){
       React.findDOMNode(this.refs.theLineNr).value = '';
@@ -634,28 +644,12 @@ var LeftSidebar = React.createClass({
     return {DATA:this.props.data,listHeight: 0, open: 'route'};
   },
   clearActiveRoutes: function(searchToShow){
-    app.DATA.routes = app.DATA.routes.map(function(route){
-      route.active = false;
-      return route;
-    });
-    this.setState({DATA:app.DATA, open: searchToShow});
-    app.clearRoutesOnMap();
+    this.setState({DATA:app.clearActiveRoutes(), open: searchToShow});
   },
   setActiveRoutes:function(routeIds) {
-    app.DATA.routes = app.DATA.routes.map(function(route){
-      for(var i = 0; i < routeIds.length; i++) {
-        if(routeIds[i] === route.route_id) {
-          if(route.active) {
-            route.active = false;
-          } else {
-            route.active = true;
-          }
-        }
-      }
-      return route;
-    });
-    this.setState({DATA:app.DATA});
-    return app.showRoutesOnMap(app.DATA,'new');
+    var DATA = app.setActiveRoutes(routeIds);
+    this.setState({DATA:DATA});
+    return true;
   },
   handleResize: function(e) {
     var listHeight = document.querySelectorAll('.route-form')[0].offsetHeight;
@@ -754,7 +748,7 @@ var RouteInfoModal = React.createClass({
               {this.props.route.route_short_name}
             </h2>
             <p>{routeInfo.route}</p>
-            <p>{routeInfo.text}</p>
+            <p dangerouslySetInnerHTML={{__html:routeInfo.text}} />
             <h3>Vuorovälit ja liikennöintiajat (noin):</h3>
             {table}
           </div>

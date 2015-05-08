@@ -31,6 +31,7 @@ function App(){
   this.getOldRoutes().done(function(data){
     _this.oldRoutes = data;
   });
+  this.oldRouteData = {};
   this.initializeMapLayers();
   React.render(React.createElement(LeftSidebar, {data: this.DATA}), document.getElementById('sidebar'));
 };

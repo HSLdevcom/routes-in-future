@@ -448,7 +448,13 @@ main {
 
   .error {
     position: relative;
-
+    a {
+      display: inline-block;
+      color: $hsl-alert;
+      margin: 0;
+      padding: 0;
+      text-decoration: underline;
+    }
   }
 }
 

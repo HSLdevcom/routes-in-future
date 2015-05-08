@@ -37,6 +37,10 @@ var Route = React.createClass({
     render: function() {
         var classes = (this.props.route.active)? 'route clearfix active ' : 'route clearfix inactive ';
         var icon;
+        var routeInfoBtn; 
+        if(typeof ROUTEINFO[this.props.route.route_short_name]!=='undefined'){
+          routeInfoBtn = <div className='open-route-info' onClick={this.openRouteInfo}>i</div>;
+        } 
         if(this.props.route.route_type===3) {
           classes+= 'bus';
           icon = <Icon img='icon-icon_bus'/>
@@ -59,7 +63,7 @@ var Route = React.createClass({
               <div className='route-nr'>{this.props.route.route_short_name}</div>
             </div>
             <div className='route-text'>{routeText}</div>
-            <div className='open-route-info' onClick={this.openRouteInfo}>i</div>
+            {routeInfoBtn}
           </div>
         );
     }
@@ -559,7 +563,8 @@ var ReplacementLineSearch = React.createClass({
           oldRoute = _.find(app.oldRoutes,{shortName:value});
 
           new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
-              app.renderOldAndNewRoutes(data);
+            app.oldRouteData = data;
+              app.renderOldAndNewRoutes(app.oldRouteData);
              _this.setState({searching: false});
           });
         }
@@ -582,8 +587,12 @@ var ReplacementLineSearch = React.createClass({
     }
   },
   setActiveRoutes: function(routeIds){
-    if(this.props.setActiveRoutes(routeIds)){
-      app.showRoutesOnMap(app.DATA,'new');
+    if(this.props.setActiveRoutes(routeIds)) {
+      if(this.state.showAllRoutes){
+        app.showRoutesOnMap(app.DATA,'new');
+      } else {
+        app.renderOldAndNewRoutes(app.oldRouteData);
+      }
     }
   },
   clearSearch: function(){
@@ -614,7 +623,7 @@ var ReplacementLineSearch = React.createClass({
                   <div onClick={this.clearSearch}>
                       <Icon img='icon-icon_close' className='close' />
                   </div>
-                  <h4>Ei hakutuloksia</h4>
+                  <p>Ei hakutuloksia</p>
                   <p>
                     Voit hakea reittisi <a href='http://www.reittiopas.fi' target='_blank'>reittioppaasta</a>
                   </p>

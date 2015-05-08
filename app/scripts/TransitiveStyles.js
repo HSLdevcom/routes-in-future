@@ -187,7 +187,7 @@ function setTransitiveStyles() {
 
   var multipoints_merged = STYLES.multipoints_merged = _.cloneDeep(stops_merged);
 
-  multipoints_merged.visibility = 'hidden';
+  multipoints_merged.visibility = 'visible';
 
   /**
    * Default Multipoint Stops along a pattern

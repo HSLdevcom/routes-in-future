@@ -550,13 +550,13 @@ main {
       border: 1px solid $gray;
     }
 
-    &::-webkit-scrollbar { 
-      background: $gray;
-      width: 7px;
-      margin: 0 auto;
-      right: 2px;
-      border-radius: 99em;
-    }
+  &::-webkit-scrollbar { 
+    background: $gray;
+    width: 7px;
+    margin: 0 auto;
+    right: 2px;
+    border-radius: 99em;
+  }
 }
 .result {
   background: $white;
@@ -574,15 +574,18 @@ main {
       display: block;
     }
     h5 {
-    margin: 0;
-      &:last-child {
-        margin:0 ;   
-      }
+      margin: 0;
     }
+
+  }
+  .access-transit-egress {
+    margin: 0 -10px;
+    padding: 4px 10px;
+    background: rgba(0,0,0,.10);
   }
   .walk {
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     margin: 4px 0;
     display: none;
   }
@@ -591,7 +594,16 @@ main {
     padding-left: 0;
     font-size: 1em;
     line-height: 1.1em;
-    display: none,
+    display: none;
+    margin: .25em 0;
+  }
+  h5.from {
+    margin: 0 0 .25em;
+
+  }
+  h5.to {
+    margin: .25em 0 0;
+
   }
   h5 {
     font-size: 0.9em;
@@ -841,12 +853,17 @@ footer {
 }
 
 .route-info-modal {
+  table,
+  tr {
+    width: 100%;
+  }
   .time-row {
     td {
       font-weight: bold;
     }
   }
   td {
+    text-align: center;
     padding: .5em;
     border: 1px solid $black;
     font-size: 1em;
@@ -899,7 +916,10 @@ footer {
 
     }
   }
-
+  .modal {
+    width: 100%;
+    padding: 2em 1em;
+  }
   footer {
     width: 320px;
   }

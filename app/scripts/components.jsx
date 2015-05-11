@@ -439,22 +439,24 @@ var RouteSearchBox = React.createClass({
                             }
                             return (
                               <div>
-                                <h5 className='from'>{from}</h5>
-                                <div className='result-routes'>
-                                  {transit.routes.map(function(route,index){
-                                    var clazz = 'result-route ' + route.mode;
-                                    var key = 'resultroute'+index;
-                                    if(typeof route.shortName==='undefined') route.shortName = 'Metro';
-                                    var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
-                                    if(index<7 || focused){
-                                      return <h4 className={clazz} key={key}>{txt}</h4>;
-                                    } else if(index===7) {
-                                      return <h4 className={clazz} key={key}>...</h4>;
-                                    }
-                                  })}
-                                  <h4 className='avg-time'>{Math.floor(120/transit.rideStats.num)} min. välein</h4>
+                                <div className='access-transit-egress'>
+                                  <h5 className='from'>{from}</h5>
+                                  <div className='result-routes'>
+                                    {transit.routes.map(function(route,index){
+                                      var clazz = 'result-route ' + route.mode;
+                                      var key = 'resultroute'+index;
+                                      if(typeof route.shortName==='undefined') route.shortName = 'Metro';
+                                      var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
+                                      if(index<7 || focused){
+                                        return <h4 className={clazz} key={key}>{txt}</h4>;
+                                      } else if(index===7) {
+                                        return <h4 className={clazz} key={key}>...</h4>;
+                                      }
+                                    })}
+                                    <h4 className='avg-time'>{Math.floor(120/transit.rideStats.num)} min. välein</h4>
+                                  </div>
+                                  <h5 className='to'>{to}</h5>
                                 </div>
-                                <h5 className='to'>{to}</h5>
                                 <Icon img='icon-icon_walk' className='walk'fill='999'/>
                               </div>
                             );
@@ -518,10 +520,10 @@ var RouteSearchBox = React.createClass({
                   <option value='sunday'>Sunnuntai</option>
                 </select>                
                 <select className='select-box' ref='theTime' name='the-time'>
-                  <option value='morning'>Aamu (07-09)</option>
-                  <option value='day'>Päivä (12-14)</option>
-                  <option value='afternoon'>Iltapäivä (16-18)</option>
-                  <option value='evening'>Ilta (22-24)</option>
+                  <option value='morning'>Aamu</option>
+                  <option value='day'>Päivä</option>
+                  <option value='afternoon'>Iltapäivä</option>
+                  <option value='evening'>Ilta</option>
                   <option value='night'>Yö</option>
                 </select>
                 <button ref='theSumbitBtn' type='submit'>Hae</button>

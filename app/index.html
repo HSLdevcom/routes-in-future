@@ -2,11 +2,11 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
-    
-    <title>Tulevat reitit</title>
+
+    <title>HSL Tulevat reitit beta</title>
     <meta name="description" content="">
 
-    <meta property="og:title" content="Tulevat reitit" />
+    <meta property="og:title" content="HSL Tulevat reitit beta" />
     <meta property="og:description" content="Tulevat reitit" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="http://tulevatreitit.hsl.fi" />
@@ -239,7 +239,8 @@
             </div>
           </div>
           <h3>
-           Kehärata ja Vantaan bussilinjasto <span class="date">alkaen 10.8.2015</span>
+           Kehärata ja Vantaan bussilinjasto <span class="date">
+           10.8.2015</span>
           </h3>
           <div class="more-info">
             <p>
@@ -285,9 +286,11 @@
           <svg viewBox="0 0 40 40" class="icon close">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000" xlink:href="#icon-icon_close"></use>
           </svg>
-          <h1>Lorem Ipsum Dolor Sit Amet</h1>
+          <h1>
+            Tervetuloa tulevat reitit -palveluun
+          </h1>
           <p>
-            Aenean eu mauris ut lorem viverra blandit. Suspendisse cursus mi eget lobortis sollicitudin. Nunc erat elit, tristique in dignissim eget, feugiat id lacus. Integer accumsan condimentum ultrices. Aenean sem lectus, tempor vel eros eget, pellentesque ullamcorper eros. Nulla semper metus leo, vel condimentum dolor tempor id. Phasellus accumsan convallis ullamcorper. Suspendisse sagittis erat a ligula hendrerit pretium. Quisque lacinia faucibus arcu, ac lacinia felis euismod commodo.
+              Syötä matkasi lähtö- ja päätepiste ja selvitä, miten matkasi sujuu 10.8. alkaen, kun Kehärata on avattu ja Vantaan bussilinjasto on uudistunut. Voit myös tutkia, mitkä bussilinjat korvaavat tulevaisuudessa nykyisen yhteytesi. Palvelu on kehitysvaiheessa ja parannamme sitä palautteen perusteella.
           </p>
         </section>
         <section class="route-info-modal modal" id="route-info-modal">
@@ -324,7 +327,6 @@
       window.d3 = require('d3');
       window.Transitive = require('transitive');
       window.OtpProfiler = require('otp-profiler');
-      L.TransitiveLayer = require('Leaflet.TransitiveLayer');
     });
     </script>
         <!-- build:js scripts/plugins.js -->
@@ -335,6 +337,7 @@
         <script src="data/ReplacementLines.js"></script>
         <script src="data/RouteInfo.js"></script>
         <script src="scripts/Transitive.js"></script>
+        <script src="scripts/TransitiveLayer.js"></script>
         <script src="scripts/TransitiveStyles.js"></script>
         <script src="scripts/TransitiveImporter.js"></script>
         <script src="scripts/main.js"></script>

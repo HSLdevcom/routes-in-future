@@ -185,6 +185,7 @@ var AutocompleteInput = React.createClass({
           var suggestions = []
           var results = _.sortBy(data.results, 'osoitenumero');
           results.forEach(function (result) {
+            result.suggestionText = result.katunimi+' '+result.osoitenumero+result.kiinteiston_jakokirjain+', '+result.kaupunki;
             suggestions.push(result)
           });
           this.setState({suggestions:suggestions, value:value, autocompleteDone: false});
@@ -226,14 +227,13 @@ var AutocompleteInput = React.createClass({
     if(Object.keys(this.state.suggestions).length) {
       var autocompleteListItems = this.state.suggestions.map(function(suggestion,index){
         if(suggestion.osoitenumero) {
-          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.katunimi} {suggestion.osoitenumero}{suggestion.kiinteiston_jakokirjain}, {suggestion.kaupunki}</li>;
+          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.suggestionText}</li>;
+        } else if(typeof suggestion.stop_name!=='undefined') {
+          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.stop_id}>{suggestion.suggestionText}</li>;
         } else {
           return <li onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.suggestionText}</li>;
         }
       },this);
-      // autocompleteListItems.sort( function(a, b) {
-      //   return (a.key.localeCompare(b.key))
-      // })
       autocompleteList = <div onMouseEnter={this.blockHide} onMouseLeave={this.allowHide} className='autocomplete-container'>
                           <ul className='autocomplete-list'>
                             {autocompleteListItems}

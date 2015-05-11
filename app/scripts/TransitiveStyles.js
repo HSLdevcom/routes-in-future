@@ -84,6 +84,10 @@ function setTransitiveStyles() {
     },
     stroke: function(display, data, index, utils) {
       var point = data.owner;
+      if(typeof point.patterns!=='undefined' && 
+         typeof point.patterns[0].route.getColor()!=='undefined' ) {
+          return point.patterns[0].route.getColor();
+      }
       if (!point.isFocused()) {
         return '#e0e0e0';
       } else {
@@ -142,6 +146,9 @@ function setTransitiveStyles() {
       }
     ],
     stroke: function(display, data) {
+      if(typeof data.owner.patterns!=='undefined' && typeof data.owner.patterns[0].route.getColor()!=='undefined' ) {
+          return data.owner.patterns[0].route.getColor();
+      }
       if (data.owner.isFocused()) {
         if (data.rEdge.type === 'TRANSIT') {
           if (data.rEdge.mode == 0) {
@@ -352,6 +359,10 @@ function setTransitiveStyles() {
 
   STYLES.segment_label_containers = {
     fill: function(display, data) {
+      if(typeof data.parent.patterns!=='undefined' && 
+         typeof data.parent.patterns[0].route.getColor()!=='undefined' ) {
+            return data.parent.patterns[0].route.getColor();
+      }
       if (!data.isFocused()) return notFocusedColor;
     },
     'stroke-width': function(display, data) {

@@ -390,6 +390,7 @@ main {
 }
 
 .pre-heading {
+  font-size: 1.12em;
   margin: 0;
 }
 
@@ -631,7 +632,7 @@ h4.result-route {
   font-size: 1em;
   line-height: 1em;
   padding: 0;
-  
+  font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; font-weight: 400; font-style: normal;
   &.BUS {
     color: $bus-color; 
   }
@@ -724,6 +725,7 @@ h4.result-route {
 
   .route-nr,
   .route-text {
+    font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; font-weight: 400; font-style: normal;
     float: left;
     line-height: 2em;
   }

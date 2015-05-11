@@ -200,7 +200,8 @@ require.relative = function(parent) {
   return localRequire;
 };
 require.register("component-type/index.js", Function("exports, require, module",
-"/**\n\
+"\n\
+/**\n\
  * toString ref.\n\
  */\n\
 \n\
@@ -216,21 +217,18 @@ var toString = Object.prototype.toString;\n\
 \n\
 module.exports = function(val){\n\
   switch (toString.call(val)) {\n\
+    case '[object Function]': return 'function';\n\
     case '[object Date]': return 'date';\n\
     case '[object RegExp]': return 'regexp';\n\
     case '[object Arguments]': return 'arguments';\n\
     case '[object Array]': return 'array';\n\
-    case '[object Error]': return 'error';\n\
+    case '[object String]': return 'string';\n\
   }\n\
 \n\
   if (val === null) return 'null';\n\
   if (val === undefined) return 'undefined';\n\
-  if (val !== val) return 'nan';\n\
   if (val && val.nodeType === 1) return 'element';\n\
-\n\
-  val = val.valueOf\n\
-    ? val.valueOf()\n\
-    : Object.prototype.valueOf.apply(val)\n\
+  if (val === Object(val)) return 'object';\n\
 \n\
   return typeof val;\n\
 };\n\
@@ -676,7 +674,7 @@ function mixin(obj) {\n\
 Emitter.prototype.on =\n\
 Emitter.prototype.addEventListener = function(event, fn){\n\
   this._callbacks = this._callbacks || {};\n\
-  (this._callbacks[event] = this._callbacks[event] || [])\n\
+  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])\n\
     .push(fn);\n\
   return this;\n\
 };\n\
@@ -692,11 +690,8 @@ Emitter.prototype.addEventListener = function(event, fn){\n\
  */\n\
 \n\
 Emitter.prototype.once = function(event, fn){\n\
-  var self = this;\n\
-  this._callbacks = this._callbacks || {};\n\
-\n\
   function on() {\n\
-    self.off(event, on);\n\
+    this.off(event, on);\n\
     fn.apply(this, arguments);\n\
   }\n\
 \n\
@@ -728,12 +723,12 @@ Emitter.prototype.removeEventListener = function(event, fn){\n\
   }\n\
 \n\
   // specific event\n\
-  var callbacks = this._callbacks[event];\n\
+  var callbacks = this._callbacks['$' + event];\n\
   if (!callbacks) return this;\n\
 \n\
   // remove all handlers\n\
   if (1 == arguments.length) {\n\
-    delete this._callbacks[event];\n\
+    delete this._callbacks['$' + event];\n\
     return this;\n\
   }\n\
 \n\
@@ -760,7 +755,7 @@ Emitter.prototype.removeEventListener = function(event, fn){\n\
 Emitter.prototype.emit = function(event){\n\
   this._callbacks = this._callbacks || {};\n\
   var args = [].slice.call(arguments, 1)\n\
-    , callbacks = this._callbacks[event];\n\
+    , callbacks = this._callbacks['$' + event];\n\
 \n\
   if (callbacks) {\n\
     callbacks = callbacks.slice(0);\n\
@@ -782,7 +777,7 @@ Emitter.prototype.emit = function(event){\n\
 \n\
 Emitter.prototype.listeners = function(event){\n\
   this._callbacks = this._callbacks || {};\n\
-  return this._callbacks[event] || [];\n\
+  return this._callbacks['$' + event] || [];\n\
 };\n\
 \n\
 /**\n\
@@ -10099,6 +10094,8 @@ module.exports = function(val, options){\n\
  */\n\
 \n\
 function parse(str) {\n\
+  str = '' + str;\n\
+  if (str.length > 10000) return;\n\
   var match = /^((?:\\d+)?\\.?\\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);\n\
   if (!match) return;\n\
   var n = parseFloat(match[1]);\n\
@@ -20641,20 +20638,48 @@ function Journey(data, network) {\n\
   this.path = new NetworkPath(this);\n\
 \n\
   each(this.segments, function(segmentInfo) {\n\
-    var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
-    pathSegment.journeySegment = segmentInfo;\n\
-\n\
     if (segmentInfo.type === 'TRANSIT') {\n\
       if (segmentInfo.patterns) {\n\
+        var pathSegments = [];\n\
         each(segmentInfo.patterns, function(patternInfo) {\n\
-          pathSegment.addPattern(network.patterns[patternInfo.pattern_id],\n\
-            patternInfo.from_stop_index, patternInfo.to_stop_index);\n\
-        });\n\
+          var patternStops = [];\n\
+          for (var i = patternInfo.from_stop_index; i <= patternInfo.to_stop_index; i++) {\n\
+            patternStops.push(network.patterns[patternInfo.pattern_id].stops[i].stop_name);\n\
+          }\n\
+          var newPathSegment = true;\n\
+          each(pathSegments, function(pathSegment) {\n\
+            var pathStops = [];\n\
+            pathSegment.points.forEach(function(point) {\n\
+              pathStops.push(point.stop_name);\n\
+            });\n\
+            if (!(patternStops.filter(function(elem) {return pathStops.indexOf(elem) == -1;}).length && pathStops.filter(function(elem) {return patternStops.indexOf(elem) == -1;}).length)) {\n\
+              pathSegment.addPattern(network.patterns[patternInfo.pattern_id],\n\
+                patternInfo.from_stop_index, patternInfo.to_stop_index);\n\
+              newPathSegment = false;\n\
+              return;\n\
+            }\n\
+          });\n\
+          if (newPathSegment) {\n\
+            var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
+            pathSegment.journeySegment = segmentInfo;\n\
+            pathSegment.addPattern(network.patterns[patternInfo.pattern_id],\n\
+              patternInfo.from_stop_index, patternInfo.to_stop_index);\n\
+            pathSegments.push(pathSegment);\n\
+          }\n\
+        }, this);\n\
+        each(pathSegments, function(pathSegment) {\n\
+          this.path.addSegment(pathSegment);\n\
+        }, this);\n\
       } else if (segmentInfo.pattern_id) { // legacy support for single-pattern journey segments\n\
+        var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
+        pathSegment.journeySegment = segmentInfo;\n\
         pathSegment.addPattern(network.patterns[segmentInfo.pattern_id],\n\
           segmentInfo.from_stop_index, segmentInfo.to_stop_index);\n\
+        this.path.addSegment(pathSegment);\n\
       }\n\
     } else { // non-transit segment\n\
+      var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
+      pathSegment.journeySegment = segmentInfo;\n\
 \n\
       var streetEdges = [];\n\
       // screen out degenerate transfer segments\n\
@@ -20706,8 +20731,8 @@ function Journey(data, network) {\n\
         pathSegment.streetEdges = streetEdges;\n\
       }\n\
       pathSegment.points.push(getEndPoint(segmentInfo.to, network));\n\
+      this.path.addSegment(pathSegment);\n\
     }\n\
-    this.path.addSegment(pathSegment);\n\
   }, this);\n\
 }\n\
 \n\
@@ -21303,10 +21328,8 @@ Network.prototype.createRenderedEdge = function(pathSegment, gEdge, forward, pat
   // construct the edge key, disregarding mode qualifiers (e.g. \"_RENT\")\n\
   var type = pathSegment.getType().split('_')[0];\n\
   var key = gEdge.id + (forward ? 'F' : 'R') + '_' + type;\n\
-\n\
-  // for non-bus transit edges, append an exemplar pattern ID to the key\n\
-  if (patterns && patterns[0].route.route_type !== 3) {\n\
-    key += '_' + patterns[0].getId();\n\
+  if (patterns) {\n\
+    key += '_' + patterns[0].route.route_type;\n\
   }\n\
 \n\
   // see if this r-edge already exists\n\
@@ -23148,84 +23171,7 @@ require.register("transitive/lib/util/polyline.js", Function("exports, require, 
 };\n\
 //@ sourceURL=transitive/lib/util/polyline.js"
 ));
-require.register("conveyal-leaflet.transitivelayer/TransitiveLayer.js", Function("exports, require, module",
-"L.TransitiveLayer = module.exports = L.Class.extend({\n\
-\n\
-  initialize: function(transitive, options) {\n\
-    this._transitive = transitive;\n\
-  },\n\
-\n\
-  onAdd: function(map) {\n\
-    this._map = map;\n\
-\n\
-    this._initContainer();\n\
-\n\
-    map.on(\"moveend\", this._refresh, this);\n\
-    map.on(\"zoomend\", this._refresh, this);\n\
-    map.on(\"drag\", this._refresh, this);\n\
-    map.on(\"resize\", this._resize, this);\n\
-\n\
-    this._transitive.options.zoomEnabled = false;\n\
-    this._transitive.options.autoResize = false;\n\
-    this._transitive.setElement(this._container);\n\
-    this._transitive.render();\n\
-\n\
-    var self = this;\n\
-    this._transitive.on('clear data', function() {\n\
-      self._refresh();\n\
-    });\n\
-\n\
-    this._transitive.on('update data', function() {\n\
-      self._transitive.render();\n\
-      self._refresh();\n\
-    });\n\
-  },\n\
-\n\
-  onRemove: function(map) {\n\
-    map.getPanes().overlayPane.removeChild(this._container);\n\
-    map.off(\"moveend\", this._refresh, this);\n\
-    map.off(\"zoomend\", this._refresh, this);\n\
-    map.off(\"drag\", this._refresh, this);\n\
-    map.off(\"resize\", this._resize, this);\n\
-  },\n\
-\n\
-  getBounds: function() {\n\
-    var bounds = this._transitive.getNetworkBounds();\n\
-    if(!bounds) return null;\n\
-    return new L.LatLngBounds([bounds[0][1], bounds[0][0]],[bounds[1][1], bounds[1][0]]);\n\
-  },\n\
-\n\
-  _initContainer: function() {\n\
-    this._container = L.DomUtil.create('div', 'leaflet-transitive-container', this._map.getPanes().overlayPane);\n\
-    this._container.style.position = 'absolute';\n\
-    this._container.style.width = this._map.getSize().x + \"px\";\n\
-    this._container.style.height = this._map.getSize().y + \"px\";\n\
-  },\n\
-\n\
-  _refresh: function() {\n\
-    var bounds = this._map.getBounds();\n\
-    var topLeft = this._map.latLngToLayerPoint(bounds.getNorthWest());\n\
-    L.DomUtil.setPosition(this._container, topLeft);\n\
-    this._transitive.setDisplayBounds([\n\
-      [bounds.getWest(), bounds.getSouth()],\n\
-      [bounds.getEast(), bounds.getNorth()]\n\
-    ]);\n\
-    if(this._transitive.options.focusedJourney !== '' &&  this._transitive.data!==null && typeof this._transitive.network.journeys[this._transitive.options.focusedJourney]!=='undefined') { \n\
-        this._transitive.focusJourney(this._transitive.options.focusedJourney);\n\
-    }\n\
-  },\n\
-\n\
-  _resize: function(data) {\n\
-    this._transitive.resize(data.newSize.x, data.newSize.y);\n\
-    this._refresh();\n\
-  }\n\
-\n\
-});\n\
-\n\
-L.transitiveLayer = function(transitive, options) {\n\
-  return new L.TransitiveLayer(transitive, options);\n\
-};//@ sourceURL=conveyal-leaflet.transitivelayer/TransitiveLayer.js"
-));
+
 
 
 
@@ -23430,7 +23376,3 @@ require.alias("component-props/index.js", "component-to-function/deps/props/inde
 
 require.alias("yields-select/index.js", "yields-select/index.js");
 require.alias("transitive/lib/transitive.js", "transitive/index.js");
-
-
-require.alias("conveyal-leaflet.transitivelayer/TransitiveLayer.js", "Leaflet.TransitiveLayer/index.js");
-require.alias("conveyal-leaflet.transitivelayer/TransitiveLayer.js", "conveyal-leaflet.transitivelayer/index.js");

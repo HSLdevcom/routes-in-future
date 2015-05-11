@@ -61,7 +61,24 @@ $icon-font-family-2: 'reittiopas-icon-font-2';
 $border-radius: 3px;
 //$hsldarkblue : #006eb5;
 $hsldarkblue : #025a93;
+// font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; font-weight: 400; font-style: normal;
+// font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; font-weight: 300; font-style: italic;
+// font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; font-weight: 500; font-style: normal;
+// font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; font-weight: 700; font-style: normal;
+// font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; font-weight: 700; font-style: italic;
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 300; font-style: normal;
 
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 400; font-style: normal;
+
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 400; font-style: italic;
+
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 500; font-style: normal;
+
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 700; font-style: normal;
+
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 800; font-style: normal;
+
+// font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; font-weight: 800; font-style: italic;
 .browserupgrade {
   background: $gray;
   color: $black;
@@ -90,7 +107,9 @@ body {
 }
 
 body {
-  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif; 
+  font-weight: 400; 
+  font-style: normal;
   font-size: 12px;
   line-height: 18px;
 }
@@ -717,7 +736,7 @@ h4.result-route {
     left: 0;
     width: 20px;
     text-align: center;
-    font-weight: bold;
+    // font-weight: bold;
     cursor: pointer;
     &:hover {
       background: $hsl-blue;

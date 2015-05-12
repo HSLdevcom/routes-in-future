@@ -11,6 +11,7 @@ function ConstructTransitiveData(selectedRoutes, otpIndexEndpoint, successCallba
   var self = this;
 
   _.each(selectedRoutes, function(route) {
+    console.log(route)
     self.transitiveData.routes.push({
       route_id: route.id,
       agency_id: route.id.split(':')[0],

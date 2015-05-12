@@ -92,6 +92,7 @@ var AutocompleteInput = React.createClass({
   getInitialState: function() {
     return {
       suggestions: [],
+      activeSuggestionIndex: 0,
       value: '',
       autocompleteDone: false,
       doNotBlur: false
@@ -153,7 +154,8 @@ var AutocompleteInput = React.createClass({
         }
       });
       _this.setState({
-        suggestions: suggestions
+        suggestions: suggestions,
+        activeSuggestionIndex: 0
       });
 
     });
@@ -168,7 +170,7 @@ var AutocompleteInput = React.createClass({
       } else {
        returnThis.city = '0';  
       }
-      this.setState({suggestions:[], value:value, autocompleteDone: true, result: returnThis});
+      this.setState({suggestions:[], value:value, autocompleteDone: true, result: returnThis,activeSuggestionIndex: 0});
     } else if (suggestion.key && suggestion.name) {
       $.get('http://77.95.145.186/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
         if (data.results.length === 1) {
@@ -180,7 +182,7 @@ var AutocompleteInput = React.createClass({
           } else {
            returnThis.city = '0';  
           }
-          this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
+          this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis,activeSuggestionIndex: 0});
         } else {
           var suggestions = []
           var results = _.sortBy(data.results, 'osoitenumero');
@@ -188,7 +190,7 @@ var AutocompleteInput = React.createClass({
             result.suggestionText = result.katunimi+' '+result.osoitenumero+result.kiinteiston_jakokirjain+', '+result.kaupunki;
             suggestions.push(result)
           });
-          this.setState({suggestions:suggestions, value:value, autocompleteDone: false});
+          this.setState({suggestions:suggestions, value:value, autocompleteDone: false,activeSuggestionIndex: 0});
         }
       }.bind(this));
     } else if (suggestion.location) {
@@ -200,7 +202,7 @@ var AutocompleteInput = React.createClass({
        returnThis.city = '0';  
       }
 
-      this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis});
+      this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis,activeSuggestionIndex: 0});
     }
     React.findDOMNode(this.refs.theInput).focus();
   },
@@ -212,26 +214,40 @@ var AutocompleteInput = React.createClass({
       this.props.setResult(this.state.result,e.target.name);
     }
   },
-  showAutocomplete: function(){
+  showAutocomplete: function() {
     React.findDOMNode(this.refs.autocomplete).style.display = 'block';
   },
-  blockHide: function(){
+  blockHide: function() {
     return this.setState({doNotBlur:true});
   },
-  allowHide: function(){
+  allowHide: function() {
     return this.setState({doNotBlur:false});
   },
-  render: function(){
+  onKeyDown: function(e) {
+    e.stopPropagation();
+    console.log(e.keyCode)
+    if(e.keyCode === 38) {
+      if(this.activeSuggestionIndex>0){
+        this.setState({activeSuggestionIndex: --this.state.activeSuggestionIndex});
+      }
+    } else if(e.keyCode === 40) {
+      if(this.activeSuggestionIndex <=(this.state.suggestions.length-2) ){
+        this.setState({activeSuggestionIndex: ++this.state.activeSuggestionIndex});
+      }
+    }
+  },
+  render: function() {
     var autocompleteList;
     var value = this.state.value;
     if(Object.keys(this.state.suggestions).length) {
       var autocompleteListItems = this.state.suggestions.map(function(suggestion,index){
+        var clazz = (index === this.state.activeSuggestionIndex)? 'active': '';
         if(suggestion.osoitenumero) {
-          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.suggestionText}</li>;
+          return <li className={clazz} onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.suggestionText}</li>;
         } else if(typeof suggestion.stop_name!=='undefined') {
-          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.stop_id}>{suggestion.suggestionText}</li>;
+          return <li className={clazz} onClick={this.setAdress.bind(this,index)} key={suggestion.stop_id}>{suggestion.suggestionText}</li>;
         } else {
-          return <li onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.suggestionText}</li>;
+          return <li className={clazz} onClick={this.setAdress.bind(this,index)} key={suggestion.suggestionText}>{suggestion.suggestionText}</li>;
         }
       },this);
       autocompleteList = <div onMouseEnter={this.blockHide} onMouseLeave={this.allowHide} className='autocomplete-container'>
@@ -242,7 +258,7 @@ var AutocompleteInput = React.createClass({
     }
     return (
       <div className='form-group'>
-        <input type='text' autoComplete='off' name={this.props.name} ref='theInput' value={value} onFocus={this.showAutocomplete} onBlur={this.setResult} placeholder={this.props.placeholder} onChange={this.search}/>
+        <input type='text' autoComplete='off' onKeyDown={this.onKeyDown} name={this.props.name} ref='theInput' value={value} onFocus={this.showAutocomplete} onBlur={this.setResult} placeholder={this.props.placeholder} onChange={this.search}/>
         <div ref='autocomplete'>{autocompleteList}</div>
       </div>
     );
@@ -708,13 +724,13 @@ var LeftSidebar = React.createClass({
 });
 var RouteInfoModal = React.createClass({
   closeModal: function(){
-    document.getElementById('route-info-modal').classList.remove('open');
+    $('#route-info-modal').removeClass('open');
   },
   componentDidMount: function(){
-    document.getElementById('route-info-modal').classList.add('open');
+    $('#route-info-modal').addClass('open');
   },
   componentWillUpdate: function(){
-    document.getElementById('route-info-modal').classList.add('open');
+    $('#route-info-modal').addClass('open');
   },
   render: function(){
     var routeInfo = ROUTEINFO[this.props.route.route_short_name];

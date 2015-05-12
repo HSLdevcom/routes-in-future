@@ -329,8 +329,8 @@ main {
     }
 
     .icon {
-      height: 60%;
-      width: auto;
+      height: .7em;
+      width: .7em;
     }
   }
 
@@ -530,7 +530,7 @@ main {
   li {
     cursor: pointer;
     padding: 0 1em;
-
+    &.active,
     &:hover {
       color: $hsl-blue;
     }

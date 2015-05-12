@@ -21,7 +21,7 @@ gulp.task('styles', function () {
       onError: console.error.bind(console, 'Sass error:')
     }))
     .pipe($.postcss([
-      require('autoprefixer-core')({browsers: ['> 1%', 'last 32 version']})
+      require('autoprefixer-core')({browsers: ['IE 8', '> 1%', 'last 42 version']})
     ]))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest('.tmp/styles'))
@@ -42,7 +42,7 @@ gulp.task('html', ['styles', 'templates'], function () {
 
   return gulp.src('app/*.html')
     .pipe(assets)
-    .pipe($.if('*.js', $.uglify()))
+    // .pipe($.if('*.js', $.uglify()))
     .pipe($.if('*.css', $.csso()))
     .pipe(assets.restore())
     .pipe($.useref())
@@ -98,6 +98,7 @@ gulp.task('serve', ['styles', 'templates', 'fonts'], function () {
   browserSync({
     notify: false,
     port: 9000,
+    open: false,
     server: {
       baseDir: ['.tmp', 'app'],
       routes: {

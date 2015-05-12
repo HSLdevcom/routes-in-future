@@ -35,7 +35,7 @@ function App(){
 };
 App.prototype.getOldRoutes = function() {
   var _this = this;
-  $.getJSON('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes/',function(data) {
+  $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes/',function(data) {
     _this.oldRoutes = data;
   });
 };

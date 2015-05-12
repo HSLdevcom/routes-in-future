@@ -232,6 +232,9 @@ input[type="text"] {
 .icon {
   display: inline-block;
   max-height: 100%;
+  &.close {
+    fill: #000;
+  }
 }
 
 main {

@@ -106,7 +106,7 @@ var AutocompleteInput = React.createClass({
   search: function(e){
     var _this = this;
     this.setState({value: e.target.value});
-    $.getJSON('http://tulevatreitit.hsl.fi/geocoder/suggest/'+e.target.value)
+    $.get('http://tulevatreitit.hsl.fi/geocoder/suggest/'+e.target.value)
     .then(function(data) {
       var suggestions = [];
       var city = {};
@@ -172,7 +172,7 @@ var AutocompleteInput = React.createClass({
       }
       this.setState({suggestions:[], value:value, autocompleteDone: true, result: returnThis,activeSuggestionIndex: 0});
     } else if (suggestion.key && suggestion.name) {
-      $.getJSON('http://tulevatreitit.hsl.fi/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
+      $.get('http://tulevatreitit.hsl.fi/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
         if (data.results.length === 1) {
           var result = data.results[0];
           var name = result.katunimi + (result.osoitenumero == 0 ? "": " " + result.osoitenumero ) + ', ' + result.kaupunki;
@@ -479,7 +479,7 @@ var RouteSearchBox = React.createClass({
             var to = <h5>{this.state.to.name}</h5>;
             return (<div className={clazz} onClick={this.focusJourney.bind(this,index)} >
                       {from}
-                      <Icon img='icon-icon_walk' className='walk'fill='999'/>
+                      <Icon img='icon-icon_walk' className='walk' fill='999'/>
                       {routes}
                       {to}
                       {time}
@@ -493,7 +493,7 @@ var RouteSearchBox = React.createClass({
         resultContent = <div className='result-content'>
           <h4 className='pre-heading'>Uudet reittivaihtoehtosi alkaen 10.8.2015</h4>
           <div onClick={this.clearSearch}>
-            <Icon img='icon-icon_close' className='close' />
+            <Icon img='icon-icon_close' className='close' fill='000'/>
           </div>
           <div className='search-results' style={style}>
             {results}
@@ -579,7 +579,6 @@ var ReplacementLineSearch = React.createClass({
           oldRoute = _.find(app.oldRoutes,{shortName:value});
           var oldRoutes = [];
           oldRoutes.push(oldRoute);
-          console.log(app.oldRoutes)
           new ConstructTransitiveData(oldRoutes,'http://matka.hsl.fi/otp/routers/default/index/',function(data){
             app.oldRouteData = data;
               app.renderOldAndNewRoutes(app.oldRouteData);
@@ -630,7 +629,7 @@ var ReplacementLineSearch = React.createClass({
 
       routes = <div className='new-routes'>
                   <div onClick={this.clearSearch}>
-                      <Icon img='icon-icon_close' className='close' />
+                      <Icon img='icon-icon_close' className='close' fill='000'/>
                   </div>
                   {heading}
                   <RoutesList height={this.props.listHeight} setActiveRoutes={this.setActiveRoutes} routes={this.state.newroutes} />
@@ -639,7 +638,7 @@ var ReplacementLineSearch = React.createClass({
     if(this.state.showError && this.props.isOpen){
       errors =  <div className='error'>
                   <div onClick={this.clearSearch}>
-                      <Icon img='icon-icon_close' className='close' />
+                      <Icon img='icon-icon_close' className='close' fill='000'/>
                   </div>
                   <p>Ei hakutuloksia</p>
                   <p>
@@ -769,7 +768,7 @@ var RouteInfoModal = React.createClass({
     return(
       <div>
           <div onClick={this.closeModal}>
-            <Icon img='icon-icon_close' className='icon close'  />
+            <Icon img='icon-icon_close' className='icon close'  fill='000'/>
           </div>
           <div class="modal-content">
             <h2>

@@ -106,7 +106,7 @@ var AutocompleteInput = React.createClass({
   search: function(e){
     var _this = this;
     this.setState({value: e.target.value});
-    $.get('http://77.95.145.186/geocoder/suggest/'+e.target.value)
+    $.getJSON('http://tulevatreitit.hsl.fi/geocoder/suggest/'+e.target.value)
     .then(function(data) {
       var suggestions = [];
       var city = {};
@@ -172,7 +172,7 @@ var AutocompleteInput = React.createClass({
       }
       this.setState({suggestions:[], value:value, autocompleteDone: true, result: returnThis,activeSuggestionIndex: 0});
     } else if (suggestion.key && suggestion.name) {
-      $.get('http://77.95.145.186/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
+      $.getJSON('http://tulevatreitit.hsl.fi/geocoder/search/'+suggestion.key+'/'+suggestion.name).then(function(data){
         if (data.results.length === 1) {
           var result = data.results[0];
           var name = result.katunimi + (result.osoitenumero == 0 ? "": " " + result.osoitenumero ) + ', ' + result.kaupunki;
@@ -224,15 +224,13 @@ var AutocompleteInput = React.createClass({
     return this.setState({doNotBlur:false});
   },
   onKeyDown: function(e) {
-    e.stopPropagation();
-    console.log(e.keyCode)
     if(e.keyCode === 38) {
       if(this.activeSuggestionIndex>0){
-        this.setState({activeSuggestionIndex: --this.state.activeSuggestionIndex});
+        this.setState({activeSuggestionIndex: (this.state.activeSuggestionIndex-1)});
       }
     } else if(e.keyCode === 40) {
       if(this.activeSuggestionIndex <=(this.state.suggestions.length-2) ){
-        this.setState({activeSuggestionIndex: ++this.state.activeSuggestionIndex});
+        this.setState({activeSuggestionIndex: (this.state.activeSuggestionIndex+1)});
       }
     }
   },
@@ -368,7 +366,7 @@ var RouteSearchBox = React.createClass({
           date: profileDate
         };
         var profiler = new OtpProfiler({
-          host: 'http://77.95.145.186/otp/routers/helsinki',
+          host: 'http://tulevatreitit.hsl.fi/otp/routers/helsinki',
           limit: 5
         });
         profiler.profile(od, function(err, data) {
@@ -579,8 +577,10 @@ var ReplacementLineSearch = React.createClass({
           this.setState({newroutes: routeInfos, showAllRoutes: false, searching: true, showError: false});
 
           oldRoute = _.find(app.oldRoutes,{shortName:value});
-
-          new ConstructTransitiveData([oldRoute],'http://matka.hsl.fi/otp/routers/default/index/',function(data){
+          var oldRoutes = [];
+          oldRoutes.push(oldRoute);
+          console.log(app.oldRoutes)
+          new ConstructTransitiveData(oldRoutes,'http://matka.hsl.fi/otp/routers/default/index/',function(data){
             app.oldRouteData = data;
               app.renderOldAndNewRoutes(app.oldRouteData);
              _this.setState({searching: false});

@@ -825,7 +825,7 @@ require.register("mbostock-d3/d3.js", Function("exports, require, module",
       d3_element_setAttributeNS.call(this, space, local, value + \"\");\n\
     };\n\
     d3_style_prototype.setProperty = function(name, value, priority) {\n\
-      d3_style_setProperty.call(this, name, value + \"\", priority);\n\
+      d3_style_setProperty.call(this, name, value + \'\', priority);\n\
     };\n\
   }\n\
   d3.ascending = d3_ascending;\n\

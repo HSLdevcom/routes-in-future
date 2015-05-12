@@ -28,15 +28,16 @@ function App(){
   });
   this.transitiveLayer = new L.TransitiveLayer(this.transitive);
   this.oldRoutes = [];
-  this.getOldRoutes().done(function(data){
-    _this.oldRoutes = data;
-  });
+  this.getOldRoutes();
   this.oldRouteData = {};
   this.initializeMapLayers();
   React.render(React.createElement(LeftSidebar, {data: this.DATA}), document.getElementById('sidebar'));
 };
 App.prototype.getOldRoutes = function() {
-  return $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes');
+  var _this = this;
+  $.getJSON('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes/',function(data) {
+    _this.oldRoutes = data;
+  });
 };
 App.prototype.showRoutesOnMap = function(data, type) {
   // Create journeys of active routes, if its search results leave the journeys alone

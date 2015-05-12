@@ -212,6 +212,10 @@ var AutocompleteInput = React.createClass({
     }
     if(this.state.autocompleteDone) {
       this.props.setResult(this.state.result,e.target.name);
+    } else {
+      // if(this.state.suggestions.length>0){
+      //   this.setState({value: this.state.suggestions[this.state.activeSuggestionIndex].suggestionText})
+      // }
     }
   },
   showAutocomplete: function() {
@@ -225,12 +229,25 @@ var AutocompleteInput = React.createClass({
   },
   onKeyDown: function(e) {
     if(e.keyCode === 38) {
-      if(this.activeSuggestionIndex>0){
+      if(this.state.activeSuggestionIndex>0) {
         this.setState({activeSuggestionIndex: (this.state.activeSuggestionIndex-1)});
       }
     } else if(e.keyCode === 40) {
-      if(this.activeSuggestionIndex <=(this.state.suggestions.length-2) ){
+      if(this.state.activeSuggestionIndex <=(this.state.suggestions.length-2) ){
         this.setState({activeSuggestionIndex: (this.state.activeSuggestionIndex+1)});
+      }
+    } else if(e.keyCode === 9) {
+      this.setState({doNotBlur: false});
+    }
+  },
+  componentDidUpdate: function() {
+    var activeElement = $('.autocomplete-list .active');
+    var acList = $('.autocomplete-list');
+    if(activeElement.length>0) {
+      if( activeElement.position().top > acList.height()){
+        acList.scrollTop(this.state.activeSuggestionIndex*18);
+      } else if(activeElement.position().top < acList.scrollTop()) {
+        acList.scrollTop(this.state.activeSuggestionIndex*18);
       }
     }
   },

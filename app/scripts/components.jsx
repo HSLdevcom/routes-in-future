@@ -740,7 +740,7 @@ var RouteInfoModal = React.createClass({
     if(routeInfo.specialSchedule) {
       var hours = [];
       for (var i = 0; i < routeInfo.scheduleHours.length; i++) {
-        hours.push(<td dangerouslySetInnerHTML={{__html:routeInfo.scheduleHours[i]}} />);
+        hours.push(<td key={this.props.route.route_short_name + '-schedulehours-' + i} dangerouslySetInnerHTML={{__html:routeInfo.scheduleHours[i]}} />);
       }
       timeRow = <tr className='time-row'>
                 <td>Linja</td>
@@ -748,7 +748,7 @@ var RouteInfoModal = React.createClass({
                 </tr>;
     }
     for (var i = 0; i < routeInfo.schedule.length; i++) {
-      schedule.push(<td>{routeInfo.schedule[i]}</td>);
+      schedule.push(<td key={this.props.route.route_short_name + '-schedule-' + i}>{routeInfo.schedule[i]}</td>);
     };
     scheduleRow =<tr><td>{this.props.route.route_short_name}</td>{schedule}</tr>
     table = <table>
@@ -770,7 +770,7 @@ var RouteInfoModal = React.createClass({
           <div onClick={this.closeModal}>
             <Icon img='icon-icon_close' className='icon close'  fill='000'/>
           </div>
-          <div class="modal-content">
+          <div className="modal-content">
             <h2>
               {this.props.route.route_short_name}
             </h2>

@@ -287,9 +287,10 @@ main {
 
 .logo {
   float: left;
+  padding-left: 10px;
   img {
     max-width: 100%;
-    max-height: 30px;
+    max-height: 25px;
   }
 }
 
@@ -636,20 +637,50 @@ h4.result-route {
   line-height: 1em;
   padding: 0;
   font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; font-weight: 400; font-style: normal;
+  .icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    margin-right: 2px;
+    margin-bottom: -1px;
+  }
   &.BUS {
-    color: $bus-color; 
+    color: $bus-color;
+    .icon {
+      color: $white;
+      fill: $bus-color;
+    }
   }
   
   &.TRAM {
     color: $tram-color; 
+    .icon {
+      color: $white;
+      fill: $tram-color;
+    }
   }
   
   &.RAIL {
     color: $train-color; 
+    .icon {
+      color: $white;
+      fill: $train-color;
+    }
   }
   
   &.SUBWAY {
-    color: $metro-color; 
+    color: $metro-color;
+    .icon {
+      color: $white;
+      fill: $metro-color;
+    }
+  }
+  &.FERRY {
+    color: $ferry-color;
+    .icon {
+      color: $white;
+      fill: $ferry-color;
+    }
   }
 }
 
@@ -835,7 +866,7 @@ footer {
 }
 .welcome-text,.modal {
   background: $white;
-  padding: 2em 3.2em 2em 2em;
+  padding: 2em;
   width: 70%;
   position: absolute;
   top: 60px;
@@ -869,7 +900,7 @@ footer {
   }
   td {
     text-align: center;
-    padding: .5em;
+    padding: .5em 0;
     border: 1px solid $black;
     font-size: 1em;
     line-height: 1.1em;  

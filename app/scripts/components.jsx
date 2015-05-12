@@ -458,11 +458,23 @@ var RouteSearchBox = React.createClass({
                                   <div className='result-routes'>
                                     {transit.routes.map(function(route,index){
                                       var clazz = 'result-route ' + route.mode;
+                                      var icon;
+                                      if(route.mode ==='BUS') {
+                                        icon = <Icon img='icon-icon_bus'/>;
+                                      } else if(route.mode === 'TRAM') {
+                                        icon = <Icon img='icon-icon_tram'/>;
+                                      } else if(route.mode === 'RAIL') {
+                                        icon = <Icon img='icon-icon_rail'/>;
+                                      } else if(route.mode === 'SUBWAY') {
+                                        icon = <Icon img='icon-icon_subway'/>;
+                                      } else if(route.mode === 'FERRY') {
+                                        icon = <Icon img='icon-icon_ferry'/>;
+                                      }
                                       var key = 'resultroute'+index;
                                       if(typeof route.shortName==='undefined') route.shortName = 'Metro';
                                       var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
                                       if(index<7 || focused){
-                                        return <h4 className={clazz} key={key}>{txt}</h4>;
+                                        return <h4 className={clazz} key={key}>{icon}{txt}</h4>;
                                       } else if(index===7) {
                                         return <h4 className={clazz} key={key}>...</h4>;
                                       }

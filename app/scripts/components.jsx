@@ -472,8 +472,8 @@ var RouteSearchBox = React.createClass({
                                       }
                                       var key = 'resultroute'+index;
                                       if(typeof route.shortName==='undefined') route.shortName = 'Metro';
-                                      var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' / ';
-                                      if(index<7 || focused){
+                                      var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' /';
+                                      if(index<3 || focused){
                                         return <h4 className={clazz} key={key}>{icon}{txt}</h4>;
                                       } else if(index===7) {
                                         return <h4 className={clazz} key={key}>...</h4>;

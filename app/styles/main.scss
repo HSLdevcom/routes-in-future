@@ -535,7 +535,7 @@ main {
   li {
     cursor: pointer;
     padding: 0 1em;
-    &.active,
+    // &.active,
     &:hover {
       color: $hsl-blue;
     }

@@ -536,7 +536,7 @@ var RouteSearchBox = React.createClass({
       return (
           <div className='route-search-form'>
             <form name='route-search-form'  className='route-form' onSubmit={this.searchRoutes}>
-              <h3>Katso, muuttuuko reittisi.</h3>
+              <h3>Katso, muuttuuko reittisi:</h3>
               <AutocompleteInput cleared={this.state.cleared} name='from' placeholder='Mistä?' setResult={this.setResult}/>
               <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
               <div className='form-group'>

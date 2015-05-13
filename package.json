@@ -13,6 +13,7 @@
     "del": "^1.1.1",
     "gulp": "^3.6.0",
     "gulp-cache": "^0.2.2",
+    "gulp-concat": "^2.5.2",
     "gulp-csso": "^0.2.6",
     "gulp-if": "^1.2.1",
     "gulp-imagemin": "^2.0.0",

@@ -7,9 +7,10 @@ var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 
 gulp.task('templates', function () {
-  return gulp.src('app/scripts/**/*.jsx')
+  return gulp.src('app/scripts/react-components/*.jsx')
     .pipe($.react())
-    .pipe(gulp.dest('.tmp/scripts'));
+    .pipe($.concat('components.js'))
+    .pipe(gulp.dest('.tmp/scripts/'));
 });
 gulp.task('styles', function () {
   return gulp.src('app/styles/main.scss')

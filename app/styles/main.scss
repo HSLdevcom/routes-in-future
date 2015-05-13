@@ -900,11 +900,12 @@ h4.result-route {
     font-size: 15px;
     height: 20px;
     left: 0;
-    line-height: 15px;
+    line-height: 18px;
     margin: 0 1.5%;
     right: 0;
     text-align: center;
     width: 20px;
+    font-weight: 700;
     // font-weight: bold;
     &:hover {
       background: $hsl-blue;
@@ -1123,7 +1124,11 @@ footer {
   .map-container {
     width: 100%;
   }
-
+  .welcome-text,
+  .modal {
+    max-width: 100%;
+    min-width: 100%;
+  }
   section.map-container {
     height: 80vh;
   }

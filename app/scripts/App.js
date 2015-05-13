@@ -4,7 +4,10 @@ function App(){
   this.DATA = DATA;
   this.map =  L.map('map', {
     inertia: false,
-    zoomAnimation: false
+    zoomAnimation: false,
+    touchZoom: true,
+    tap: true,
+    dragging: true
   });
   this.focusedJourney = '';
   this.transitive = new Transitive({

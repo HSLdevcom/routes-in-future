@@ -324,26 +324,48 @@
     <script src="/bower_components/lodash/lodash.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
-    <script>
-    $(document).ready(function(){
-      window.d3 = require('d3');
-      window.Transitive = require('transitive');
-      window.OtpProfiler = require('otp-profiler');
-    });
-    </script>
-        <!-- build:js scripts/plugins.js -->
-        <!-- endbuild -->
+    <!-- build:js scripts/plugins.js -->
+    <!-- endbuild -->
 
-        <!-- build:js scripts/main.js -->
-        <script src="data/data.js"></script>
-        <script src="data/ReplacementLines.js"></script>
-        <script src="data/RouteInfo.js"></script>
-        <script src="scripts/Transitive.js"></script>
-        <script src="scripts/TransitiveLayer.js"></script>
-        <script src="scripts/TransitiveStyles.js"></script>
-        <script src="scripts/TransitiveImporter.js"></script>
-        <script src="scripts/main.js"></script>
-        <script src="scripts/components.js"></script>
-        <!-- endbuild -->
+    <!-- build:js scripts/main.js -->
+    <script src="data/data.js"></script>
+    <script src="data/ReplacementLines.js"></script>
+    <script src="data/RouteInfo.js"></script>
+    <script src="scripts/Transitive.js"></script>
+    <script src="scripts/TransitiveLayer.js"></script>
+    <script src="scripts/TransitiveStyles.js"></script>
+    <script src="scripts/TransitiveImporter.js"></script>
+    <script src="scripts/App.js"></script>
+    <script src="scripts/components.js"></script>
+    <!-- endbuild -->
+    <script>
+      var app;
+      $(document).ready(function(){
+        window.d3 = require('d3');
+        window.Transitive = require('transitive');
+        window.OtpProfiler = require('otp-profiler');
+        app = new App();
+        $('.read-more-link').on('click', function(e) {
+          e.preventDefault();
+          $(this).toggleClass('open');
+          $('.more-info').toggleClass('open');
+          $('#sidebar').toggleClass('hidden');
+        });
+        $('.left-sidebar').on('click', function() {
+          $('.welcome-text').removeClass('open');
+        });
+        $('.feedback-modal .close').on('click', function() {
+          $('.feedback-modal').removeClass('open');
+        });
+        $('.footer .open-feedback').on('click', function() {
+          $('.feedback-modal').addClass('open');
+          $('.welcome-text').removeClass('open');
+
+        });
+        $('.welcome-text .close').on('click', function() {
+          $('.welcome-text').removeClass('open');
+        });
+      });
+    </script>
 </body>
 </html>

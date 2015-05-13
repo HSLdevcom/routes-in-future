@@ -40,10 +40,11 @@ gulp.task('jshint', function () {
 
 gulp.task('html', ['styles', 'templates'], function () {
   var assets = $.useref.assets({searchPath: ['.tmp', 'app', '.']});
-
   return gulp.src('app/*.html')
     .pipe(assets)
+    .pipe($.if('*.js', $.sourcemaps.init({loadMaps: true})))
     .pipe($.if('*.js', $.uglify()))
+    .pipe($.if('*.js', $.sourcemaps.write('./')))
     .pipe($.if('*.css', $.csso()))
     .pipe(assets.restore())
     .pipe($.useref())

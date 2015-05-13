@@ -1,4 +1,3 @@
-var app;
 function App(){
   React.initializeTouchEvents(true);
   var _this = this;
@@ -78,7 +77,7 @@ App.prototype.showRoutesOnMap = function(data, type) {
       this.map.setView([60.287481, 24.996849], 11);
     }
     if(type==='routesearch') {
-      this.transitive.focusJourney(this.focusedJourney);
+      //this.transitive.focusJourney(this.focusedJourney);
     }
   }
 };
@@ -170,7 +169,7 @@ App.prototype.openRouteInfo = function(route){
 
 App.prototype.initializeMapLayers = function() {
   var _this = this;
-  L.tileLayer('http://matka.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
+  L.tileLayer('http://tulevatreitit.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
@@ -181,28 +180,3 @@ App.prototype.initializeMapLayers = function() {
   
   this.map.setView([60.287481, 24.996849], 11);
 }
-
-$(document).ready(function() {
-  app = new App();
-  
-  $('.read-more-link').on('click', function(e) {
-    e.preventDefault();
-    $(this).toggleClass('open');
-    $('.more-info').toggleClass('open');
-    $('#sidebar').toggleClass('hidden');
-  });
-  $('.left-sidebar').on('click', function() {
-    $('.welcome-text').removeClass('open');
-  });
-  $('.feedback-modal .close').on('click', function() {
-    $('.feedback-modal').removeClass('open');
-  });
-  $('.footer .open-feedback').on('click', function() {
-    $('.feedback-modal').addClass('open');
-    $('.welcome-text').removeClass('open');
-
-  });
-  $('.welcome-text .close').on('click', function() {
-    $('.welcome-text').removeClass('open');
-  });
-});

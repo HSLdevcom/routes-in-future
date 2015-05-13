@@ -38,8 +38,10 @@ var RouteSearchBox = React.createClass({
     },
     searchRoutes: function(e){
       e.preventDefault();
-      if(this.state.from.city !== 'Vantaa' && this.state.to.city !=='Vantaa') {
-        this.setState({cantSearch: true, searchResults: []});
+      if((this.state.from.lat === 0 && this.state.from.lon === 0)||(this.state.to.lat === 0 && this.state.to.lon === 0)){
+        return this.setState({showError:true});
+      } else if(this.state.from.city !== 'Vantaa' && this.state.to.city !=='Vantaa') {
+        this.setState({cantSearch: true, showError:false, searchResults: []});
         return this.props.clearActiveRoutes('route');
       } else {
         var startTime = '07:00';
@@ -128,9 +130,9 @@ var RouteSearchBox = React.createClass({
             od.profile = validObj;
             profiler.journey(od,function(err,transitivedata) {
               _this.setState({searchResults : valid, showError: (valid.length)?false : true});
-              app.showRoutesOnMap(transitivedata,'routesearch');
               app.transitive.options.focusedJourney = '0_transit';
-              app.transitive.focusJourney('0_transit');
+              app.showRoutesOnMap(transitivedata,'routesearch');
+              //app.transitive.focusJourney('0_transit');
               
             });
 
@@ -169,7 +171,7 @@ var RouteSearchBox = React.createClass({
               return {walkTime: a.walkTime + b.walkTime};
               }).walkTime)/60) + ' min. kävelyä';
             
-            var time = <div className='time'>
+            var time = <div className='time clearfix'>
                           <div className='total-time'>
                             <h3>
                               {Math.floor(result.stats.min/60)} - 
@@ -224,14 +226,14 @@ var RouteSearchBox = React.createClass({
                               </div>
                             );
                           });
-            var from = <h5>{this.state.from.name}</h5>;
-            var to = <h5>{this.state.to.name}</h5>;
+            var from = <h5 className="from-adress">{this.state.from.name}</h5>;
+            var to = <h5 className="to-adress">{this.state.to.name}</h5>;
             return (<div className={clazz} onClick={this.focusJourney.bind(this,index)} >
+                      {time}
                       {from}
                       <Icon img='icon-icon_walk' className='walk' fill='999'/>
                       {routes}
                       {to}
-                      {time}
                     </div>);
 
           } else {
@@ -242,7 +244,7 @@ var RouteSearchBox = React.createClass({
         resultContent = <div className='result-content'>
           <h4 className='pre-heading'>Uudet reittivaihtoehtosi alkaen 10.8.2015</h4>
           <div onClick={this.clearSearch}>
-            <Icon img='icon-icon_close' className='close' fill='000'/>
+            <Icon img='icon-icon_close' className='close' fill='999'/>
           </div>
           <div className='search-results' style={style}>
             {results}

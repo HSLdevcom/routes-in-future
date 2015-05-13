@@ -108,9 +108,9 @@ body {
 
 body {
   font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif; 
-  font-weight: 400; 
-  font-style: normal;
   font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
   line-height: 18px;
 }
 
@@ -148,8 +148,10 @@ h2 {
 }
 
 h3 {
+  font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; 
   font-size: 1.4em;
-  font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B'; font-weight: 500; font-style: normal;
+  font-style: normal;
+  font-weight: 500; 
   line-height: 1.1em;
 }
 
@@ -223,8 +225,9 @@ input[type="text"] {
 }
 
 .error {
-  font-style: italic;
   color: $hsl-alert;
+  font-style: italic;
+
   a {
     color: $hsl-alert;
   }
@@ -233,8 +236,9 @@ input[type="text"] {
 .icon {
   display: inline-block;
   max-height: 100%;
+  
   &.close {
-    fill: #000;
+    fill: $gray;
   }
 }
 
@@ -252,28 +256,27 @@ main {
   background: $background-color;
   color: $black;
   margin: 0;
-  min-height: 100%;
   max-height: 100%;
+  min-height: 100%;
   overflow: hidden;
-  padding: 0;
+  padding: 0 0 35px;
   position: relative;
   width: 360px;
   z-index: 2;
-  padding-bottom: 35px;
 
   &::-webkit-scrollbar-thumb { 
     background: $white;
+    border: 1px solid $gray;
     border-radius: 99em;
     width: 3px;
-    border: 1px solid $gray;
   }
 
   &::-webkit-scrollbar { 
     background: $gray;
-    width: 7px;
+    border-radius: 99em;
     margin: 0 auto;
     right: 2px;
-    border-radius: 99em;
+    width: 7px;
   }
 
   h3,
@@ -288,10 +291,12 @@ main {
 
 .logo {
   float: left;
+  margin: 10px 0;
   padding-left: 10px;
+
   img {
-    max-width: 100%;
     max-height: 25px;
+    max-width: 100%;
   }
 }
 
@@ -313,10 +318,12 @@ main {
     margin-bottom: 0;
     width: 100%;
   }
+
   p {
-    padding: 0 0 0 10px;
     line-height: 1.2em;
+    padding: 0 0 0 10px;
   }
+
   a {
     border-bottom: dotted 2px $hsl-distruption;
     border-left: 0;
@@ -347,6 +354,7 @@ main {
 
     &.open {
       margin: 1em 0 0;
+  
       .open {
         display: inline-block;
       }
@@ -358,14 +366,14 @@ main {
   }
 
   .more-info {
-    max-height: 0;
     height: 0;
+    max-height: 0;
     overflow: hidden;
-    transition: all 0.3s ease-out;
+    transition: all .3s ease-out;
 
     &.open {
-      max-height: 1000px;
       height: auto;
+      max-height: 1000px;
     }
   }
 }
@@ -386,9 +394,11 @@ main {
     padding-left: 10px;
   }
 
-  button,.select-box {
+  button,
+  .select-box {
     width: 31.25%;
   }
+
   select.select-box {
     padding: 0;
   }
@@ -467,15 +477,16 @@ main {
 
   .new-routes {
     padding: 0;
-    width: 100%;
     position: relative;
+    width: 100%;
   }
 
   .error {
     position: relative;
+   
     a {
-      display: inline-block;
       color: $hsl-alert;
+      display: inline-block;
       margin: 0;
       padding: 0;
       text-decoration: underline;
@@ -507,10 +518,10 @@ main {
   ul {
     box-sizing: border-box;
     height: 100%;
-    max-height: 120px;
     list-style-position: inside;
     list-style-type: none;
     margin: 0;
+    max-height: 120px;
     overflow: auto;
     padding: 0;
     position: relative;
@@ -518,17 +529,17 @@ main {
     
     &::-webkit-scrollbar-thumb { 
       background: $white;
+      border: 1px solid $gray;
       border-radius: 99em;
       width: 3px;
-      border: 1px solid $gray;
     }
 
     &::-webkit-scrollbar { 
       background: $gray;
-      width: 7px;
+      border-radius: 99em;
       margin: 0 auto;
       right: 2px;
-      border-radius: 99em;
+      width: 7px;
     }
   }
 
@@ -541,86 +552,140 @@ main {
     }
   }
 }
+
 .search-results {
   
+  margin-top: 10px;
+  min-height: 200px;
   overflow: auto;
   position: relative;
   width: 100%;
-  min-height: 200px;
-  margin-top: 10px;
   
   &::-webkit-scrollbar-thumb { 
-      background: $white;
-      border-radius: 99em;
-      width: 3px;
-      border: 1px solid $gray;
-    }
+    background: $white;
+    border: 1px solid $gray;
+    border-radius: 99em;
+    width: 3px;
+  }
 
   &::-webkit-scrollbar { 
     background: $gray;
-    width: 7px;
+    border-radius: 99em;
     margin: 0 auto;
     right: 2px;
-    border-radius: 99em;
+    width: 7px;
   }
 }
+
 .result {
   background: $white;
-  border: 1px solid #ddd;
+  border: 1px solid $light-gray;
   border-radius: 3px;   
+  cursor: pointer;
   margin: 1em 0;   
-  padding: 35px 10px 10px; 
+  padding: 0 10px 10px 30px; 
   position: relative;
   width: 98%;
-  cursor: pointer;
+  
+  .from,
+  .to,
+  .from-adress,
+  .to-adress {
+    position: relative;
+    
+    &:before {
+      border: 0;
+      border-radius: 99em;
+      box-sizing: border-box;
+      content: " ";
+      height: 10px;
+      left: -20px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+    }
+  }
+
+  .from-adress {
+    &:before {
+      background: $tram-color;
+    }
+  }
+
+  .to-adress {
+    &:before {
+      background: $hsl-pink;
+    }
+  }
+
+  .to,
+  .from {
+    &:before {
+      background: $white;
+      border: 2px solid $hsl-blue;
+    }
+  }
 
   &.focused {
     border: 3px $hsl-blue solid;
+    
     .avg-time,
     .walk {
       display: block;
     }
+
     h5 {
       margin: 0;
     }
 
   }
+
   .access-transit-egress {
     margin: 0 -10px;
     padding: 4px 10px;
-    background: rgba(0,0,0,.10);
   }
+
   .walk {
-    width: 12px;
+    display: none;
     height: 12px;
     margin: 4px 0;
-    display: none;
+    width: 12px;
   }
+
   .avg-time {
-    color: $black;
-    padding-left: 0;
-    font-size: 1em;
-    line-height: 1.1em;
+    color: $gray;
     display: none;
+    font-size: 13px;
+    line-height: 1.1em;
     margin: .25em 0;
+    padding-left: 0;
   }
-  h5.from {
-    margin: 0 0 .25em;
 
-  }
-  h5.to {
-    margin: .25em 0 0;
-
-  }
   h5 {
-    font-size: 0.9em;
+    font-size: 13px;
+    font-weight: 500;
     margin: 0 0 .5em;
-    &:last-child {
-      margin: .5em 0 0 ;   
+    
+    &.from,
+    &.to {
+      font-weight: 500;
     }
+
+    &.from {
+      margin: 0 0 .25em;
+    }
+    
+    &.to {
+      margin: .25em 0 0;
+    }
+    
+    &:last-child {
+      margin: .5em 0 0;   
+    }
+
     &:last-of-type {
-        margin-top: .5em;
-        margin-bottom: 0;
+      margin: .5em 0 0;
     }
   }
 
@@ -628,31 +693,28 @@ main {
     margin-top: 0;
   }
 }
-.result-routes {
-  font-size: 1.1em;
-  line-height: 1.1em;
-  
-  h5 {
-    margin: 0 ;
-  }
-}
 
 h4.result-route {
   display: inline-block;
-  font-size: 1.1em;
-  line-height: 1.25em;
+  font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; 
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500; 
+  line-height: 22px;
   margin: 0 .5em 0 0;
   padding: 0;
-  font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; font-weight: 500; font-style: normal;
+
   .icon {
-    width: 1em;
-    height: 1em;
     display: inline-block;
+    height: 18px;
+    margin-bottom: -3px;
     margin-right: 2px;
-    margin-bottom: -1px;
+    width: 18px;
   }
+
   &.BUS {
     color: $bus-color;
+    
     .icon {
       color: $white;
       fill: $bus-color;
@@ -661,6 +723,7 @@ h4.result-route {
   
   &.TRAM {
     color: $tram-color; 
+    
     .icon {
       color: $white;
       fill: $tram-color;
@@ -669,6 +732,7 @@ h4.result-route {
   
   &.RAIL {
     color: $train-color; 
+    
     .icon {
       color: $white;
       fill: $train-color;
@@ -677,13 +741,16 @@ h4.result-route {
   
   &.SUBWAY {
     color: $metro-color;
+    
     .icon {
       color: $white;
       fill: $metro-color;
     }
   }
+
   &.FERRY {
     color: $ferry-color;
+    
     .icon {
       color: $white;
       fill: $ferry-color;
@@ -692,18 +759,34 @@ h4.result-route {
 }
 
 .time {
-  position: absolute;
-  right: 10px;
-  top: 10px;
+  background: $background-color;
+  margin: 0 -10px 8px -30px;
+  padding: 5px 0 5px 10px;
+  
+  .total-time,
+  .walk-time {
+    float: left;
+  }
+
+  .total-time {
+    margin-right: 8px;
+    
+    h3 {
+      font-size: 13px;
+      line-height: 15px;
+      margin-bottom: 0;
+      padding: 0;
+    }
+  }
+  
+  .walk-time h4 {
+    font-size: 13px;
+    line-height: 15px;
+    margin-bottom: 0;
+    padding: 0;
+  }
 }
 
-.total-time h3{
-    margin-bottom: 0;
-}
-
-.walk-time h4 {
-    margin-bottom: 0;
-}
 
 
 .routes-list {
@@ -711,19 +794,20 @@ h4.result-route {
   overflow: auto;
   position: relative;
   width: 100%;
+  
   &::-webkit-scrollbar-thumb { 
     background: $white;
+    border: 1px solid $gray;
     border-radius: 99em;
     width: 3px;
-    border: 1px solid $gray;
   }
 
   &::-webkit-scrollbar { 
     background: $gray;
-    width: 7px;
+    border-radius: 99em;
     margin: 0 auto;
     right: 2px;
-    border-radius: 99em;
+    width: 7px;
   }
 }
 
@@ -731,8 +815,9 @@ h4.result-route {
   border-top: 1px solid $white;
   display: block;
   padding: .5em 0;
-  width: 100%;
   position: relative;
+  width: 100%;
+  
   .icon {
     color: $white;
     fill: $bus-color;
@@ -747,8 +832,8 @@ h4.result-route {
     flex-wrap: nowrap;
     float: left;
     justify-content: left;
-    width: 28.125%;
     margin-right: .875%;
+    width: 28.125%;
   }
 
   .checkmark {
@@ -763,39 +848,43 @@ h4.result-route {
     position: relative;
     width: 1.33333333333333em;
   }
+
   .route-nr {
     font-size: 1.1em;
   }
+
   .route-nr,
   .route-text {
-    font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; font-weight: 500; font-style: normal;
     float: left;
+    font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', Helvetica, sans-serif; 
+    font-style: normal;
+    font-weight: 500; 
     line-height: 2em;
   }
 
   .route-text {
+    line-height: 26px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 26px;
     width: calc(67% - 20px);
   }
 
   .open-route-info {
-    border: 2px solid #007ac9;
-    color: $hsl-blue;
+    border: 2px solid $hsl-blue;
     border-radius: 99em;
+    color: $hsl-blue;
+    cursor: pointer;
+    float: right;
     font-size: 15px;
+    height: 20px;
+    left: 0;
+    line-height: 15px;
     margin: 0 1.5%;
     right: 0;
-    float: right;
-    height: 20px;
-    line-height: 15px;
-    left: 0;
-    width: 20px;
     text-align: center;
+    width: 20px;
     // font-weight: bold;
-    cursor: pointer;
     &:hover {
       background: $hsl-blue;
       color: $white;
@@ -840,7 +929,7 @@ footer {
   bottom: 0;
   color: $gray;
   left: 0;
-  padding: 10px 20px 10px;
+  padding: 10px 20px;
   position: fixed;
   width: 360px;
   z-index: 3;
@@ -874,20 +963,24 @@ footer {
     width: 100%;
   }
 }
-.welcome-text,.modal {
+
+.welcome-text,
+.modal {
   background: $white;
-  padding: 2em;
-  width: 70%;
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 99;
   border-radius: $border-radius;
   display: none;
+  left: 50%;
+  padding: 2em;
+  position: absolute;
+  top: 60px;
+  transform: translateX(-50%);
+  width: 70%;
+  z-index: 99;
+  
   &.open {
     display: block;
   }
+
   .close {
     cursor: pointer;
     height: 2em;
@@ -897,41 +990,54 @@ footer {
     width: 2em;
   }
 }
+
 .welcome-text {
   min-width: 520px;
+
+  p {
+    font-size: 15px;
+    line-height: 18px;
+  }
 }
+
 .route-info-modal {
   table,
   tr {
     width: 100%;
   }
+
   .time-row {
     td {
       font-weight: bold;
     }
   }
+
   td {
-    text-align: center;
-    padding: .5em 0;
     border: 1px solid $black;
     font-size: 1em;
     line-height: 1.1em;  
+    padding: .5em 0;
+    text-align: center;
   }
 }
+
 .modal.feedback-modal {
   height: 98vh;
   margin-top: 1vh;
-  top: 0;
   padding: 0;
+  top: 0;
+
   iframe {
-    width: 100%;
-    min-height: 98vh;
     max-height: 98vh;
+    min-height: 98vh;
+    width: 100%;
+    
     textarea {
-      max-height: 40px!important;
+      max-height: 40px !important;
     }
   }
 }
+
 .transitive-line:hover {
   stroke: $black;
 }
@@ -955,7 +1061,7 @@ footer {
     width: 320px;
 
     .info {
-      padding: 20px 10px 20px;
+      padding: 20px 10px;
     }
 
     .route-search-form,
@@ -964,10 +1070,12 @@ footer {
 
     }
   }
+
   .modal {
-    width: 100%;
     padding: 2em 1em;
+    width: 100%;
   }
+
   footer {
     width: 320px;
   }
@@ -986,13 +1094,16 @@ footer {
   .map-container {
     width: 100%;
   }
+
   section.map-container {
     height: 80vh;
   }
+
   .left-sidebar {
     height: auto;
     max-height: none;
   }
+  
   .search-results,
   .routes-list {
     min-height: 100px;

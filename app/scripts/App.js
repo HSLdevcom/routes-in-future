@@ -4,7 +4,7 @@ function App(){
   this.DATA = DATA;
   this.map =  L.map('map', {
     inertia: false,
-    zoomAnimation: false,
+    zoomAnimation: true,
     touchZoom: true,
     tap: true,
     dragging: true

@@ -230,10 +230,12 @@ var RouteSearchBox = React.createClass({
             var to = <h5 className="to-adress">{this.state.to.name}</h5>;
             return (<div className={clazz} onClick={this.focusJourney.bind(this,index)} >
                       {time}
-                      {from}
-                      <Icon img='icon-icon_walk' className='walk' fill='999'/>
-                      {routes}
-                      {to}
+                      <div className="result-inner">
+                        {from}
+                        <Icon img='icon-icon_walk' className='walk' fill='999'/>
+                        {routes}
+                        {to}
+                      </div>
                     </div>);
 
           } else {

@@ -587,6 +587,22 @@ main {
   position: relative;
   width: 98%;
   
+  .result-inner {
+    position: relative;
+    
+    &:before {
+      background-color: #999;
+      content: " ";
+      left: -18px;
+      width: 3px;
+      height: calc(100% - 20px);
+      position: absolute;
+      transform: translateX(50%);
+      top: 10px;
+      z-index: 98;
+    }
+  }
+
   .from,
   .to,
   .from-adress,
@@ -604,6 +620,7 @@ main {
       top: 50%;
       transform: translateY(-50%);
       width: 10px;
+      z-index: 99;
     }
   }
 
@@ -621,6 +638,8 @@ main {
 
   .to,
   .from {
+    display: none;
+
     &:before {
       background: $white;
       border: 2px solid $hsl-blue;
@@ -630,6 +649,8 @@ main {
   &.focused {
     border: 3px $hsl-blue solid;
     
+    .to,
+    .from ,
     .avg-time,
     .walk {
       display: block;
@@ -1001,6 +1022,14 @@ footer {
 }
 
 .route-info-modal {
+  
+  h2 {
+    font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B'; 
+    font-style: normal;
+    font-weight: 500; 
+    color: $hsl-blue; 
+  }
+
   table,
   tr {
     width: 100%;
@@ -1103,7 +1132,7 @@ footer {
     height: auto;
     max-height: none;
   }
-  
+
   .search-results,
   .routes-list {
     min-height: 100px;

@@ -153,6 +153,13 @@ var RouteSearchBox = React.createClass({
       app.transitive.focusJourney(journeyId);
       this.setState({focusedIndex: index});
     },
+    componentWillReceiveProps: function(nextProps) {
+      if(!nextProps.isOpen) {
+        this.setState({
+          searchResults: []
+        });
+      }
+    },
     render: function() {
       var resultContent, errorContent;
       if(this.state.searchResults.length) {

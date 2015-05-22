@@ -7,7 +7,10 @@ function App(){
     zoomAnimation: true,
     touchZoom: true,
     tap: true,
-    dragging: true
+    maxZoom: 18,
+    minZoom: 11,
+    dragging: true,
+    maxBounds: L.latLngBounds([60.078534, 24.492334],[60.470071, 25.302576])
   });
   this.focusedJourney = '';
   this.transitive = new Transitive({
@@ -173,7 +176,8 @@ App.prototype.openRouteInfo = function(route){
 App.prototype.initializeMapLayers = function() {
   var _this = this;
   L.tileLayer('http://tulevatreitit.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
-    maxZoom: 18,
+    maxZoom: 14,
+    minZoom: 11,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
   }).addTo(this.map);

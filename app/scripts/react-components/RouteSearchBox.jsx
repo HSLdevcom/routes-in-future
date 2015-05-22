@@ -88,7 +88,7 @@ var RouteSearchBox = React.createClass({
           profileDate = '2015-08-30';
         }
         
-        this.setState({cantSearch: false, linkHour: linkHour, linkDaymonthyear: linkDaymonthyear});
+        this.setState({cantSearch: false, showError: false, linkHour: linkHour, linkDaymonthyear: linkDaymonthyear});
         this.props.clearActiveRoutes('route');
         var _this = this;
         var od = {

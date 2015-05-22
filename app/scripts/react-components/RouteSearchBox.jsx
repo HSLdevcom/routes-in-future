@@ -39,7 +39,9 @@ var RouteSearchBox = React.createClass({
     searchRoutes: function(e){
       e.preventDefault();
       if((this.state.from.lat === 0 && this.state.from.lon === 0)||(this.state.to.lat === 0 && this.state.to.lon === 0)){
+        this.clearSearch();
         return this.setState({showError:true});
+
       } else if(this.state.from.city !== 'Vantaa' && this.state.to.city !=='Vantaa') {
         this.setState({cantSearch: true, showError:false, searchResults: []});
         return this.props.clearActiveRoutes('route');
@@ -257,7 +259,7 @@ var RouteSearchBox = React.createClass({
         var href= 'http://www.reittiopas.fi?from_in='+this.state.from.name+'&to_in='+this.state.to.name+'&when=now&timetype=departure&hour='+this.state.linkHour+'&minute=00&daymonthyear='+this.state.linkDaymonthyear;
         errorContent =  <div className='error'>
                           <p>
-                            Kumpikaan osoitteista ei ole muutosalueella
+                            lähtö- tai pääteosoite tai –pysäkki täytyy olla muutosalueella
                           </p>
                           <p>
                             <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
@@ -267,11 +269,11 @@ var RouteSearchBox = React.createClass({
       if(this.state.showError && this.props.isOpen){
         var href= 'http://www.reittiopas.fi?from_in='+this.state.from.name+'&to_in='+this.state.to.name+'&when=now&timetype=departure&hour='+this.state.linkHour+'&minute=00&daymonthyear='+this.state.linkDaymonthyear;
         errorContent =  <div className='error'>
-                    <h4>Ei hakutuloksia</h4>
+                    <p>Valitse lähtö- ja pääteosoite tai -pysäkki kirjoittamisen yhteydessä näkyvästä listasta.</p>
                     <p>
-                      <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
                     </p>
                   </div>;
+                  // <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
       }
     
       return (

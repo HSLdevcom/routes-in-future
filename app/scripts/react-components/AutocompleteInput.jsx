@@ -16,7 +16,7 @@ var AutocompleteInput = React.createClass({
   },
   search: function(e){
     var _this = this;
-    this.setState({value: e.target.value});
+    this.setState({value: e.target.value, autocompleteDone: false});
     $.get('http://tulevatreitit.hsl.fi/geocoder/suggest/'+e.target.value)
     .then(function(data) {
       var suggestions = [];
@@ -124,9 +124,8 @@ var AutocompleteInput = React.createClass({
     if(this.state.autocompleteDone) {
       this.props.setResult(this.state.result,e.target.name);
     } else {
-      // if(this.state.suggestions.length>0){
-      //   this.setState({value: this.state.suggestions[this.state.activeSuggestionIndex].suggestionText})
-      // }
+
+      this.props.setResult({ name:e.target.name, city: '', lat:0, lon:0},e.target.name);
     }
   },
   showAutocomplete: function() {

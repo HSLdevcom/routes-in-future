@@ -7,5 +7,8 @@
     "jquery": "~2.1.3",
     "jquery-xdr": "~1.0.0",
     "placeholders": "~4.0.1"
+  },
+  "resolutions": {
+    "react": "~0.13.1"
   }
 }

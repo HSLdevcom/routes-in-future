@@ -4,7 +4,7 @@ function App(){
   this.DATA = DATA;
   this.map =  L.map('map', {
     inertia: false,
-    zoomAnimation: true,
+    zoomAnimation: L.Browser.mobile,
     touchZoom: true,
     tap: true,
     maxZoom: 18,
@@ -59,6 +59,19 @@ App.prototype.showRoutesOnMap = function(data, type) {
       }
     }), 'route_id');
 
+    // data.journeys = [{
+    //   journey_id: 'j_1039_1',
+    //   journey_name: 'Pattern: Myjourney',
+    //   focus: false,
+    //   segments: patterns.map(function(pattern) {
+    //     return {
+    //       type: 'TRANSIT',
+    //       pattern_id: pattern.pattern_id,
+    //       from_stop_index: 0,
+    //       to_stop_index: (pattern.stops.length - 1)
+    //     };
+    //   })
+    // }];
     data.journeys = patterns.map(function(pattern) {
       return {
         journey_id: 'j_' + pattern.pattern_id,

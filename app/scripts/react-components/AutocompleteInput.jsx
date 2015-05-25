@@ -1,4 +1,4 @@
-
+var isPlaceholderSupported = 'placeholder' in document.createElement('input');
 var AutocompleteInput = React.createClass({
   getInitialState: function() {
     return {
@@ -115,6 +115,7 @@ var AutocompleteInput = React.createClass({
 
       this.setState({suggestions:[], value:name, autocompleteDone: true, result: returnThis,activeSuggestionIndex: 0});
     }
+    React.findDOMNode(this.refs.theInput).value = value;
     React.findDOMNode(this.refs.theInput).focus();
   },
   setResult: function(e){
@@ -163,7 +164,6 @@ var AutocompleteInput = React.createClass({
   },
   render: function() {
     var autocompleteList;
-    var value = this.state.value;
     if(Object.keys(this.state.suggestions).length) {
       var autocompleteListItems = this.state.suggestions.map(function(suggestion,index){
         var clazz = (index === this.state.activeSuggestionIndex)? 'active': '';
@@ -183,7 +183,7 @@ var AutocompleteInput = React.createClass({
     }
     return (
       <div className='form-group'>
-        <input type='text' autoComplete='off' onKeyDown={this.onKeyDown} name={this.props.name} ref='theInput' value={value} onFocus={this.showAutocomplete} onBlur={this.setResult} placeholder={this.props.placeholder} onChange={this.search}/>
+        <input type='text'autoComplete='off' onKeyDown={this.onKeyDown} name={this.props.name} ref='theInput' onFocus={this.showAutocomplete} onBlur={this.setResult} placeholder={this.props.placeholder} onChange={this.search}/>
         <div ref='autocomplete'>{autocompleteList}</div>
       </div>
     );

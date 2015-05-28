@@ -37,6 +37,8 @@
     "http-server": "^0.8.0",
     "lodash": "^3.6.0",
     "normalize.css": "^3.0.3",
-    "normalize.scss": "^0.1.0"
+    "normalize.scss": "^0.1.0",
+    "react": "^0.13.3",
+    "react-autosuggest": "^1.14.0"
   }
 }

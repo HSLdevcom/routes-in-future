@@ -9542,9 +9542,6 @@ var DATA = {
         "stop_id": "110084"
       },
       {
-        "stop_id": "110084"
-      },
-      {
         "stop_id": "110343"
       },
       {
@@ -15723,9 +15720,6 @@ var DATA = {
     "pattern_name": "",
     "route_id": "1039B",
     "stops": [
-      {
-        "stop_id": "110084"
-      },
       {
         "stop_id": "110084"
       },

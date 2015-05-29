@@ -63,8 +63,6 @@ var Search = React.createClass({
       return;
     }
     urls = cities.map(function(city) {
-      //var address = address.replace(' ','').replace(city,'');
-      //console.log(address)
       return 'http://matka.hsl.fi/geocoder/' + (number ? "address/" + city + "/" + address + "/" + number : "street/" + city + "/" + address);
     });
     return XhrPromise.getJsons(urls).then((function(_this) {
@@ -96,7 +94,9 @@ var Search = React.createClass({
           return console.log("Cannot find any locations with " + address + ", " + number + ", " + cities);
         }
       };
-    })(this));
+    })(this), function(a){
+        _this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
+    });
   },
 
   setLocation : function(lat, lon, city, address) {
@@ -145,6 +145,8 @@ var Search = React.createClass({
         }
       }
       return callback(null, addresses);
+    }, function(a){
+      return _this.props.setResult({lat:0,lon:0,city:''},_this.props.aid);
     });
   },
 

@@ -37,6 +37,7 @@ function App() {
       mergeVertexThreshold: 0
     }]
   });
+  //¨this.transitive.setRenderer('wireframe')
   this.transitiveLayer = new L.TransitiveLayer(this.transitive);
   this.oldRoutes = [];
   this.getOldRoutes();
@@ -183,8 +184,6 @@ App.prototype.showRoutesOnMap = function(data, type) {
       p.stops.forEach(function(s,index){
         if(index===0) {
           addToNetwork(s.stop_id,'start',{pid: p.pattern_id,index: index})
-        } else {
-          //addToNetwork(s.stop_id,p.stops[index-1].stop_id,{pid: p.pattern_id,index: index-1});
         }
         if(index===p.stops.length-1){
           addToNetwork(s.stop_id,'end',{pid: p.pattern_id,index: index});
@@ -194,48 +193,8 @@ App.prototype.showRoutesOnMap = function(data, type) {
       });
     });
     //createStartStops(network);
-    // var vars = [];
-    // _.forEach(network.allStops,function(stops,stop_id) {
-    //   _.forEach(stops,function(patterns,inner_stop_id) {
-        
-    //     if(inner_stop_id!=='end' && inner_stop_id!=='start'){
-    //       if(Object.keys(stops).length!==Object.keys(network.allStops[inner_stop_id]).length) {
-    //         console.log(Object.keys(stops))
-    //         console.log(Object.keys(network.allStops[inner_stop_id]))
-    //         if(vars.indexOf(stop_id)===-1) {
-    //           vars.push(stop_id)
-    //         }
-    //       }
-
-    //     }
-    //     if(inner_stop_id==='start' ||inner_stop_id==='end') {
-    //       if(vars.indexOf(stop_id)===-1) {
-    //         vars.push(stop_id)
-    //       }
-    //     }
-    //   });
-    // });
-    
-    var journeys = {};
-    patterns.map(function(pattern){
-      var stops = [];
-      journeys[pattern.pattern_id] = [];
-      _.forEach(junctions,function(value,key){
-
-        var foundStops = _.uniq(_.where(value,{pid:pattern.pattern_id}),'index');
-        for (var i = foundStops.length - 1; i >= 0; i--) {
-          stops.push(foundStops[i].index)
-        };
-      });
-      for (var i = stops.length - 1; i >= 0; i--) {
-        journeys[pattern.pattern_id].push(stops[i])
-      }
-      journeys[pattern.pattern_id].sort(function(a,b){
-        return a - b;
-      });
-    });
     var thing = [];
-    _.forEach(journeys,function(value, key){
+    _.forEach(junctions,function(value, key){
       var segments = [];
       for (var i = 0; i < value.length; i++) {
         if(i<value.length-1) {

@@ -87,7 +87,7 @@ $search-result-text-match-font-weight: 600;
 $search-result-border-radius: $border-radius;
 $search-result-max-height: 130px;
 $search-result-font-family: $font-family;
-$search-result-icon-color: $black;
+$search-result-icon-color: $gray;
 $search-form-icon-color: $white;
 $search-form-border-radius: $border-radius;
 $search-form-transparency: $transparency;
@@ -442,7 +442,7 @@ main {
 
 .route-search-form {
   
-  form {
+  .route-form {
     margin-bottom: 1em;
   }
 
@@ -626,10 +626,10 @@ main {
       content: " ";
       left: -18px;
       width: 3px;
-      height: calc(100% - 20px);
+      height: 100%;
       position: absolute;
       transform: translateX(50%);
-      top: 10px;
+      top: 5px;
       z-index: 98;
     }
   }
@@ -1004,6 +1004,21 @@ input.tt-input {
 }
 
 .react-autosuggest__suggestions {
+ &::-webkit-scrollbar-thumb { 
+    background: $white;
+    border: 1px solid $gray;
+    border-radius: 99em;
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar { 
+    background: $gray;
+    border-radius: 99em;
+    margin: 0 auto;
+    right: 2px;
+    width: 7px;
+  }
+  box-sizing: border-box;
   background-color: $search-result-background-color;
   color: $search-result-text-color;
   font-weight: $search-result-text-font-weight;
@@ -1018,7 +1033,7 @@ input.tt-input {
   overflow: auto;
   box-shadow: 0px 2px 15px gray;
   z-index: 1000;
-  position: relative;
+  position: absolute;
 }
 
 .react-autosuggest__suggestion--focused {
@@ -1028,14 +1043,15 @@ input.tt-input {
 }
 
 .react-autosuggest__suggestion {
-  padding: 0px 0 5px 0;
+  padding: 5px 0 5px 0;
   margin: 0;
   cursor: pointer;
-  height: 1.9em;
+  line-height: 1.4em;
 }
 
 .react-autosuggest__suggestion .icon {
   margin-right: 4px;
+  margin-bottom: -2px;
   fill: $search-result-icon-color;
 }
 

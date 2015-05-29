@@ -20631,7 +20631,6 @@ module.exports = Journey;\n\
  */\n\
 \n\
 function Journey(data, network) {\n\
-\n\
   this.network = network;\n\
 \n\
   for (var key in data) {\n\
@@ -20641,48 +20640,20 @@ function Journey(data, network) {\n\
   this.path = new NetworkPath(this);\n\
 \n\
   each(this.segments, function(segmentInfo) {\n\
+    var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
+    pathSegment.journeySegment = segmentInfo;\n\
+\n\
     if (segmentInfo.type === 'TRANSIT') {\n\
       if (segmentInfo.patterns) {\n\
-        var pathSegments = [];\n\
         each(segmentInfo.patterns, function(patternInfo) {\n\
-          var patternStops = [];\n\
-          for (var i = patternInfo.from_stop_index; i <= patternInfo.to_stop_index; i++) {\n\
-            patternStops.push(network.patterns[patternInfo.pattern_id].stops[i].stop_name);\n\
-          }\n\
-          var newPathSegment = true;\n\
-          each(pathSegments, function(pathSegment) {\n\
-            var pathStops = [];\n\
-            pathSegment.points.forEach(function(point) {\n\
-              pathStops.push(point.stop_name);\n\
-            });\n\
-            if (!(patternStops.filter(function(elem) {return pathStops.indexOf(elem) == -1;}).length && pathStops.filter(function(elem) {return patternStops.indexOf(elem) == -1;}).length)) {\n\
-              pathSegment.addPattern(network.patterns[patternInfo.pattern_id],\n\
-                patternInfo.from_stop_index, patternInfo.to_stop_index);\n\
-              newPathSegment = false;\n\
-              return;\n\
-            }\n\
-          });\n\
-          if (newPathSegment) {\n\
-            var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
-            pathSegment.journeySegment = segmentInfo;\n\
-            pathSegment.addPattern(network.patterns[patternInfo.pattern_id],\n\
-              patternInfo.from_stop_index, patternInfo.to_stop_index);\n\
-            pathSegments.push(pathSegment);\n\
-          }\n\
-        }, this);\n\
-        each(pathSegments, function(pathSegment) {\n\
-          this.path.addSegment(pathSegment);\n\
-        }, this);\n\
+          pathSegment.addPattern(network.patterns[patternInfo.pattern_id],\n\
+            patternInfo.from_stop_index, patternInfo.to_stop_index);\n\
+        });\n\
       } else if (segmentInfo.pattern_id) { // legacy support for single-pattern journey segments\n\
-        var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
-        pathSegment.journeySegment = segmentInfo;\n\
         pathSegment.addPattern(network.patterns[segmentInfo.pattern_id],\n\
           segmentInfo.from_stop_index, segmentInfo.to_stop_index);\n\
-        this.path.addSegment(pathSegment);\n\
       }\n\
     } else { // non-transit segment\n\
-      var pathSegment = new PathSegment(segmentInfo.type, this.path);\n\
-      pathSegment.journeySegment = segmentInfo;\n\
 \n\
       var streetEdges = [];\n\
       // screen out degenerate transfer segments\n\
@@ -20734,8 +20705,8 @@ function Journey(data, network) {\n\
         pathSegment.streetEdges = streetEdges;\n\
       }\n\
       pathSegment.points.push(getEndPoint(segmentInfo.to, network));\n\
-      this.path.addSegment(pathSegment);\n\
     }\n\
+    this.path.addSegment(pathSegment);\n\
   }, this);\n\
 }\n\
 \n\

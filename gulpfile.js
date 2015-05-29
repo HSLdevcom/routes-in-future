@@ -73,6 +73,7 @@ gulp.task('fonts', function () {
 });
 
 gulp.task('extras', function () {
+
   return gulp.src([
     'app/*.*',
     '!app/*.html'
@@ -95,7 +96,6 @@ gulp.task('test', ['styles', 'templates', 'fonts'], function () {
     }
   });
 });
-
 gulp.task('serve', ['styles', 'templates', 'fonts'], function () {
   browserSync({
     notify: false,

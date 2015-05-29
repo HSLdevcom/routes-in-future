@@ -282,13 +282,18 @@ var RouteSearchBox = React.createClass({
                   </div>;
                   // <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
       }
-    
+//    <AutocompleteInput  name='from' placeholder='Mistä?' />
+  //    <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
       return (
           <div className='route-search-form'>
-            <form name='route-search-form'  className='route-form' onSubmit={this.searchRoutes}>
+            <div className='route-form' >
               <h3>Katso, muuttuuko reittisi:</h3>
-              <AutocompleteInput cleared={this.state.cleared} name='from' placeholder='Mistä?' setResult={this.setResult}/>
-              <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
+              <div className="form-group">
+                <Search aid="from" cleared={this.state.cleared} setResult={this.setResult} placeholder='Mistä?'/>
+              </div>
+              <div className="form-group">
+                <Search aid="to" cleared={this.state.cleared} setResult={this.setResult} placeholder='Mihin?'/>
+              </div>
               <div className='form-group'>
                 <select className='select-box' ref='theDay' name='the-day'>
                   <option value='weekday'>Arkipäivä</option>
@@ -302,9 +307,9 @@ var RouteSearchBox = React.createClass({
                   <option value='evening'>Ilta</option>
                   <option value='night'>Yö</option>
                 </select>
-                <button ref='theSumbitBtn' type='submit'>Hae</button>
+                <button ref='theSumbitBtn' type='submit' onClick={this.searchRoutes}>Hae</button>
               </div>
-            </form>
+            </div>
               {errorContent}
               {resultContent}
           </div>

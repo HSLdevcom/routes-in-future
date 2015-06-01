@@ -56,6 +56,8 @@ var Search = React.createClass({
 
   findLocation : function(cities, address, number) {
     var urls;
+    var cityResults = [];
+    var _this = this;
     if (!cities || cities.length === 0) {
       //_this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
       var cities = ['espoo','helsinki','vantaa'];
@@ -63,10 +65,12 @@ var Search = React.createClass({
       return;
     }
     urls = cities.map(function(city) {
-      return 'http://matka.hsl.fi/geocoder/' + (number ? "address/" + city + "/" + address + "/" + number : "street/" + city + "/" + address);
+      return $.getJSON('http://matka.hsl.fi/geocoder/' + (number ? "address/" + city + "/" + address + "/" + number : "street/" + city + "/" + address))
+      .then(function(data){
+        cityResults.push(data);
+      });
     });
-    return XhrPromise.getJsons(urls).then((function(_this) {
-      return function(cityResults) {
+    return $.when.apply($,urls).then(function() {
         var addressString, data, foundLocations, i, len;
         foundLocations = [];
         for (i = 0, len = cityResults.length; i < len; i++) {
@@ -93,8 +97,7 @@ var Search = React.createClass({
           _this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
           return console.log("Cannot find any locations with " + address + ", " + number + ", " + cities);
         }
-      };
-    })(this), function(a){
+    }, function(a){
         _this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
     });
   },
@@ -117,11 +120,14 @@ var Search = React.createClass({
   searchAddresses : function(cities, address, number, callback) {
     var numberRegex, urls;
     var _this = this;
+    var cityResults = [];
     numberRegex = number ? new RegExp("^" + number) : /.*/;
     urls = cities.map(function(city) {
-      return 'http://matka.hsl.fi/geocoder/' + ("street/" + city + "/" + address);
+      return $.getJSON('http://matka.hsl.fi/geocoder/' + ("street/" + city + "/" + address)).then(function(data){
+        cityResults.push(data);
+      });
     });
-    return XhrPromise.getJsons(urls).then(function(cityResults) {
+    return $.when.apply($,urls).then(function() {
       var addresses, data, i, j, len, len1, ref, staircaseSelection;
       addresses = [];
       for (i = 0, len = cityResults.length; i < len; i++) {
@@ -153,7 +159,7 @@ var Search = React.createClass({
   searchSuggests : function(address, callback) {
     var cities;
     cities = "city=helsinki&city=vantaa&city=espoo";
-    return XhrPromise.getJson('http://matka.hsl.fi/geocoder/' + ("suggest/" + address + "?" + cities)).then((function(_this) {
+    return $.getJSON('http://matka.hsl.fi/geocoder/' + ("suggest/" + address + "?" + cities)).then((function(_this) {
       return function(data) {
         var all, city, i, j, len, len1, ref, ref1, stops, street, streetName, streets, uniqueCities;
         streets = [];
@@ -192,6 +198,7 @@ var Search = React.createClass({
           };
         });
         if (streets.length === 1 && stops.length === 0) {
+          all = streets;
           _this.searchAddresses([streets[0].city], streets[0].address, null, callback);
           return callback(null, all);
         } else {

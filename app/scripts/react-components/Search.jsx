@@ -17,218 +17,24 @@ var Search = React.createClass({
     //return this.setState(this.context.getStore('LocationStore').getLocationState());
   },
 
-  analyzeInput : function(input) {
-    var address, cities, city, containsComma, containsSpace, isAddressSearch, isLastCharSpace, isNumbersInQuery, isStopCodeSearch, number;
-    containsComma = input.lastIndexOf(',') > -1;
-    containsSpace = input.lastIndexOf(' ') > -1;
-    isLastCharSpace = /\s+$/.test(input);
-    isNumbersInQuery = input.match(/\d/) ? true : false;
-    isStopCodeSearch = isNumbersInQuery && !containsSpace;
-    isAddressSearch = (isNumbersInQuery || isLastCharSpace) && !isStopCodeSearch;
-    cities = [];
-    if (containsComma) {
-      address = input.substring(0, input.lastIndexOf(',')).replace(/\d+/g, '').trim();
-      city = input.substring(input.lastIndexOf(',') + 1, input.length).trim().replace(' ','');
-      number = isNumbersInQuery ? input.match(/\d+/)[0] : null;
-      if (city.length > 0) {
-        cities.push(city.toLowerCase());
-      }
-    } else if (isStopCodeSearch) {
-      address = input.trim();
-    } else {
-      address = input.replace(/\d+/g, '').trim();
-      number = isNumbersInQuery ? input.match(/\d+/)[0] : null;
-    }
-    if (this.state && this.state.previousSuggestCities && cities.length === 0) {
-      cities = cities.concat(this.state.previousSuggestCities);
-    }
-    return {
-      isValidSearch: input.trim().length > 0,
-      isLastCharSpace: isLastCharSpace,
-      isNumbersInQuery: isNumbersInQuery,
-      isAddressSearch: isAddressSearch,
-      query: input,
-      queryCities: cities,
-      queryAddress: address,
-      queryNumber: number
-    };
-  },
-
-  findLocation : function(cities, address, number) {
-    var urls;
-    var cityResults = [];
-    var _this = this;
-    if (!cities || cities.length === 0) {
-      //_this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
-      var cities = ['espoo','helsinki','vantaa'];
-      console.log("Cannot find location without city information, manually setting the cities :/");
-      return;
-    }
-    urls = cities.map(function(city) {
-      return $.getJSON('http://matka.hsl.fi/geocoder/' + (number ? "address/" + city + "/" + address + "/" + number : "street/" + city + "/" + address))
-      .then(function(data){
-        cityResults.push(data);
-      });
-    });
-    return $.when.apply($,urls).then(function() {
-        var addressString, data, foundLocations, i, len;
-        foundLocations = [];
-        for (i = 0, len = cityResults.length; i < len; i++) {
-          data = cityResults[i];
-          if (data.results.length > 0) {
-            foundLocations.push(data.results[0]);
-          }
-        }
-        if (foundLocations.length === 1) {
-          addressString = number ? address + " " + number + ", " + foundLocations[0].municipalityFi : address + " " + foundLocations[0].number + ", " + foundLocations[0].municipalityFi;
-          
-          var t = {
-            type:'street',
-            address: address,
-            city: foundLocations[0].municipalityFi,
-            selection: addressString
-          };
-
-          return _this.setLocation(foundLocations[0].location[1], foundLocations[0].location[0], foundLocations[0].municipalityFi,t);
-          
-        } else if (foundLocations.length > 1) {
-          return console.log("Query " + address + ", " + number + ", " + cities + " returns results from more than 1 city. Cannot set location.");
-        } else {
-          _this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
-          return console.log("Cannot find any locations with " + address + ", " + number + ", " + cities);
-        }
-    }, function(a){
-        _this.props.setResult({lat:0,lon:0,city:''},this.props.aid);
-    });
-  },
-
-  setLocation : function(lat, lon, city, address) {
-    return this.props.setResult({lat:lat,lon:lon,city:city},this.props.aid);
+  setLocation : function(lat, lon, address) {
+    return this.props.setResult({lat:lat,lon:lon},this.props.aid);
   },
 
   getSuggestions : function(input, callback) {
-    var analyzed;
-    this.callback = callback;
-    analyzed = this.analyzeInput(input);
-    if (analyzed.isAddressSearch && analyzed.queryCities.length > 0) {
-      return this.searchAddresses(analyzed.queryCities, analyzed.queryAddress, analyzed.queryNumber, callback);
-    } else {
-      return this.searchSuggests(analyzed.queryAddress, callback);
-    }
-  },
-
-  searchAddresses : function(cities, address, number, callback) {
-    var numberRegex, urls;
-    var _this = this;
-    var cityResults = [];
-    numberRegex = number ? new RegExp("^" + number) : /.*/;
-    urls = cities.map(function(city) {
-      return $.getJSON('http://matka.hsl.fi/geocoder/' + ("street/" + city + "/" + address)).then(function(data){
-        cityResults.push(data);
-      });
+    $.getJSON('http://dev.digitransit.fi/pelias/v1/search?boundary.rect.min_lat=59.9&boundary.rect.max_lat=60.45&boundary.rect.min_lon=24.3&boundary.rect.max_lon=25.5&text=' + input)
+    .then(function(data){
+      callback(null, data.features);
     });
-    return $.when.apply($,urls).then(function() {
-      var addresses, data, i, j, len, len1, ref, staircaseSelection;
-      addresses = [];
-      for (i = 0, len = cityResults.length; i < len; i++) {
-        data = cityResults[i];
-        ref = data.results;
-        for (j = 0, len1 = ref.length; j < len1; j++) {
-          address = ref[j];
-          if (numberRegex.test(parseInt(address.number))) {
-            staircaseSelection = address.unit != null ? address.unit : "";
-            addresses.push({
-              'type': 'address',
-              'address': address.streetFi,
-              'lat': address.location[1],
-              'lon': address.location[0],
-              'number': address.number,
-              'staircase': address.unit,
-              'city': address.municipalityFi,
-              'selection': address.streetFi + " " + address.number + staircaseSelection + ", " + address.municipalityFi
-            });
-          }
-        }
-      }
-      return callback(null, addresses);
-    }, function(a){
-      return _this.props.setResult({lat:0,lon:0,city:''},_this.props.aid);
-    });
-  },
-
-  searchSuggests : function(address, callback) {
-    var cities;
-    cities = "city=helsinki&city=vantaa&city=espoo";
-    return $.getJSON('http://matka.hsl.fi/geocoder/' + ("suggest/" + address + "?" + cities)).then((function(_this) {
-      return function(data) {
-        var all, city, i, j, len, len1, ref, ref1, stops, street, streetName, streets, uniqueCities;
-        streets = [];
-        uniqueCities = [];
-        ref = data.streetnames_fi;
-        for (i = 0, len = ref.length; i < len; i++) {
-          street = ref[i];
-          for (streetName in street) {
-            cities = street[streetName];
-            for (j = 0, len1 = cities.length; j < len1; j++) {
-              city = cities[j];
-              streets.push({
-                'type': 'street',
-                'address': "" + streetName,
-                'city': "" + city.key,
-                'selection': streetName + ", " + city.key
-              });
-              if ((ref1 = city.key.toLowerCase(), indexOf.call(uniqueCities, ref1) < 0) && streetName.toLowerCase() === address.toLowerCase()) {
-                uniqueCities.push(city.key.toLowerCase());
-              }
-            }
-          }
-        }
-        _this.setState({
-          previousSuggestCities: uniqueCities
-        });
-        stops = data.stops.map(function(result) {
-          return {
-            'type': 'stop',
-            'address': result.nameFi,
-            'city': result.municipalityFi,
-            'lat': result.location[1],
-            'lon': result.location[0],
-            'stopCode': result.stopCode,
-            'selection': result.nameFi + " (" + result.stopCode + "), " + result.municipalityFi
-          };
-        });
-        if (streets.length === 1 && stops.length === 0) {
-          all = streets;
-          _this.searchAddresses([streets[0].city], streets[0].address, null, callback);
-          return callback(null, all);
-        } else {
-          all = streets.concat(stops);
-          _this.setState({suggestions: all})
-          return callback(null, all);
-        }
-      };
-    })(this));
   },
 
   renderSuggestion : function(suggestion, input) {
     var afterMatch, beforeMatch, firstMatchIndex, icon, lastMatchIndex, match, reqex, value;
-    value = suggestion.selection;
+    value = suggestion.properties.label;
     reqex = new RegExp('\\b' + value, 'i');
     firstMatchIndex = value.toLowerCase().indexOf(input.toLowerCase());
     lastMatchIndex = firstMatchIndex + input.length;
-    switch (suggestion.type) {
-      case 'street':
-        icon = "<svg viewBox=\"0 0 40 40\" class=\"icon\"><use xlink:href=\"#icon-icon_place\"></use></svg>";
-        break;
-      case 'address':
-        icon = "<svg viewBox=\"0 0 40 40\" class=\"icon\"><use xlink:href=\"#icon-icon_place\"></use></svg>";
-        break;
-      case 'stop':
-        icon = "<svg viewBox=\"0 0 40 40\" class=\"icon\"><use xlink:href=\"#icon-icon_direction-b\"></use></svg>";
-        break;
-      default:
-        icon = "<span>*</span>";
-    }
+    icon = "<svg viewBox=\"0 0 40 40\" class=\"icon\"><use xlink:href=\"#icon-icon_place\"></use></svg>";
     if (firstMatchIndex === -1) {
       return React.createElement("span", null, React.createElement("span", {
         "dangerouslySetInnerHTML": {
@@ -249,19 +55,12 @@ var Search = React.createClass({
   },
 
   suggestionValue : function(suggestion) {
-    return suggestion.selection;
+    return suggestion.properties.label;
   },
 
   suggestionSelected : function(suggestion, e) {
-    var analyzed;
     e.preventDefault();
-    if (suggestion.lat !== void 0 && suggestion.lon !== void 0) {
-      return this.setLocation(suggestion.lat, suggestion.lon, suggestion.city);
-    } else {
-      analyzed = this.analyzeInput(suggestion.selection);
-      this.searchAddresses(analyzed.queryCities, analyzed.queryAddress, analyzed.queryNumber, this.callback);
-      return this.findLocation(analyzed.queryCities, analyzed.queryAddress, analyzed.queryNumber);
-    }
+    this.setLocation(suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0], suggestion.properties.label);
   },
 
   handleAutoSuggestMount : function(autoSuggestComponent) {

@@ -13,7 +13,7 @@ var LeftSidebar = React.createClass({
   },
   handleResize: function(e) {
     var listHeight = document.querySelectorAll('.route-form')[0].offsetHeight;
-    listHeight += document.querySelectorAll('.line-form')[0].offsetHeight;
+    // listHeight += document.querySelectorAll('.line-form')[0].offsetHeight;
     listHeight += document.querySelectorAll('.info')[0].offsetHeight;
     listHeight += document.querySelectorAll('.footer')[0].offsetHeight;
     listHeight += 100;
@@ -37,19 +37,19 @@ var LeftSidebar = React.createClass({
   render: function(){
     return (
       <div className="sidebar-inner">
-        <RouteSearchBox 
+        <RouteSearchBox
           isOpen={(this.state.open==='route')?true:false}
-          listHeight={this.state.listHeight} 
-          clearActiveRoutes={this.clearActiveRoutes} 
-          updateHeight={this.handleResize} 
-          listHeight={this.state.listHeight} 
+          listHeight={this.state.listHeight}
+          clearActiveRoutes={this.clearActiveRoutes}
+          updateHeight={this.handleResize}
+          listHeight={this.state.listHeight}
           setActiveRoutes={this.setActiveRoutes} />
-        <ReplacementLineSearch
+        {/*<ReplacementLineSearch
           isOpen={(this.state.open==='line')?true:false}
-          listHeight={this.state.listHeight} 
-          setActiveRoutes={this.setActiveRoutes} 
-          clearActiveRoutes={this.clearActiveRoutes} 
-          routes={this.state.DATA.routes} />
+          listHeight={this.state.listHeight}
+          setActiveRoutes={this.setActiveRoutes}
+          clearActiveRoutes={this.clearActiveRoutes}
+          routes={this.state.DATA.routes} />*/}
       </div>
     );
   }

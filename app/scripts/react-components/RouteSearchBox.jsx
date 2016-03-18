@@ -42,52 +42,53 @@ var RouteSearchBox = React.createClass({
         this.clearSearch();
         return this.setState({showError:true});
 
-      } else if(this.state.from.city !== 'Vantaa' && this.state.to.city !=='Vantaa') {
-        this.setState({cantSearch: true, showError:false, searchResults: []});
-        return this.props.clearActiveRoutes('route');
+      // } else if(this.state.from.city !== 'Vantaa' && this.state.to.city !=='Vantaa') {
+      //   this.setState({cantSearch: true, showError:false, searchResults: []});
+      //   return this.props.clearActiveRoutes('route');
       } else {
-        var startTime = '07:00';
-        var endTime = '11:00';
-        var profileDate = '2015-08-26';
-        var inputTimeofDay = React.findDOMNode(this.refs.theTime).value; 
-        var inputDayOfTheWeek = React.findDOMNode(this.refs.theDay).value; 
+        var startTime = '07:15';
+        var endTime = '08:15';
+        var profileDate = '2016-08-24';
+        var inputTimeofDay = React.findDOMNode(this.refs.theTime).value;
+        var inputDayOfTheWeek = React.findDOMNode(this.refs.theDay).value;
         var maxWalkTime = 20;
         var linkDaymonthyear = '26.08.2015';
         var linkHour = '08';
         if(inputTimeofDay === 'morning') {
           linkHour = '08';
-          startTime = '07:00';
-          endTime = '09:00';
+          startTime = '07:15';
+          endTime = '08:15';
         } else if (inputTimeofDay === 'day'){
-          linkHour = '13';
+          linkHour = '12';
           startTime = '12:00';
-          endTime = '14:00';
+          endTime = '13:00';
         } else if (inputTimeofDay === 'afternoon'){
-          linkHour = '17';
+          linkHour = '16';
           startTime = '16:00';
-          endTime = '18:00';
+          endTime = '17:00';
         } else if (inputTimeofDay === 'evening'){
-          linkHour = '21';
-          startTime = '18:00';
+          linkHour = '19';
+          startTime = '19:00';
           endTime = '20:00';
         } else if (inputTimeofDay === 'night'){
-          linkHour = '01';
+          linkHour = '22';
           startTime = '22:00';
-          endTime = '23:59';
+          endTime = '23:00';
           maxWalkTime = 45;
         }
 
         if(inputDayOfTheWeek === 'weekday') {
-          linkDaymonthyear = '26.08.2015';
-          profileDate = '2015-08-26';
-        } else if (inputTimeofDay === 'saturday'){
-          linkDaymonthyear = '29.08.2015';
-          profileDate = '2015-08-29';
-        } else if (inputTimeofDay === 'sunday'){
-          linkDaymonthyear = '30.08.2015';
-          profileDate = '2015-08-30';
+          linkDaymonthyear = '24.08.2016';
+          profileDate = '2016-08-24';
+        } else if (inputDayOfTheWeek === 'saturday'){
+          linkDaymonthyear = '27.08.2016';
+          profileDate = '2016-08-27';
+        } else if (inputDayOfTheWeek === 'sunday'){
+          linkDaymonthyear = '28.08.2016';
+          profileDate = '2016-08-28';
         }
-        
+
+
         this.setState({cantSearch: false, showError: false, linkHour: linkHour, linkDaymonthyear: linkDaymonthyear});
         this.props.clearActiveRoutes('route');
         var _this = this;
@@ -135,9 +136,7 @@ var RouteSearchBox = React.createClass({
               app.transitive.options.focusedJourney = '0_transit';
               app.showRoutesOnMap(transitivedata,'routesearch');
               //app.transitive.focusJourney('0_transit');
-              
             });
-
           }
 
         });
@@ -170,7 +169,7 @@ var RouteSearchBox = React.createClass({
         }
         results = this.state.searchResults.map(function(result, index) {
           if(result.summary!=='Non-transit options') {
-            var focused = (this.state.focusedIndex === index); 
+            var focused = (this.state.focusedIndex === index);
             var clazz = (this.state.focusedIndex === index)? 'result focused': 'result';
             var walkTime = Math.floor((result.access.reduce(function(a,b){
               return {time: a.time + b.time};
@@ -179,11 +178,11 @@ var RouteSearchBox = React.createClass({
               }).time + result.transit.reduce(function(a,b){
               return {walkTime: a.walkTime + b.walkTime};
               }).walkTime)/60) + ' min. kävelyä';
-            
+
             var time = <div className='time clearfix'>
                           <div className='total-time'>
                             <h3>
-                              {Math.floor(result.stats.min/60)} - 
+                              {Math.floor(result.stats.min/60)} -
                               {Math.floor((result.stats.max-result.transit[0].waitStats.max)/60)} min.
                             </h3>
                           </div>
@@ -191,13 +190,13 @@ var RouteSearchBox = React.createClass({
                             <h4>{walkTime} </h4>
                           </div>
                         </div>;
-            
+
             var routes =  result.transit.map(function(transit){
                             var from;
                             var to;
                             if(focused) {
                               from = transit.fromName.charAt(0) + transit.fromName.slice(1).toLowerCase();
-                              to = transit.toName.charAt(0) + transit.toName.slice(1).toLowerCase();                
+                              to = transit.toName.charAt(0) + transit.toName.slice(1).toLowerCase();
                             }
                             return (
                               <div>
@@ -227,7 +226,7 @@ var RouteSearchBox = React.createClass({
                                         return <h4 className={clazz} key={key}>...</h4>;
                                       }
                                     })}
-                                    <h4 className='avg-time'>{Math.floor(120/transit.rideStats.num)} min. välein</h4>
+                                    <h4 className='avg-time'>{Math.floor(60/transit.rideStats.num)} min. välein</h4>
                                   </div>
                                   <h5 className='to'>{to}</h5>
                                 </div>
@@ -261,7 +260,7 @@ var RouteSearchBox = React.createClass({
             {results}
           </div>
         </div>;
-      } 
+      }
       if(this.state.cantSearch && this.props.isOpen) {
         var href= 'http://www.reittiopas.fi?from_in='+this.state.from.name+'&to_in='+this.state.to.name+'&when=now&timetype=departure&hour='+this.state.linkHour+'&minute=00&daymonthyear='+this.state.linkDaymonthyear;
         errorContent =  <div className='error'>
@@ -272,7 +271,7 @@ var RouteSearchBox = React.createClass({
                             <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
                           </p>
                         </div>;
-      } 
+      }
       if(this.state.showError && this.props.isOpen){
         var href= 'http://www.reittiopas.fi?from_in='+this.state.from.name+'&to_in='+this.state.to.name+'&when=now&timetype=departure&hour='+this.state.linkHour+'&minute=00&daymonthyear='+this.state.linkDaymonthyear;
         errorContent =  <div className='error'>
@@ -299,13 +298,13 @@ var RouteSearchBox = React.createClass({
                   <option value='weekday'>Arkipäivä</option>
                   <option value='saturday'>Lauantai</option>
                   <option value='sunday'>Sunnuntai</option>
-                </select>                
+                </select>
                 <select className='select-box' ref='theTime' name='the-time'>
-                  <option value='morning'>Aamu</option>
-                  <option value='day'>Päivä</option>
-                  <option value='afternoon'>Iltapäivä</option>
-                  <option value='evening'>Ilta</option>
-                  <option value='night'>Yö</option>
+                  <option value='morning'>klo 7-8</option>
+                  <option value='day'>klo 12-13</option>
+                  <option value='afternoon'>klo 16-17</option>
+                  <option value='evening'>klo 19-20</option>
+                  <option value='night'>klo 22-23</option>
                 </select>
                 <button ref='theSumbitBtn' type='submit' onClick={this.searchRoutes}>Hae</button>
               </div>

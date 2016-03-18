@@ -25,7 +25,7 @@ L.TransitiveLayer = L.Class.extend({
     });
 
     this._transitive.on('update data', function() {
-      self._transitive.render();
+      //self._transitive.render();
       self._refresh();
     });
   },
@@ -59,8 +59,8 @@ L.TransitiveLayer = L.Class.extend({
       [bounds.getWest(), bounds.getSouth()],
       [bounds.getEast(), bounds.getNorth()]
     ]);
-    if(this._transitive.options.focusedJourney !== '' 
-      &&  this._transitive.data!==null 
+    if(this._transitive.options.focusedJourney !== ''
+      &&  this._transitive.data!==null
       && typeof this._transitive.network.journeys[this._transitive.options.focusedJourney]!=='undefined') {
       this._transitive.focusJourney(this._transitive.options.focusedJourney);
     }

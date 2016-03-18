@@ -1,19 +1,23 @@
 function App() {
   React.initializeTouchEvents(true);
   var _this = this;
-  this.DATA = DATA;
+  this.DATA = {
+    routes: [],
+    patterns: [],
+    stops: [],
+  } //DATA;
   var route_ids = [];
   var pats = [];
-  for (var i = 0; i < this.DATA.routes.length; i++) {
-    pats.push(_.where(this.DATA.patterns,{pattern_id: this.DATA.routes[i].route_id+'_1'}));
-  }
-  this.DATA.patterns = _.flatten(pats);
+  // for (var i = 0; i < this.DATA.routes.length; i++) {
+  //   pats.push(_.where(this.DATA.patterns,{pattern_id: this.DATA.routes[i].route_id+'_1'}));
+  // }
+  // this.DATA.patterns = _.flatten(pats);
   this.map =  L.map('map', {
     inertia: false,
     zoomAnimation: L.Browser.mobile,
     touchZoom: true,
     tap: true,
-    maxZoom: 18,
+    maxZoom: 14,
     minZoom: 11,
     dragging: true,
     maxBounds: L.latLngBounds([60.078534, 24.492334], [60.470071, 25.302576])
@@ -47,7 +51,7 @@ function App() {
 };
 App.prototype.getOldRoutes = function() {
   var _this = this;
-  $.get('http://matka.hsl.fi/otp/routers/default/index/agencies/HSL/routes/', function(data) {
+  $.get('http://matka.hsl.fi/otp/routers/hsl/index/routes', function(data) {
     _this.oldRoutes = data;
   });
 };
@@ -227,10 +231,10 @@ App.prototype.showRoutesOnMap = function(data, type) {
       };
     });
     data.journeys = oldstyle;
-
   }
 
   if (type === 'new' || type === 'routesearch') {
+    data.routes = DATA.routes;
     this.transitive.updateData(data);
     if (typeof data.journeys !== 'undefined' && data.journeys.length) {
       this.map.fitBounds(this.transitiveLayer.getBounds());
@@ -243,7 +247,7 @@ App.prototype.showRoutesOnMap = function(data, type) {
     }
   }
 };
-App.prototype.setActiveRoutes = function(routeIds) { 
+App.prototype.setActiveRoutes = function(routeIds) {
   var activeRouteIds = [];
   this.DATA.routes = this.DATA.routes.map(function(route) {
       for (var i = 0; i < routeIds.length; i++) {
@@ -324,12 +328,15 @@ App.prototype.openRouteInfo = function(route) {
 App.prototype.initializeMapLayers = function() {
   var _this = this;
   L.tileLayer('http://tulevatreitit.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
-    maxZoom: 14,
+    maxZoom: 19,
     minZoom: 11,
+    tileSize: 512,
+    zoomOffset: -1,
+    size: L.Browser.retina ? "@2x" : "",
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
   }).addTo(this.map);
-  
+
   this.map.addLayer(this.transitiveLayer);
 
   this.map.setView([60.287481, 24.996849], 11);

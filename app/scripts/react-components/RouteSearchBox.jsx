@@ -182,7 +182,7 @@ var RouteSearchBox = React.createClass({
             var time = <div className='time clearfix'>
                           <div className='total-time'>
                             <h3>
-                              {Math.floor(result.stats.min/60)} -
+                              {Math.floor(result.stats.min/60)} -&nbsp;
                               {Math.floor((result.stats.max-result.transit[0].waitStats.max)/60)} min.
                             </h3>
                           </div>
@@ -263,7 +263,7 @@ var RouteSearchBox = React.createClass({
 
         },this);
         resultContent = <div className='result-content'>
-          <h4 className='pre-heading'>Uudet reittivaihtoehtosi alkaen 10.8.2015</h4>
+          <h4 className='pre-heading'>Uudet reittivaihtoehtosi alkaen 15.8.2016</h4>
           <div onClick={this.clearSearch}>
             <Icon img='icon-icon_close' className='close' fill='999'/>
           </div>

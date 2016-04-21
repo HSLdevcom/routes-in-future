@@ -204,9 +204,19 @@ var RouteSearchBox = React.createClass({
                                   <h5 className='from'>{from}</h5>
                                   <div className='result-routes'>
                                     {transit.routes.map(function(route,index){
+                                      /* Make sure Metro lines are only displayed as Metro with no numbers or multiples */
+                                      if (route.mode === 'SUBWAY') {
+                                        route.shortName = 'Metro';
+                                        if (index > 0 && transit.routes[index-1].mode === 'SUBWAY') {
+                                          return;
+                                        }
+                                      }
+
                                       var clazz = 'result-route ' + route.mode;
+                                      var key = 'resultroute' + index;
                                       var icon;
-                                      if(route.mode ==='BUS') {
+
+                                      if (route.mode ==='BUS') {
                                         icon = <Icon img='icon-icon_bus'/>;
                                       } else if(route.mode === 'TRAM') {
                                         icon = <Icon img='icon-icon_tram'/>;
@@ -217,12 +227,13 @@ var RouteSearchBox = React.createClass({
                                       } else if(route.mode === 'FERRY') {
                                         icon = <Icon img='icon-icon_ferry'/>;
                                       }
-                                      var key = 'resultroute'+index;
-                                      if(typeof route.shortName==='undefined') route.shortName = 'Metro';
-                                      var txt = (index===(transit.routes.length-1))? route.shortName : route.shortName+' /';
-                                      if(index<3 || focused){
+
+                                      var txt = route.shortName;
+                                      txt = (index === (transit.routes.length-1) || txt === 'Metro') ? txt : txt + ' /';
+
+                                      if (index < 3 || focused){
                                         return <h4 className={clazz} key={key}>{icon}{txt}</h4>;
-                                      } else if(index===7) {
+                                      } else if(index === 7) {
                                         return <h4 className={clazz} key={key}>...</h4>;
                                       }
                                     })}

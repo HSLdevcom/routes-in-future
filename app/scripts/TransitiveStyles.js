@@ -84,13 +84,16 @@ function setTransitiveStyles() {
     },
     stroke: function(display, data, index, utils) {
       var point = data.owner;
-      if(typeof point.patterns!=='undefined' && 
+      if(typeof point.patterns!=='undefined' &&
          typeof point.patterns[0].route.getColor()!=='undefined' ) {
           return point.patterns[0].route.getColor();
       }
       if (!point.isFocused()) {
         return '#e0e0e0';
       } else {
+        if (typeof point.patterns!=='undefined' && point.patterns[0].route.route_type === 'SUBWAY') {
+          return '#FF640E';
+        }
         return '#007AC9';
       }
     },
@@ -162,8 +165,7 @@ function setTransitiveStyles() {
           } else {
             return '#007AC9';
           }
-        } 
-
+        }
         return '#007AC9';
       } else {
         return 'rgba(139, 137, 137, 0.5)';
@@ -261,7 +263,7 @@ function setTransitiveStyles() {
           if (segment.type === 'TRANSIT') {
             if (segment.mode == 0) {
               return '#00985f';
-            } else if (segment.mode == 1) {
+            } else if (segment.mode == 'SUBWAY') {
               return '#FF640E';
             } else if (segment.mode == 2) {
               return '#8c4799';
@@ -359,7 +361,7 @@ function setTransitiveStyles() {
 
   STYLES.segment_label_containers = {
     fill: function(display, data) {
-      if(typeof data.parent.patterns!=='undefined' && 
+      if(typeof data.parent.patterns!=='undefined' &&
          typeof data.parent.patterns[0].route.getColor()!=='undefined' ) {
             return data.parent.patterns[0].route.getColor();
       }

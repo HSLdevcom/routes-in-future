@@ -12765,7 +12765,7 @@ function getTurnPoints(walkSteps) {\n\
 }\n\
 \n\
 function getStopId(stop) {\n\
-  return stop.cluster || stop.id;\n\
+  return stop.id;\n\
 }\n\
 \n\
 /**\n\

@@ -91,8 +91,16 @@ function setTransitiveStyles() {
       if (!point.isFocused()) {
         return '#e0e0e0';
       } else {
-        if (typeof point.patterns!=='undefined' && point.patterns[0].route.route_type === 'SUBWAY') {
-          return '#FF640E';
+        if (typeof point.patterns!=='undefined') {
+          if (point.patterns[0].route.route_type === 'SUBWAY') {
+            return '#FF640E';
+          }
+          if (point.patterns[0].route.route_type === 'TRAM') {
+            return '#00985f';
+          }
+          if (point.patterns[0].route.route_type === 'RAIL') {
+            return '#8c4799';
+          }
         }
         return '#007AC9';
       }
@@ -261,11 +269,11 @@ function setTransitiveStyles() {
           return notFocusedColor;
         } else {
           if (segment.type === 'TRANSIT') {
-            if (segment.mode == 0) {
+            if (segment.mode == 'TRAM') {
               return '#00985f';
             } else if (segment.mode == 'SUBWAY') {
               return '#FF640E';
-            } else if (segment.mode == 2) {
+            } else if (segment.mode == 'RAIL') {
               return '#8c4799';
             } else if (segment.mode == 4) {
               return '#00b9e4';

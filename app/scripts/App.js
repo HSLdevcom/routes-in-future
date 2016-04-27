@@ -28,13 +28,13 @@ function App() {
     focusedJourney: '',
     styles:setTransitiveStyles(),
     zoomFactors: [{
+    //   minScale: 0,
+    //   gridCellSize: 25,
+    //   internalVertexFactor: 1000000,
+    //   angleConstraint: 22.5, //22.5
+    //   mergeVertexThreshold: 200
+    // }, {
       minScale: 0,
-      gridCellSize: 25,
-      internalVertexFactor: 1000000,
-      angleConstraint: 22.5, //22.5
-      mergeVertexThreshold: 200
-    }, {
-      minScale: 1.5,
       gridCellSize: 0,
       internalVertexFactor: 0,
       angleConstraint: 5,

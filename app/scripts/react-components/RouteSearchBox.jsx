@@ -118,7 +118,7 @@ var RouteSearchBox = React.createClass({
           sorted.map(function(option){
             var option = option;
             if(typeof option.transit!=='undefined') {
-              if (!_.includes(seen, option.summary.split("via")[0])){
+              if (!_.some(seen, function(seenStr) {return _.contains(option.summary.split("via")[0], seenStr)})){
                 seen.push(option.summary.split("via")[0]);
                 valid.push(option);
               }

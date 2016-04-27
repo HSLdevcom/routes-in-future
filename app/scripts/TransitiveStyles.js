@@ -101,6 +101,9 @@ function setTransitiveStyles() {
           if (point.patterns[0].route.route_type === 'RAIL') {
             return '#8c4799';
           }
+          if (point.patterns[0].route.route_type === 'FERRY') {
+            return '#00b9e4';
+          }
         }
         return '#007AC9';
       }
@@ -275,7 +278,7 @@ function setTransitiveStyles() {
               return '#FF640E';
             } else if (segment.mode == 'RAIL') {
               return '#8c4799';
-            } else if (segment.mode == 4) {
+            } else if (segment.mode == 'FERRY') {
               return '#00b9e4';
             } else {
               return '#007AC9';

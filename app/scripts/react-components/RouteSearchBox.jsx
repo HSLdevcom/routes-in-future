@@ -56,23 +56,23 @@ var RouteSearchBox = React.createClass({
         var linkHour = '08';
         if(inputTimeofDay === 'morning') {
           linkHour = '08';
-          startTime = '07:15';
-          endTime = '08:15';
+          startTime = '07:00';
+          endTime = '09:05';
         } else if (inputTimeofDay === 'day'){
           linkHour = '12';
-          startTime = '12:00';
-          endTime = '13:00';
+          startTime = '11:00';
+          endTime = '13:05';
         } else if (inputTimeofDay === 'afternoon'){
           linkHour = '16';
-          startTime = '16:00';
+          startTime = '14:55';
           endTime = '17:00';
         } else if (inputTimeofDay === 'evening'){
           linkHour = '19';
-          startTime = '19:00';
+          startTime = '17:55';
           endTime = '20:00';
         } else if (inputTimeofDay === 'night'){
           linkHour = '22';
-          startTime = '22:00';
+          startTime = '20:55';
           endTime = '23:00';
           maxWalkTime = 45;
         }
@@ -237,7 +237,7 @@ var RouteSearchBox = React.createClass({
                                         return <h4 className={clazz} key={key}>...</h4>;
                                       }
                                     })}
-                                    <h4 className='avg-time'>{Math.floor(60/transit.rideStats.num)} min. välein</h4>
+                                    <h4 className='avg-time'>noin {Math.floor(120/transit.rideStats.num)} min. välein</h4>
                                   </div>
                                   <h5 className='to'>{to}</h5>
                                 </div>
@@ -311,11 +311,11 @@ var RouteSearchBox = React.createClass({
                   <option value='sunday'>Sunnuntai</option>
                 </select>
                 <select className='select-box' ref='theTime' name='the-time'>
-                  <option value='morning'>klo 7-8</option>
-                  <option value='day'>klo 12-13</option>
-                  <option value='afternoon'>klo 16-17</option>
-                  <option value='evening'>klo 19-20</option>
-                  <option value='night'>klo 22-23</option>
+                  <option value='morning'>klo 7-9</option>
+                  <option value='day'>klo 11-13</option>
+                  <option value='afternoon'>klo 15-17</option>
+                  <option value='evening'>klo 18-20</option>
+                  <option value='night'>klo 21-23</option>
                 </select>
                 <button ref='theSumbitBtn' type='submit' onClick={this.searchRoutes}>Hae</button>
               </div>

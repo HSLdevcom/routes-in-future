@@ -179,15 +179,23 @@ var RouteSearchBox = React.createClass({
               return {walkTime: a.walkTime + b.walkTime};
               }).walkTime)/60) + ' min. kävelyä';
 
+            var minDuration = Math.floor(result.stats.min/60);
+            var maxDuration = Math.floor((result.stats.max-result.transit[0].waitStats.max)/60);
+            var durationStr;
+            if (minDuration == maxDuration) {
+              durationStr = 'Noin ' + minDuration + ' min.';
+            } else {
+              durationStr = minDuration + ' - ' + maxDuration + ' min.';
+            }
+
             var time = <div className='time clearfix'>
                           <div className='total-time'>
                             <h3>
-                              {Math.floor(result.stats.min/60)} -&nbsp;
-                              {Math.floor((result.stats.max-result.transit[0].waitStats.max)/60)} min.
+                              {durationStr}
                             </h3>
                           </div>
                           <div className='walk-time'>
-                            <h4>{walkTime} </h4>
+                            <h4> josta {walkTime} </h4>
                           </div>
                         </div>;
 

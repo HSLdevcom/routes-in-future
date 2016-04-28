@@ -229,7 +229,10 @@ function setTransitiveStyles() {
       if (point.containsBoardPoint() || point.containsAlightPoint())
         return 'bold';
     },
-
+    'font-family': function(display, data, index, utils) {
+      return "'Gotham Rounded SSm A', 'Gotham Rounded SSm B', 'Helvetica Neue', Helvetica, Arial, sans-serif "
+    },
+    
     /**
      * 'orientations' is a transitive-specific attribute used to specify allowable
      * label placement orientations expressed as one of eight compass directions

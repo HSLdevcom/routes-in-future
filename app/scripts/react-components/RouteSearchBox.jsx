@@ -206,6 +206,26 @@ var RouteSearchBox = React.createClass({
                               from = transit.fromName.charAt(0) + transit.fromName.slice(1).toLowerCase();
                               to = transit.toName.charAt(0) + transit.toName.slice(1).toLowerCase();
                             }
+
+                            transit.routes.sort(function(routea, routeb) {
+                              var partsA = (routea.shortName || '').match(/^[A-Za-z]?(0*)([0-9]*)/);
+                              var partsB = (routeb.shortName || '').match(/^[A-Za-z]?(0*)([0-9]*)/);
+                              if (partsA[1].length !== partsB[1].length) {
+                                if (partsA[1].length + partsA[2].length === 0) {
+                                  return -1; // A is the one with no numbers at all, wins leading zero
+                                } else if (partsB[1].length + partsB[2].length === 0) {
+                                  return 1; // B is the one with no numbers at all, wins leading zero
+                                }
+                                return partsB[1].length - partsA[1].length; // more leading zeros wins
+                              }
+                              var numberA = parseInt(partsA[2] || '0', 10);
+                              var numberB = parseInt(partsB[2] || '0', 10);
+                              return numberA - numberB ||
+                                (routea.shortName || '')
+                                .localeCompare(routeb.shortName || '') || (routea.longName || '')
+                                .localeCompare(routeb.longName || '');
+                            });
+
                             return (
                               <div>
                                 <div className='access-transit-egress'>

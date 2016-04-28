@@ -64,8 +64,8 @@ var RouteSearchBox = React.createClass({
           endTime = '13:05';
         } else if (inputTimeofDay === 'afternoon'){
           linkHour = '16';
-          startTime = '14:55';
-          endTime = '17:00';
+          startTime = '15:00';
+          endTime = '17:05';
         } else if (inputTimeofDay === 'evening'){
           linkHour = '19';
           startTime = '17:55';
@@ -263,7 +263,7 @@ var RouteSearchBox = React.createClass({
 
         },this);
         resultContent = <div className='result-content'>
-          <h4 className='pre-heading'>Uudet reittivaihtoehtosi alkaen 15.8.2016</h4>
+          <h4 className='pre-heading'>Reittivaihtoehtoja 15.8.2016 alkaen</h4>
           <div onClick={this.clearSearch}>
             <Icon img='icon-icon_close' className='close' fill='999'/>
           </div>

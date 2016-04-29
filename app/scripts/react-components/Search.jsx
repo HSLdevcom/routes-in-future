@@ -22,7 +22,16 @@ var Search = React.createClass({
   },
 
   getSuggestions : function(input, callback) {
-    $.getJSON('http://dev.digitransit.fi/pelias/v1/search?boundary.rect.min_lat=59.9&boundary.rect.max_lat=60.45&boundary.rect.min_lon=24.3&boundary.rect.max_lon=25.5&text=' + input)
+    var queryParams = $.param({
+      'focus.point.lat': '60.1747',
+      'focus.point.lon': '24.8012',
+      'boundary.rect.min_lat': '59.9',
+      'boundary.rect.max_lat': '60.45',
+      'boundary.rect.min_lon': '24.3',
+      'boundary.rect.max_lon': '25.5',
+      'text': input
+    });
+    $.getJSON('http://api.digitransit.fi/geocoding/v1/search?' + queryParams)
     .then(function(data){
       callback(null, data.features);
     });

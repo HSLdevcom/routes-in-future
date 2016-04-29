@@ -10,7 +10,7 @@ $gray-blue-light: rgb(182, 193, 199);
 $light-gray: #ddd;
 $gray: #999;
 
-// Palette 
+// Palette
 $hsl-blue: #007ac9;
 $hsl-tram-green: #00985f;
 $hsl-metro-orange: #ff6319;
@@ -20,13 +20,13 @@ $hsl-pink: #f092cd;
 $hsl-alert: #dc0451;
 $hsl-distruption: #fed100;
 
-// Fonts 
-$font-family: Arial, Georgia, Serif;
+// Fonts
+$font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-// Application base colors 
+// Application base colors
 $background-color: #eef1f3;
 
-// Vehicle colors 
+// Vehicle colors
 $bus-color: $hsl-blue;
 $tram-color: $hsl-tram-green;
 $metro-color: $hsl-metro-orange;
@@ -34,7 +34,7 @@ $train-color: $hsl-train-red;
 $ferry-color: $hsl-ferry-blue;
 
 
-// Icon fonts 
+// Icon fonts
 @font-face {
   font-family: 'reittiopas-icon-font-1';
   src: url('../fonts/hslpiktokehys-regular-webfont.eot');
@@ -137,22 +137,22 @@ body {
 }
 
 body {
-  font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif; 
+  font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: 18px;
 }
 
-div, 
-header, 
-footer, 
-nav, 
-aside, 
-section, 
-main, 
-button, 
-input, 
+div,
+header,
+footer,
+nav,
+aside,
+section,
+main,
+button,
+input,
 textarea {
   box-sizing: border-box;
 }
@@ -181,7 +181,7 @@ h3 {
   font-family: 'Gotham Rounded SSm A', 'Gotham Rounded SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.4em;
   font-style: normal;
-  font-weight: 500; 
+  font-weight: 500;
   line-height: 1.1em;
 }
 
@@ -201,7 +201,7 @@ p {
 }
 
 select,
-input, 
+input,
 button {
   display: block;
   font-size: 1em;
@@ -295,14 +295,14 @@ main {
   width: 360px;
   z-index: 2;
 
-  &::-webkit-scrollbar-thumb { 
+  &::-webkit-scrollbar-thumb {
     background: $white;
     border: 1px solid $gray;
     border-radius: 99em;
     width: 3px;
   }
 
-  &::-webkit-scrollbar { 
+  &::-webkit-scrollbar {
     background: $gray;
     border-radius: 99em;
     margin: 0 auto;
@@ -335,10 +335,10 @@ main {
   background: $hsl-blue;
   color: $white;
   padding: 10px 15px 15px;
-  
+
   h3 {
     margin-bottom: .5em;
-    
+
     .date {
       color: $hsl-distruption;
       font-size: .75em;
@@ -378,14 +378,14 @@ main {
   }
 
   .read-more-link {
-    
+
     .open {
       display: none;
     }
 
     &.open {
       margin: 1em 0 0;
-  
+
       .open {
         display: inline-block;
       }
@@ -419,7 +419,7 @@ main {
 .route-search-form,
 .line-search-form {
   padding: 15px 20px 10px;
-  
+
   h3,
   h4 {
     padding-left: 10px;
@@ -441,7 +441,7 @@ main {
 }
 
 .route-search-form {
-  
+
   .route-form {
     margin-bottom: 1em;
   }
@@ -449,7 +449,7 @@ main {
   .result-content {
     position: relative;
   }
-  
+
   .select-box:first-child {
     margin-right: 2.08333333333333%;
   }
@@ -470,7 +470,7 @@ main {
 
 .line-search-form {
   border-top: 2px solid $white;
-  
+
   form {
     margin-bottom: 1em;
   }
@@ -514,7 +514,7 @@ main {
 
   .error {
     position: relative;
-   
+
     a {
       color: $hsl-alert;
       display: inline-block;
@@ -528,7 +528,7 @@ main {
 .form-group {
   margin: 0 0 1em;
   position: relative;
-  
+
   input {
     margin: 0;
   }
@@ -557,15 +557,15 @@ main {
     padding: 0;
     position: relative;
     width: 100%;
-    
-    &::-webkit-scrollbar-thumb { 
+
+    &::-webkit-scrollbar-thumb {
       background: $white;
       border: 1px solid $gray;
       border-radius: 99em;
       width: 3px;
     }
 
-    &::-webkit-scrollbar { 
+    &::-webkit-scrollbar {
       background: $gray;
       border-radius: 99em;
       margin: 0 auto;
@@ -585,21 +585,21 @@ main {
 }
 
 .search-results {
-  
+
   margin-top: 10px;
   min-height: 50px;
   overflow: auto;
   position: relative;
   width: 100%;
-  
-  &::-webkit-scrollbar-thumb { 
+
+  &::-webkit-scrollbar-thumb {
     background: $white;
     border: 1px solid $gray;
     border-radius: 99em;
     width: 3px;
   }
 
-  &::-webkit-scrollbar { 
+  &::-webkit-scrollbar {
     background: $gray;
     border-radius: 99em;
     margin: 0 auto;
@@ -611,16 +611,16 @@ main {
 .result {
   background: $white;
   border: 1px solid $light-gray;
-  border-radius: 3px;   
+  border-radius: 3px;
   cursor: pointer;
-  margin: 1em 0;   
-  padding: 0 10px 10px 30px; 
+  margin: 1em 0;
+  padding: 0 10px 10px 30px;
   position: relative;
   width: 98%;
-  
+
   .result-inner {
     position: relative;
-    
+
     &:before {
       background-color: #999;
       content: " ";
@@ -639,7 +639,7 @@ main {
   .from-adress,
   .to-adress {
     position: relative;
-    
+
     &:before {
       border: 0;
       border-radius: 99em;
@@ -679,7 +679,7 @@ main {
 
   &.focused {
     border: 3px $hsl-blue solid;
-    
+
     .to,
     .from ,
     .avg-time,
@@ -718,7 +718,7 @@ main {
     font-size: 13px;
     font-weight: 500;
     margin: 0 0 .5em;
-    
+
     &.from,
     &.to {
       font-weight: 500;
@@ -727,13 +727,13 @@ main {
     &.from {
       margin: 0 0 .25em;
     }
-    
+
     &.to {
       margin: .25em 0 0;
     }
-    
+
     &:last-child {
-      margin: .5em 0 0;   
+      margin: .5em 0 0;
     }
 
     &:last-of-type {
@@ -751,7 +751,7 @@ h4.result-route {
   font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-style: normal;
-  font-weight: 500; 
+  font-weight: 500;
   line-height: 22px;
   margin: 0 .5em 0 0;
   padding: 0;
@@ -766,34 +766,34 @@ h4.result-route {
 
   &.BUS {
     color: $bus-color;
-    
+
     .icon {
       color: $white;
       fill: $bus-color;
     }
   }
-  
+
   &.TRAM {
-    color: $tram-color; 
-    
+    color: $tram-color;
+
     .icon {
       color: $white;
       fill: $tram-color;
     }
   }
-  
+
   &.RAIL {
-    color: $train-color; 
-    
+    color: $train-color;
+
     .icon {
       color: $white;
       fill: $train-color;
     }
   }
-  
+
   &.SUBWAY {
     color: $metro-color;
-    
+
     .icon {
       color: $white;
       fill: $metro-color;
@@ -802,7 +802,7 @@ h4.result-route {
 
   &.FERRY {
     color: $ferry-color;
-    
+
     .icon {
       color: $white;
       fill: $ferry-color;
@@ -814,7 +814,7 @@ h4.result-route {
   background: $background-color;
   margin: 0 -10px 8px -30px;
   padding: 5px 0 5px 10px;
-  
+
   .total-time,
   .walk-time {
     float: left;
@@ -822,7 +822,7 @@ h4.result-route {
 
   .total-time {
     margin-right: 8px;
-    
+
     h3 {
       font-size: 13px;
       line-height: 15px;
@@ -830,7 +830,7 @@ h4.result-route {
       padding: 0;
     }
   }
-  
+
   .walk-time h4 {
     font-size: 13px;
     line-height: 15px;
@@ -846,15 +846,15 @@ h4.result-route {
   overflow: auto;
   position: relative;
   width: 100%;
-  
-  &::-webkit-scrollbar-thumb { 
+
+  &::-webkit-scrollbar-thumb {
     background: $white;
     border: 1px solid $gray;
     border-radius: 99em;
     width: 3px;
   }
 
-  &::-webkit-scrollbar { 
+  &::-webkit-scrollbar {
     background: $gray;
     border-radius: 99em;
     margin: 0 auto;
@@ -869,7 +869,7 @@ h4.result-route {
   padding: .5em 0;
   position: relative;
   width: 100%;
-  
+
   .icon {
     color: $white;
     fill: $bus-color;
@@ -878,7 +878,7 @@ h4.result-route {
     margin: 0 5px 0 0;
     width: 2em;
   }
-  
+
   .checkmark-icon-nr {
     display: flex;
     flex-wrap: nowrap;
@@ -910,7 +910,7 @@ h4.result-route {
     float: left;
     font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-style: normal;
-    font-weight: 500; 
+    font-weight: 500;
     line-height: 2em;
   }
 
@@ -959,7 +959,7 @@ h4.result-route {
     background: $white;
 
     .checkmark {
-      
+
       &:before {
         border-bottom: 3px solid $hsl-blue;
         border-left: 3px solid $hsl-blue;
@@ -1004,14 +1004,14 @@ input.tt-input {
 }
 
 .react-autosuggest__suggestions {
- &::-webkit-scrollbar-thumb { 
+ &::-webkit-scrollbar-thumb {
     background: $white;
     border: 1px solid $gray;
     border-radius: 99em;
     width: 3px;
   }
 
-  &::-webkit-scrollbar { 
+  &::-webkit-scrollbar {
     background: $gray;
     border-radius: 99em;
     margin: 0 auto;
@@ -1134,7 +1134,7 @@ footer {
   transform: translateX(-50%);
   width: 70%;
   z-index: 99;
-  
+
   &.open {
     display: block;
   }
@@ -1160,12 +1160,12 @@ footer {
 }
 
 .route-info-modal {
-  
+
   h2 {
     font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B', "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-style: normal;
-    font-weight: 500; 
-    color: $hsl-blue; 
+    font-weight: 500;
+    color: $hsl-blue;
   }
 
   table,
@@ -1182,7 +1182,7 @@ footer {
   td {
     border: 1px solid $black;
     font-size: 1em;
-    line-height: 1.1em;  
+    line-height: 1.1em;
     padding: .5em 0;
     text-align: center;
   }
@@ -1198,7 +1198,7 @@ footer {
     max-height: 98vh;
     min-height: 98vh;
     width: 100%;
-    
+
     textarea {
       max-height: 40px !important;
     }
@@ -1218,10 +1218,10 @@ footer {
 }
 
 @media screen and (min-width: 1500px) {
-  
+
 }
 @media screen and (max-width: 1100px) {
-  
+
 }
 @media screen and (max-width: 1024px) {
   .left-sidebar {

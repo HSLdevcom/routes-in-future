@@ -132,7 +132,7 @@ var RouteSearchBox = React.createClass({
 
             od.profile = validObj;
             profiler.journey(od,function(err,transitivedata) {
-              _this.setState({searchResults : valid, showError: (valid.length)?false : true});
+              _this.setState({searchResults : valid, showError: (valid.length)?false : true, focusedIndex: 0});
               app.transitive.options.focusedJourney = '0_transit';
               app.showRoutesOnMap(transitivedata,'routesearch');
               //app.transitive.focusJourney('0_transit');

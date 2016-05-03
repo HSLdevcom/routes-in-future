@@ -64,11 +64,14 @@ var Search = React.createClass({
   },
 
   suggestionValue : function(suggestion) {
+    this.suggestionSelected(suggestion);
     return suggestion.properties.label;
   },
 
   suggestionSelected : function(suggestion, e) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     this.setLocation(suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0], suggestion.properties.label);
   },
 
@@ -76,41 +79,8 @@ var Search = React.createClass({
     var input;
     if (autoSuggestComponent) {
       input = autoSuggestComponent.refs.input.getDOMNode();
-      input.addEventListener('keydown', this.suggestionArrowPress);
       return this.autoSuggestInput = input;
     }
-  },
-
-  suggestionArrowPress : function(e) {
-    var autoSuggestDiv, autoSuggestDivs, selectedSuggestion, suggestions;
-    if(e.which === 9) {
-       analyzed = this.analyzeInput(this.autoSuggestInput.value);
-       return this.findLocation(analyzed.queryCities, analyzed.queryAddress, analyzed.queryNumber);
-    }
-    if (e.which !== 38 && e.which !== 40) {
-      return;
-    }
-    suggestions = document.getElementsByClassName("react-autosuggest__suggestion--focused");
-    if (suggestions.length === 0) {
-      return;
-    }
-    selectedSuggestion = suggestions[0];
-    autoSuggestDivs = document.getElementsByClassName("react-autosuggest__suggestions");
-    if (autoSuggestDivs.length === 0) {
-      return;
-    }
-    autoSuggestDiv = autoSuggestDivs[0];
-    if (e.which === 38) {
-      return autoSuggestDiv.scrollTop = selectedSuggestion.offsetTop - 90;
-    } else if (e.which === 40) {
-      return autoSuggestDiv.scrollTop = selectedSuggestion.offsetTop - 60;
-    }
-  },
-  onSubmit : function(e) {
-    var analyzed;
-    e.preventDefault();
-    analyzed = this.analyzeInput(this.autoSuggestInput.value);
-    return this.findLocation(analyzed.queryCities, analyzed.queryAddress, analyzed.queryNumber);
   },
 
   render : function() {

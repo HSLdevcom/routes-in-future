@@ -85,7 +85,9 @@ var Search = React.createClass({
 
   onSubmit : function(e) {
     e.preventDefault();
-    this.props.searchRoutes(e);
+    if (typeof this.props.searchRoutes === "function") {
+      this.props.searchRoutes(e);
+    }
   },
 
   render : function() {

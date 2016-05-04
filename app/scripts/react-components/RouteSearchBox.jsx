@@ -327,7 +327,7 @@ var RouteSearchBox = React.createClass({
             <div className='route-form' >
               <h3>Katso, muuttuuko reittisi:</h3>
               <div className="form-group">
-                <Search aid="from" cleared={this.state.cleared} setResult={this.setResult} searchRoutes={this.searchRoutes} placeholder='Mistä?'/>
+                <Search aid="from" cleared={this.state.cleared} setResult={this.setResult} placeholder='Mistä?'/>
               </div>
               <div className="form-group">
                 <Search aid="to" cleared={this.state.cleared} setResult={this.setResult} searchRoutes={this.searchRoutes} placeholder='Mihin?'/>

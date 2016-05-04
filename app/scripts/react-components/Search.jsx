@@ -69,7 +69,7 @@ var Search = React.createClass({
   },
 
   suggestionSelected : function(suggestion, e) {
-    if (e) {
+    if (!typeof e == "undefined") {
       e.preventDefault();
     }
     this.setLocation(suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0], suggestion.properties.label);
@@ -81,6 +81,11 @@ var Search = React.createClass({
       input = autoSuggestComponent.refs.input.getDOMNode();
       return this.autoSuggestInput = input;
     }
+  },
+
+  onSubmit : function(e) {
+    e.preventDefault();
+    this.props.searchRoutes(e);
   },
 
   render : function() {

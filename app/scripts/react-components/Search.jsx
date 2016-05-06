@@ -2,11 +2,10 @@
 var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 var Search = React.createClass({
   getInitialState: function() {
-    return {hasLocation: 'to',suggestions:[]};
+    return {hasLocation: 'to', suggestions:[]};
   },
   componentWillMount : function() {
-    //this.context.getStore('LocationStore').addChangeListener(this.onChange);
-    //return this.setState(this.context.getStore('LocationStore').getLocationState());
+    this.isSuggestionSelected = false;
   },
 
   componentWillUnmount : function() {
@@ -34,7 +33,8 @@ var Search = React.createClass({
     $.getJSON('http://api.digitransit.fi/geocoding/v1/search?' + queryParams)
     .then(function(data){
       callback(null, data.features);
-    });
+      this.setState({suggestions: data.features});
+    }.bind(this));
   },
 
   renderSuggestion : function(suggestion, input) {
@@ -72,6 +72,7 @@ var Search = React.createClass({
     if (!typeof e == "undefined") {
       e.preventDefault();
     }
+    this.isSuggestionSelected = true;
     this.setLocation(suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0], suggestion.properties.label);
   },
 
@@ -90,13 +91,25 @@ var Search = React.createClass({
     }
   },
 
+  selectFirst : function() {
+    if (typeof this.state.suggestions !== 'undefined' && this.state.suggestions.length > 0 && !this.isSuggestionSelected) {
+      this.suggestionSelected(this.state.suggestions[0]);
+    }
+  },
+
+  resetSuggestion : function() {
+    // this.isSuggestionSelected = false;
+  },
+
   render : function() {
     var inputAttributes, inputDisabled;
     inputDisabled = "";
     inputAttributes = {
       id: this.props.aid,
       placeholder: this.props.placeholder,
-      disabled: inputDisabled
+      disabled: inputDisabled,
+      onFocus: this.resetSuggestion,
+      onBlur: this.selectFirst
     };
     return (
     <form onSubmit={this.onSubmit}>

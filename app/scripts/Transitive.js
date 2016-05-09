@@ -20419,7 +20419,7 @@ PathSegment.prototype.endVertex = function() {\n\
 };\n\
 \n\
 PathSegment.prototype.addPattern = function(pattern, fromIndex, toIndex) {\n\
-  if ((toIndex - fromIndex + 1) > this.points.length) {\n\
+  if (this.points.length == 0 || (toIndex - fromIndex + 1) < this.points.length) {\n\
     this.points = [];\n\
     var lastStop = null;\n\
     for (var i = fromIndex; i <= toIndex; i++) {\n\

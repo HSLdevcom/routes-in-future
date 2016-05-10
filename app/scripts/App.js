@@ -20,7 +20,7 @@ function App() {
     maxZoom: 14,
     minZoom: 11,
     dragging: true,
-    maxBounds: L.latLngBounds([60.078534, 24.492334], [60.470071, 25.302576])
+    maxBounds: L.latLngBounds([60.061880, 24.334030], [60.470071, 25.302576])
   });
   this.focusedJourney = '';
   this.transitive = new Transitive({

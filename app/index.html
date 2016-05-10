@@ -275,8 +275,6 @@
       <footer class="footer">
         <p>
           <span>&copy; HSL 2016</span>
-          <!-- <span><a href="">Käyttöehdot</a></span> -->
-          <span><a href="#feedback" class="open-feedback">Palautetta palvelusta</a></span>
         </p>
       </footer>
       <section class="map-container">
@@ -294,12 +292,6 @@
         </section>
         <section class="route-info-modal modal" id="route-info-modal">
 
-        </section>
-        <section class="feedback-modal modal">
-          <svg viewBox="0 0 40 40" class="icon close">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000" xlink:href="#icon-icon_close"></use>
-          </svg>
-          <iframe src="https://docs.google.com/forms/d/1DPsizD3wbk054C6wd3AG1o_wJngevZMdC983uoAR_H4/viewform?embedded=true&hl=fi" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
         </section>
       </section>
     </main>
@@ -352,14 +344,6 @@
         });
         $('.left-sidebar').on('click', function() {
           $('.welcome-text').removeClass('open');
-        });
-        $('.feedback-modal .close').on('click', function() {
-          $('.feedback-modal').removeClass('open');
-        });
-        $('.footer .open-feedback').on('click', function() {
-          $('.feedback-modal').addClass('open');
-          $('.welcome-text').removeClass('open');
-
         });
         $('.welcome-text .close').on('click', function() {
           $('.welcome-text').removeClass('open');

@@ -20,7 +20,7 @@ function App() {
     maxZoom: 14,
     minZoom: 11,
     dragging: true,
-    maxBounds: L.latLngBounds([60.061880, 24.334030], [60.470071, 25.302576])
+    maxBounds: L.latLngBounds([59.972834, 24.334030], [60.470071, 25.302576])
   });
   this.focusedJourney = '';
   this.transitive = new Transitive({
@@ -239,7 +239,7 @@ App.prototype.showRoutesOnMap = function(data, type) {
     if (typeof data.journeys !== 'undefined' && data.journeys.length) {
       this.map.fitBounds(this.transitiveLayer.getBounds());
     } else {
-      this.map.setView([60.287481, 24.996849], 11);
+      this.map.setView([60.186048, 24.832846], 11);
     }
 
     if (type === 'routesearch') {
@@ -339,5 +339,5 @@ App.prototype.initializeMapLayers = function() {
 
   this.map.addLayer(this.transitiveLayer);
 
-  this.map.setView([60.287481, 24.996849], 11);
+  this.map.setView([60.186048, 24.832846], 12);
 }

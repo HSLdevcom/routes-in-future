@@ -57,22 +57,22 @@ var RouteSearchBox = React.createClass({
         if(inputTimeofDay === 'morning') {
           linkHour = '08';
           startTime = '07:00';
-          endTime = '09:05';
+          endTime = '09:00';
         } else if (inputTimeofDay === 'day'){
           linkHour = '12';
           startTime = '11:00';
-          endTime = '13:05';
+          endTime = '13:00';
         } else if (inputTimeofDay === 'afternoon'){
           linkHour = '16';
           startTime = '15:00';
-          endTime = '17:05';
+          endTime = '17:00';
         } else if (inputTimeofDay === 'evening'){
           linkHour = '19';
-          startTime = '17:55';
+          startTime = '18:00';
           endTime = '20:00';
         } else if (inputTimeofDay === 'night'){
           linkHour = '22';
-          startTime = '20:55';
+          startTime = '21:00';
           endTime = '23:00';
           maxWalkTime = 45;
         }

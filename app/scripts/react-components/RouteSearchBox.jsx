@@ -8,6 +8,7 @@ var RouteSearchBox = React.createClass({
           showError: false,
           searchResults:[],
           transitivedata:[],
+          searching: false,
           linkDaymonthyear:'26.08.2015',
           linkHour:'08',
           from: {
@@ -89,7 +90,7 @@ var RouteSearchBox = React.createClass({
         }
 
 
-        this.setState({cantSearch: false, showError: false, linkHour: linkHour, linkDaymonthyear: linkDaymonthyear});
+        this.setState({cantSearch: false, showError: false, linkHour: linkHour, linkDaymonthyear: linkDaymonthyear, searching: true});
         this.props.clearActiveRoutes('route');
         var _this = this;
         var od = {
@@ -132,13 +133,13 @@ var RouteSearchBox = React.createClass({
 
             od.profile = validObj;
             profiler.journey(od,function(err,transitivedata) {
-              _this.setState({searchResults : valid, showError: (valid.length)?false : true, focusedIndex: 0});
+              _this.setState({searchResults : valid, showError: (valid.length)?false : true, focusedIndex: 0, searching: false});
               app.transitive.options.focusedJourney = '0_transit';
               app.showRoutesOnMap(transitivedata,'routesearch');
               //app.transitive.focusJourney('0_transit');
             });
           }
-
+          else _this.setState({searching: false});
         });
       }
     },
@@ -160,7 +161,7 @@ var RouteSearchBox = React.createClass({
       }
     },
     render: function() {
-      var resultContent, errorContent;
+      var resultContent, errorContent, searchIndicator;
       if(this.state.searchResults.length) {
         var style = {};
         var results;
@@ -320,8 +321,10 @@ var RouteSearchBox = React.createClass({
                   </div>;
                   // <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
       }
-//    <AutocompleteInput  name='from' placeholder='Mistä?' />
-  //    <AutocompleteInput cleared={this.state.cleared} name='to' placeholder='Mihin?' setResult={this.setResult}/>
+
+      searchIndicator = <div className='spinner'>
+                          <img src="../../images/loading.svg" />
+                        </div>;
       return (
           <div className='route-search-form'>
             <div className='route-form' >
@@ -349,7 +352,7 @@ var RouteSearchBox = React.createClass({
               </div>
             </div>
               {errorContent}
-              {resultContent}
+              {this.state.searching ? searchIndicator : resultContent}
           </div>
         );
     }

@@ -115,7 +115,17 @@ var RouteSearchBox = React.createClass({
         profiler.profile(od, function(err, data) {
           var valid = [];
           var seen = [];
-          var sorted = data.options.sort(function (a, b) {return(a.stats.avg-b.stats.avg)});
+          var sorted = data.options.sort(function (a, b) {
+            var aCmpr = a.stats.avg;
+            var bCmpr = b.stats.avg;
+            if (typeof a.transit != 'undefined'){
+              aCmpr = a.stats.avg-a.transit[0].waitStats.avg;
+            }
+            if (typeof b.transit != 'undefined'){
+              bCmpr = b.stats.avg-b.transit[0].waitStats.avg;
+            }
+            return(aCmpr - bCmpr);
+          });
           sorted.map(function(option){
             var option = option;
             if(typeof option.transit!=='undefined') {
@@ -161,7 +171,8 @@ var RouteSearchBox = React.createClass({
       }
     },
     render: function() {
-      var resultContent, errorContent, searchIndicator;
+      var resultContent, errorContent;
+      var searchIndicator = <Spinner />;
       if(this.state.searchResults.length) {
         var style = {};
         var results;
@@ -322,9 +333,6 @@ var RouteSearchBox = React.createClass({
                   // <a href={href} target='_blank'>Katso tämä reitti Reittioppaasta</a>
       }
 
-      searchIndicator = <div className='spinner'>
-                          <img src="../../images/loading.svg" />
-                        </div>;
       return (
           <div className='route-search-form'>
             <div className='route-form' >

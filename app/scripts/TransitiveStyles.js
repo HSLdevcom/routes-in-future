@@ -197,8 +197,9 @@ function setTransitiveStyles() {
     cx: 0,
     cy: 0,
     r: 5,
-    stroke: '0px',
-    fill: '#FFF'
+    fill: '#FFF',
+    stroke: '#007AC9',
+    'stroke-width': '2px'
   };
 
   /**
@@ -232,7 +233,7 @@ function setTransitiveStyles() {
     'font-family': function(display, data, index, utils) {
       return "'Gotham Rounded SSm A', 'Gotham Rounded SSm B', 'Helvetica Neue', Helvetica, Arial, sans-serif "
     },
-    
+
     /**
      * 'orientations' is a transitive-specific attribute used to specify allowable
      * label placement orientations expressed as one of eight compass directions

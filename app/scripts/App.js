@@ -327,7 +327,7 @@ App.prototype.openRouteInfo = function(route) {
 
 App.prototype.initializeMapLayers = function() {
   var _this = this;
-  L.tileLayer('http://tulevatreitit.hsl.fi/hsl-map/{z}/{x}/{y}.png', {
+  L.tileLayer('https://api.digitransit.fi/map/v1/hsl-map/{z}/{x}/{y}.png', {
     maxZoom: 19,
     minZoom: 11,
     tileSize: 512,

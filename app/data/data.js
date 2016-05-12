@@ -211,6 +211,18 @@ var DATA = {
       "agency_name": "Helsingin seudun liikenne"
     },
     {
+      "route_id": "1:3001D",
+      "route_short_name": "D",
+      "route_type": "RAIL",
+      "agency_name": "Helsingin seudun liikenne"
+    },
+    {
+      "route_id": "1:4562N",
+      "route_short_name": "562N",
+      "route_type": "BUS",
+      "agency_name": "Helsingin seudun liikenne"
+    },
+    {
       "route_id": "1:2165N",
       "route_short_name": "165N",
       "route_type": "BUS",
@@ -244,12 +256,6 @@ var DATA = {
       "route_id": "1:1076B",
       "route_short_name": "76B",
       "route_type": "BUS",
-      "agency_name": "Helsingin seudun liikenne"
-    },
-    {
-      "route_id": "1:3001H",
-      "route_short_name": "H",
-      "route_type": "RAIL",
       "agency_name": "Helsingin seudun liikenne"
     },
     {
@@ -819,6 +825,12 @@ var DATA = {
     {
       "route_id": "1:4560",
       "route_short_name": "560",
+      "route_type": "BUS",
+      "agency_name": "Helsingin seudun liikenne"
+    },
+    {
+      "route_id": "1:4562",
+      "route_short_name": "562",
       "route_type": "BUS",
       "agency_name": "Helsingin seudun liikenne"
     },
@@ -1609,12 +1621,6 @@ var DATA = {
       "agency_name": "Helsingin seudun liikenne"
     },
     {
-      "route_id": "1:3002S",
-      "route_short_name": "S",
-      "route_type": "RAIL",
-      "agency_name": "Helsingin seudun liikenne"
-    },
-    {
       "route_id": "1:3002U",
       "route_short_name": "U",
       "route_type": "RAIL",
@@ -1623,6 +1629,12 @@ var DATA = {
     {
       "route_id": "1:3002P",
       "route_short_name": "P",
+      "route_type": "RAIL",
+      "agency_name": "Helsingin seudun liikenne"
+    },
+    {
+      "route_id": "1:3002X",
+      "route_short_name": "X",
       "route_type": "RAIL",
       "agency_name": "Helsingin seudun liikenne"
     },

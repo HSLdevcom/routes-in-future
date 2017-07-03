@@ -49,7 +49,7 @@ var RouteSearchBox = React.createClass({
       } else {
         var startTime = '07:15';
         var endTime = '08:15';
-        var profileDate = '2016-08-24';
+        var profileDate = '2017-10-18';
         var inputTimeofDay = React.findDOMNode(this.refs.theTime).value;
         var inputDayOfTheWeek = React.findDOMNode(this.refs.theDay).value;
         var maxWalkTime = 20;
@@ -80,13 +80,13 @@ var RouteSearchBox = React.createClass({
 
         if(inputDayOfTheWeek === 'weekday') {
           linkDaymonthyear = '24.08.2016';
-          profileDate = '2016-08-24';
+          profileDate = '2017-10-18';
         } else if (inputDayOfTheWeek === 'saturday'){
           linkDaymonthyear = '27.08.2016';
-          profileDate = '2016-08-27';
+          profileDate = '2017-10-21';
         } else if (inputDayOfTheWeek === 'sunday'){
           linkDaymonthyear = '28.08.2016';
-          profileDate = '2016-08-28';
+          profileDate = '2017-10-22';
         }
 
 

@@ -234,7 +234,14 @@ App.prototype.showRoutesOnMap = function(data, type) {
   }
 
   if (type === 'new' || type === 'routesearch') {
-    data.routes = DATA.routes;
+    data.routes = DATA.routes.map(function(route) {
+      return {
+        agency_name: route.agencyName,
+        route_id: route.id,
+        route_short_name: route.shortName,
+        route_type: route.mode,
+      };
+    });
     this.transitive.updateData(data);
     if (typeof data.journeys !== 'undefined' && data.journeys.length) {
       this.map.fitBounds(this.transitiveLayer.getBounds());

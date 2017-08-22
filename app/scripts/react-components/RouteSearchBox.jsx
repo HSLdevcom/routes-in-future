@@ -303,7 +303,7 @@ var RouteSearchBox = React.createClass({
 
         },this);
         resultContent = <div className='result-content'>
-          <h4 className='pre-heading'>Reittivaihtoehtoja 15.8.2016 alkaen</h4>
+          <h4 className='pre-heading'>Reittivaihtoehtoja</h4>
           <div onClick={this.clearSearch}>
             <Icon img='icon-icon_close' className='close' fill='999'/>
           </div>
